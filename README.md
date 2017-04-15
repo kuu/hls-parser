@@ -8,14 +8,13 @@
 Provides synchronous functions to read/write HLS playlists
 
 ## Features
-* Parses an HLS playlist file based on [the spec](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21).
+* Parses an HLS playlist based on [the spec](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21).
 * The parsed playlist is represented as a standard JS object (See **Data format**.)
-* Converts the (modified) JS object back into a text playlist that conforms to [the spec](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21).
+* Converts the (updated) JS object back into a text playlist that conforms to [the spec](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21).
 
 ## Usage
 ```js
-const {Parser} = require('hls-parser');
-const parser = new Parser();
+const HLS = require('hls-parser');
 
 fetch('https://foo.com/bar.m3u8')
 .then(result => {
@@ -23,7 +22,7 @@ fetch('https://foo.com/bar.m3u8')
 })
 .then(data => {
   // Parse the playlist
-  return parser.parse(data, url);
+  return HLS.parse(data, url);
 }).then(playlist=> {
   // You access the playlist as a JS object
   if (playlist.isMasterPlaylist) {
@@ -31,42 +30,45 @@ fetch('https://foo.com/bar.m3u8')
   } else {
     console.log(`Media playlist: ${playlist.uri}`);
   }
-  // Modify the object
-  playlist.uri = new URL('http://my.site.com/bar.m3u8');
+  // Create a new playlist
+  const {MediaPlaylist} = HLS.types;
+  const newPlaylist = new MediaPlaylist({
+    targetDuration: 9,
+    playlistType: 'VOD',
+    segments: [
+      new Segment({
+        uri: 'low.m3u8'
+        duration: 9,
+        mediaSequenceNumber: 0,
+        discontinuitySequence: 0
+      })
+    ]
+  }));
   // Convert the object into a text
-  console.log(`Modified playlist: ${parser.serialize(playlist)}`);
+  console.log(`New playlist: ${HLS.stringify(newPlaylist)}`);
 });
 
 ```
 
 ## API
-### `constructor([options])`
-Creates a new `Parser` object.
+### `parse(data, url)`
+Converts a text playlist into a structured JS object
 #### params
 | Name    | Type   | Required | Default | Description   |
 | ------- | ------ | -------- | ------- | ------------- |
-| options | object | No       | {}      | See below     |
-#### options
-Currently no params are supported.
-
-### `Parser`
-#### methods
-##### `parse(data, url)`
-Converts a text playlist into a structured JS object
-###### params
-| Name    | Type   | Required | Default | Description   |
-| ------- | ------ | -------- | ------- | ------------- |
-| data    | string | Yes      | N/A     | Text data of [an HLS playlist](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.1) |
+| data    | string | Yes      | N/A     | A text playlist that conforms to [the spec](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.1) |
 | url     | string | Yes      | N/A     | URL of the playlist, which will be used as a base URL of the playlists/segments encountered within the playlist |
-###### return value
+#### return value
 An instance of either `MasterPlaylist` or `MediaPlaylist` (See below.)
 
-##### `serialize()`
+### `stringify(playlist)`
 Converts a JS object into a plain text playlist
-###### params
-No params
-###### return value
-Text data of [an HLS playlist](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.1)
+#### params
+| Name    | Type   | Required | Default | Description   |
+| ------- | ------ | -------- | ------- | ------------- |
+| playlist    | An instance of either `MasterPlaylist` or `MediaPlaylist` (See below.)  | Yes      | N/A     | An object returned by `parse()` or a manually created object |
+#### return value
+A text playlist that conforms to [the spec](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.1)
 
 ## Data format
 This section describes the structure of the object returned by `parse()` method.
