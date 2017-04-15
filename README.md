@@ -44,8 +44,6 @@ Creates a new `Parser` object.
 | options | object | No       | {}      | See below     |
 #### options
 Currently no params are supported.
-| Name        | Type   | Default | Description                       |
-| ----------- | ------ | ------- | --------------------------------- |
 
 ### `Parser`
 #### methods
@@ -64,10 +62,10 @@ Converts a JS object into a plain text playlist
 ###### params
 No params
 ###### return value
-Text data of [an HLS playlist](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.1) |
+Text data of [an HLS playlist](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.1)
 
 ## Data format
-As the readable stream returned by `createReadStream` operates in object mode, the data emitted by the stream is always a JS object. This section describes the structure of the object.
+This section describes the structure of the object returned by `parse()` method.
 
 ![data structure](./data-structure.png)
 

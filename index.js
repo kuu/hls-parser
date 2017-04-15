@@ -14,7 +14,7 @@ const {
   MediaPlaylist,
   Segment
 } = types;
-const print = debug('hls-stream');
+const print = debug('hls-parser');
 
 function INVALIDPLAYLIST(msg) {
   utils.THROW(new Error(`Invalid Playlist : ${msg}`));
