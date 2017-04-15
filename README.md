@@ -8,9 +8,9 @@
 Provides synchronous functions to read/write HLS playlists
 
 ## Features
-* Read playlist and segment files based on [the spec](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21).
-* Converts them files into standard JS objects (See **Data format**.)
-* Converts the JS objects back into HLS playlist and segment files that conform to [the spec](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21).
+* Parses an HLS playlist file based on [the spec](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21).
+* The parsed playlist is represented as a standard JS object (See **Data format**.)
+* Converts the (modified) JS object back into a text playlist that conforms to [the spec](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21).
 
 ## Usage
 ```js
@@ -22,14 +22,18 @@ fetch('https://foo.com/bar.m3u8')
   return result.text();
 })
 .then(data => {
+  // Parse the playlist
   return parser.parse(data, url);
 }).then(playlist=> {
+  // You access the playlist as a JS object
   if (playlist.isMasterPlaylist) {
     console.log(`Master playlist: ${playlist.uri}`);
   } else {
     console.log(`Media playlist: ${playlist.uri}`);
   }
+  // Modify the object
   playlist.uri = new URL('http://my.site.com/bar.m3u8');
+  // Convert the object into a text
   console.log(`Modified playlist: ${parser.serialize(playlist)}`);
 });
 
