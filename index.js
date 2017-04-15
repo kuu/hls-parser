@@ -392,10 +392,9 @@ function parseMediaPlaylist(lines, url) {
 }
 
 class FileParser {
-  constructor(url, options = {}) {
+  constructor(url) {
     utils.PARAMCHECK(url);
     this.baseUrl = url;
-    this.options = options;
     this.version = undefined;
     this.isMasterPlaylist = undefined;
   }
@@ -472,24 +471,19 @@ class FileParser {
 
 }
 
-class Parser {
-  constructor(options) {
-    this.options = options;
-  }
-
-  parse(text, url) {
-    print(`Parser.parse: ${url}`);
-    const fileParser = new FileParser(url);
-    const lines = fileParser.lexicalParse(text);
-    return fileParser.semanticParse(lines, url);
-    /*
-    return {
-      compatibleVersion: 1
-    };
-    */
-  }
+function parse(text, url) {
+  print(`HLS.parse: ${url}`);
+  const fileParser = new FileParser(url);
+  const lines = fileParser.lexicalParse(text);
+  return fileParser.semanticParse(lines, url);
+  /*
+  return {
+    compatibleVersion: 1
+  };
+  */
 }
 
-Parser.types = types;
-
-module.exports = Parser;
+module.exports = {
+  parse,
+  types
+};

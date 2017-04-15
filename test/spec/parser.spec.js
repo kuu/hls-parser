@@ -1,13 +1,12 @@
 const test = require('ava');
 const fixtures = require('../helpers/fixtures');
-const Parser = require('../../');
+const HLS = require('../../');
 
-const {Playlist} = Parser.types;
-const parser = new Parser();
+const {Playlist} = HLS.types;
 
 fixtures.forEach(({name, data, expected}) => {
   test(name, t => {
-    const result = parser.parse(data, `http://node-hls-stream.com/${name}.m3u8`);
+    const result = HLS.parse(data, `http://node-hls-stream.com/${name}.m3u8`);
     if (deepEqual(t, result, expected)) {
       t.pass();
     }
