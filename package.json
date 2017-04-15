@@ -1,0 +1,49 @@
+{
+  "name": "@kuu/hls-parser",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "lint": "xo",
+    "coverage": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
+    "test": "npm run lint && nsp check && ava --verbose"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kuu/hls-parser.git"
+  },
+  "keywords": [
+    "HLS"
+  ],
+  "author": "Kuu Miyazaki",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kuu/hls-parser/issues"
+  },
+  "homepage": "https://github.com/kuu/hls-parser#readme",
+  "dependencies": {
+    "debug": "^2.6.3"
+  },
+  "devDependencies": {
+    "ava": "^0.19.1",
+    "coveralls": "^2.13.0",
+    "nsp": "^2.6.3",
+    "nyc": "^10.2.0",
+    "xo": "^0.18.1"
+  },
+  "engines": {
+    "node": ">=7.0.0"
+  },
+  "xo": {
+    "esnext": true,
+    "space": true,
+    "rules": {
+      "capitalized-comments": 0,
+      "dot-notation": 0,
+      "new-cap": 0,
+      "no-cond-assign": 0,
+      "no-multi-assign": 0,
+      "import/no-dynamic-require": 0
+    }
+  }
+}
