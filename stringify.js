@@ -1,9 +1,282 @@
 const debug = require('debug');
+const utils = require('./utils');
 
 const print = debug('hls-parser');
 
+class LineArray extends Array {
+  constructor(baseUri) {
+    super();
+    this.baseUri = baseUri;
+  }
+  // @override
+  push(...elems) {
+    // redundancy check
+    for (const elem of elems) {
+      if (elem.startsWith('#EXTINF') ||
+        elem.startsWith('#EXT-X-BYTERANGE') ||
+        elem.startsWith('#EXT-X-DISCONTINUITY')) {
+        super.push(elem);
+        continue;
+      }
+      if (this.includes(elem)) {
+        continue;
+      }
+      super.push(elem);
+    }
+  }
+  createRelativeUri(uri) {
+    if (uri.origin === this.baseUri.origin) {
+      const basePath = this.baseUri.pathname;
+      return utils.relativePath(basePath.slice(0, basePath.lastIndexOf('/') + 1), uri.pathname);
+    }
+    return uri.href;
+  }
+}
+
+function buildMasterPlaylist(lines, playlist) {
+  for (const sessionData of playlist.sessionDataList) {
+    buildSessionData(lines, sessionData);
+  }
+  if (playlist.sessionKey) {
+    buildKey(lines, playlist.sessionKey, true);
+  }
+  for (const variant of playlist.variants) {
+    buildVariant(lines, variant);
+  }
+}
+
+function buildSessionData(lines, sessionData) {
+  const attrs = [`DATA-ID="${sessionData.id}"`];
+  if (sessionData.language) {
+    attrs.push(`LANGUAGE="${sessionData.language}"`);
+  }
+  if (sessionData.value) {
+    attrs.push(`VALUE="${sessionData.value}"`);
+  } else if (sessionData.uri) {
+    attrs.push(`URI="${lines.createRelativeUri(sessionData.uri)}"`);
+  }
+  lines.push(`#EXT-X-SESSION-DATA:${attrs.join(',')}`);
+}
+
+function buildKey(lines, key, isSessionKey) {
+  const name = isSessionKey ? '#EXT-X-SESSION-KEY' : '#EXT-X-KEY';
+  const attrs = [`METHOD=${key.method}`];
+  if (key.uri) {
+    attrs.push(`URI="${lines.createRelativeUri(key.uri)}"`);
+  }
+  if (key.iv) {
+    if (key.iv.length !== 16) {
+      utils.INVALIDPLAYLIST('IV must be a 128-bit unsigned integer');
+    }
+    attrs.push(`IV=${utils.byteSequenceToHex(key.iv)}`);
+  }
+  if (key.format) {
+    attrs.push(`KEYFORMAT="${key.format}"`);
+  }
+  if (key.formatVersion) {
+    attrs.push(`KEYFORMATVERSIONS="${key.formatVersion}"`);
+  }
+  lines.push(`${name}:${attrs.join(',')}`);
+}
+
+function buildVariant(lines, variant) {
+  const name = variant.isIFrameOnly ? '#EXT-X-I-FRAME-STREAM-INF' : '#EXT-X-STREAM-INF';
+  const attrs = [`BANDWIDTH=${variant.bandwidth}`];
+  if (variant.averageBandwidth) {
+    attrs.push(`AVERAGE-BANDWIDTH=${variant.averageBandwidth}`);
+  }
+  if (variant.isIFrameOnly) {
+    attrs.push(`URI="${lines.createRelativeUri(variant.uri)}"`);
+  }
+  if (variant.codecs) {
+    attrs.push(`CODECS="${variant.codecs}"`);
+  }
+  if (variant.resolution) {
+    attrs.push(`RESOLUTION=${variant.resolution.width}x${variant.resolution.height}`);
+  }
+  if (variant.frameRate) {
+    attrs.push(`FRAME-RATE=${variant.frameRate}`);
+  }
+  if (variant.hdcpLevel) {
+    attrs.push(`HDCP-LEVEL=${variant.hdcpLevel}`);
+  }
+  if (variant.audio.length > 0) {
+    attrs.push(`AUDIO="${variant.audio[0].groupId}"`);
+    for (const rendition of variant.audio) {
+      buildRendition(lines, rendition);
+    }
+  }
+  if (variant.video.length > 0) {
+    attrs.push(`VIDEO="${variant.video[0].groupId}"`);
+    for (const rendition of variant.video) {
+      buildRendition(lines, rendition);
+    }
+  }
+  if (variant.subtitles.length > 0) {
+    attrs.push(`SUBTITLES="${variant.subtitles[0].groupId}"`);
+    for (const rendition of variant.subtitles) {
+      buildRendition(lines, rendition);
+    }
+  }
+  if (variant.closedCaptions.length > 0) {
+    attrs.push(`CLOSED-CAPTIONS="${variant.closedCaptions[0].groupId}"`);
+    for (const rendition of variant.closedCaptions) {
+      buildRendition(lines, rendition);
+    }
+  }
+  lines.push(`${name}:${attrs.join(',')}`);
+  if (!variant.isIFrameOnly) {
+    lines.push(`${lines.createRelativeUri(variant.uri)}`);
+  }
+}
+
+function buildRendition(lines, rendition) {
+  const attrs = [
+    `TYPE=${rendition.type}`,
+    `GROUP-ID="${rendition.groupId}"`,
+    `NAME="${rendition.name}"`
+  ];
+  if (rendition.isDefault !== undefined) {
+    attrs.push(`DEFAULT=${rendition.isDefault ? 'YES' : 'NO'}`);
+  }
+  if (rendition.autoselect !== undefined) {
+    attrs.push(`AUTOSELECT=${rendition.autoselect ? 'YES' : 'NO'}`);
+  }
+  if (rendition.forced !== undefined) {
+    attrs.push(`FORCED=${rendition.forced ? 'YES' : 'NO'}`);
+  }
+  if (rendition.language) {
+    attrs.push(`LANGUAGE="${rendition.language}"`);
+  }
+  if (rendition.assocLanguage) {
+    attrs.push(`ASSOC-LANGUAGE="${rendition.assocLanguage}"`);
+  }
+  if (rendition.instreamId) {
+    attrs.push(`INSTREAM-ID="${rendition.instreamId}"`);
+  }
+  if (rendition.characteristics) {
+    attrs.push(`CHARACTERISTICS="${rendition.characteristics}"`);
+  }
+  if (rendition.channels) {
+    attrs.push(`CHANNELS="${rendition.channels}"`);
+  }
+  if (rendition.uri) {
+    attrs.push(`URI="${lines.createRelativeUri(rendition.uri)}"`);
+  }
+  lines.push(`#EXT-X-MEDIA:${attrs.join(',')}`);
+}
+
+function buildMediaPlaylist(lines, playlist) {
+  lines.push(`#EXT-X-TARGETDURATION:${playlist.targetDuration}`);
+  if (playlist.mediaSequenceBase) {
+    lines.push(`#EXT-X-MEDIA-SEQUENCE:${playlist.mediaSequenceBase}`);
+  }
+  if (playlist.discontinuitySequenceBase) {
+    lines.push(`#EXT-X-DISCONTINUITY-SEQUENCE:${playlist.discontinuitySequenceBase}`);
+  }
+  if (playlist.playlistType) {
+    lines.push(`#EXT-X-PLAYLIST-TYPE:${playlist.playlistType}`);
+  }
+  if (playlist.isIFrame) {
+    lines.push(`#EXT-X-I-FRAMES-ONLY`);
+  }
+  for (const segment of playlist.segments) {
+    buildSegment(lines, segment);
+  }
+  if (playlist.endlist) {
+    lines.push(`#EXT-X-ENDLIST`);
+  }
+}
+
+function buildSegment(lines, segment) {
+  if (segment.byterange) {
+    lines.push(`#EXT-X-BYTERANGE:${segment.length}@${segment.offset}`);
+  }
+  if (segment.discontinuity) {
+    lines.push(`#EXT-X-DISCONTINUITY`);
+  }
+  if (segment.key) {
+    buildKey(lines, segment.key);
+  }
+  if (segment.map) {
+    buildMap(lines, segment.map);
+  }
+  if (segment.programDateTime) {
+    lines.push(`#EXT-X-PROGRAM-DATE-TIME:${utils.formatDate(segment.programDateTime)}`);
+  }
+  if (segment.dateRange) {
+    buildDateRange(lines, segment.dateRange);
+  }
+  lines.push(`#EXTINF:${segment.duration},${segment.title}`);
+  lines.push(`${lines.createRelativeUri(segment.uri)}`);
+}
+
+function buildMap(lines, map) {
+  const attrs = [`URI="${lines.createRelativeUri(map.uri)}"`];
+  if (map.byterange) {
+    attrs.push(`BYTERANGE=${map.byterange}`);
+  }
+  lines.push(`#EXT-X-MAP:${attrs.join(',')}`);
+}
+
+function buildDateRange(lines, dateRange) {
+  const attrs = [
+    `ID="${dateRange.id}"`,
+    `START-DATE="${utils.formatDate(dateRange.start)}"`
+  ];
+  if (dateRange.end) {
+    attrs.push(`END-DATE="${dateRange.end}"`);
+  }
+  if (dateRange.duration) {
+    attrs.push(`DURATION=${dateRange.duration}`);
+  }
+  if (dateRange.plannedDuration) {
+    attrs.push(`PLANNED-DURATION=${dateRange.plannedDuration}`);
+  }
+  if (dateRange.classId) {
+    attrs.push(`CLASS="${dateRange.classId}"`);
+  }
+  if (dateRange.endOnNext) {
+    attrs.push(`END-ON-NEXT=YES`);
+  }
+  Object.keys(dateRange.attributes).forEach(key => {
+    if (key.startsWith('X-')) {
+      if (typeof dateRange.attributes[key] === 'number') {
+        attrs.push(`${key}=${dateRange.attributes[key]}`);
+      } else {
+        attrs.push(`${key}="${dateRange.attributes[key]}"`);
+      }
+    } else if (key.startsWith('SCTE35-')) {
+      attrs.push(`${key}=${utils.byteSequenceToHex(dateRange.attributes[key])}`);
+    }
+  });
+  lines.push(`#EXT-X-DATERANGE:${attrs.join(',')}`);
+}
+
 function stringify(playlist) {
-  print(`HLS.stringify: ${playlist.url}`);
+  print('HLS.stringify');
+  utils.PARAMCHECK(playlist);
+  utils.ASSERT('Not a playlist', playlist.type === 'playlist' && playlist.uri);
+  const lines = new LineArray(playlist.uri);
+  lines.push('#EXTM3U');
+  if (playlist.version) {
+    lines.push(`#EXT-X-VERSION:${playlist.version}`);
+  }
+  if (playlist.independentSegments) {
+    lines.push(`#EXT-X-INDEPENDENT-SEGMENTS:${playlist.independentSegments}`);
+  }
+  if (playlist.offset) {
+    lines.push(`#EXT-X-START:TIME-OFFSET=${playlist.offset}`);
+  }
+  if (playlist.isMasterPlaylist) {
+    buildMasterPlaylist(lines, playlist);
+  } else {
+    buildMediaPlaylist(lines, playlist);
+  }
+  // console.log('<<<');
+  // console.log(lines.join('\n'));
+  // console.log('>>>');
+  return lines.join('\n');
 }
 
 module.exports = stringify;

@@ -4,10 +4,10 @@ const HLS = require('../../');
 
 const {Playlist} = HLS.types;
 
-fixtures.forEach(({name, data, expected}) => {
+fixtures.forEach(({name, m3u8, object}) => {
   test(name, t => {
-    const result = HLS.parse(data, `http://node-hls-stream.com/${name}.m3u8`);
-    if (deepEqual(t, result, expected)) {
+    const result = HLS.parse(m3u8, `http://node-hls-stream.com/${name}.m3u8`);
+    if (deepEqual(t, result, object)) {
       t.pass();
     }
   });

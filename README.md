@@ -7,11 +7,6 @@
 
 Provides synchronous functions to read/write HLS playlists
 
-## Features
-* Parses an HLS playlist based on [the spec](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21).
-* The parsed playlist is represented as a standard JS object (See **Data format**.)
-* Converts the (updated) JS object back into a text playlist that conforms to [the spec](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21).
-
 ## Usage
 ```js
 const HLS = require('hls-parser');
@@ -22,9 +17,8 @@ fetch('https://foo.com/bar.m3u8')
 })
 .then(data => {
   // Parse the playlist
-  return HLS.parse(data, url);
-}).then(playlist=> {
-  // You access the playlist as a JS object
+  const playlist = HLS.parse(data, url);
+  // You can access the playlist as a JS object
   if (playlist.isMasterPlaylist) {
     console.log(`Master playlist: ${playlist.uri}`);
   } else {
@@ -46,12 +40,14 @@ fetch('https://foo.com/bar.m3u8')
   }));
   // Convert the object into a text
   console.log(`New playlist: ${HLS.stringify(newPlaylist)}`);
+})
+.catch(err => {
+  console.error(err.stack);
 });
-
 ```
 
 ## API
-### `parse(data, url)`
+### `HLS.parse(data, url)`
 Converts a text playlist into a structured JS object
 #### params
 | Name    | Type   | Required | Default | Description   |
@@ -61,14 +57,17 @@ Converts a text playlist into a structured JS object
 #### return value
 An instance of either `MasterPlaylist` or `MediaPlaylist` (See below.)
 
-### `stringify(playlist)`
+### `HLS.stringify(playlist)`
 Converts a JS object into a plain text playlist
 #### params
 | Name    | Type   | Required | Default | Description   |
 | ------- | ------ | -------- | ------- | ------------- |
-| playlist    | An instance of either `MasterPlaylist` or `MediaPlaylist` (See below.)  | Yes      | N/A     | An object returned by `parse()` or a manually created object |
+| playlist    | `MasterPlaylist` or `MediaPlaylist` (See **Data format** below.)  | Yes      | N/A     | An object returned by `parse()` or a manually created object |
 #### return value
 A text playlist that conforms to [the spec](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.1)
+### `HLS.types`
+An object property that holds all the classes described below.
+
 
 ## Data format
 This section describes the structure of the object returned by `parse()` method.
