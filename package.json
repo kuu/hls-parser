@@ -1,7 +1,7 @@
 {
   "name": "@kuu/hls-parser",
   "version": "0.0.2",
-  "description": "",
+  "description": "A simple library to read/write HLS playlists",
   "main": "index.js",
   "scripts": {
     "lint": "xo",
@@ -13,7 +13,11 @@
     "url": "git+https://github.com/kuu/hls-parser.git"
   },
   "keywords": [
-    "HLS"
+    "HLS",
+    "media",
+    "video",
+    "audio",
+    "streaming"
   ],
   "author": "Kuu Miyazaki",
   "license": "MIT",
