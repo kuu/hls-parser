@@ -12,7 +12,8 @@ function createRendition() {
     language: 'en',
     name: 'English',
     isDefault: true,
-    autoselect: true
+    autoselect: true,
+    characteristics: 'public.accessibility.transcribes-spoken-dialog,public.easy-to-read'
   }));
   renditions.push(new Rendition({
     type: 'AUDIO',
@@ -20,21 +21,26 @@ function createRendition() {
     groupId: 'aac',
     language: 'de',
     name: 'Deutsch',
-    autoselect: true
+    isDefault: false,
+    autoselect: true,
+    characteristics: 'public.accessibility.transcribes-spoken-dialog,public.easy-to-read'
   }));
   renditions.push(new Rendition({
     type: 'AUDIO',
     uri: new URL('http://node-hls-stream.com/commentary/audio-only.m3u8'),
     groupId: 'aac',
     language: 'en',
-    name: 'Commentary'
+    name: 'Commentary',
+    isDefault: false,
+    autoselect: false,
+    characteristics: 'public.accessibility.transcribes-spoken-dialog,public.easy-to-read'
   }));
   return renditions;
 }
 
 const playlist = new MasterPlaylist({
-  uri: new URL('http://node-hls-stream.com/8.6-Master-Playlist-with-Alternative-audio.m3u8'),
-  variants: createVariants()
+  uri: new URL('http://node-hls-stream.com/8.9-CHARACTERISTICS-attribute-containing-multiple-characteristics.m3u8'),
+  variants: createVariants(),
 });
 
 function createVariants() {

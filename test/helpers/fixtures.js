@@ -9,9 +9,9 @@ filenames.forEach(filename => {
   if (filename.endsWith('.m3u8')) {
     const name = path.basename(filename, '.m3u8');
     const filepath = path.join(baseDir, filename);
-    const data = fs.readFileSync(filepath, 'utf8');
-    const expected = require(`../fixtures/expected/${name}.js`);
-    fixtures.push({name, data, expected});
+    const m3u8 = fs.readFileSync(filepath, 'utf8');
+    const object = require(`../fixtures/objects/${name}.js`);
+    fixtures.push({name, m3u8, object});
   }
 });
 

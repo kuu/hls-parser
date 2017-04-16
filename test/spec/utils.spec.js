@@ -54,6 +54,12 @@ test('utils.hexToByteSequence', t => {
   t.deepEqual(utils.hexToByteSequence('FFFFFF'), Buffer.from([255, 255, 255]));
 });
 
+test('utils.byteSequenceToHex', t => {
+  t.is(utils.byteSequenceToHex(Buffer.from([0, 0, 0])), '0x000000');
+  t.is(utils.byteSequenceToHex(Buffer.from([255, 255, 255])), '0xFFFFFF');
+  t.is(utils.byteSequenceToHex(Buffer.from([255, 255, 256])), '0xFFFF00');
+});
+
 test('utils.createUrl', t => {
   let url = utils.createUrl('http://abc.com');
   t.is(url.href, 'http://abc.com/');
@@ -121,4 +127,55 @@ test('utls.camelify', t => {
   const props = ['caption', 'Caption', 'captioN', 'CAPTION', 'closed-captions', 'closed_captions', 'CLOSED-CAPTIONS'];
   const results = ['caption', 'caption', 'caption', 'caption', 'closedCaptions', 'closedCaptions', 'closedCaptions'];
   t.deepEqual(props.map(p => utils.camelify(p)), results);
+});
+
+test('utils.formatDate', t => {
+  const DATE = '2014-03-05T11:15:00.000Z';
+  t.is(utils.formatDate(new Date(DATE)), DATE);
+  const LOCALDATE = '2000-01-01T08:59:59.999+09:00';
+  const UTC = '1999-12-31T23:59:59.999Z';
+  t.is(utils.formatDate(new Date(LOCALDATE)), UTC);
+});
+
+test('utils.relativePath', t => {
+  let FROM;
+  let TO;
+  FROM = '/a/b/c/';
+  TO = '/a/b/c/x';
+  t.is(utils.relativePath(FROM, TO), 'x');
+  TO = '/a/b/c/y';
+  t.is(utils.relativePath(FROM, TO), 'y');
+  TO = '/a/b/c/d/y';
+  t.is(utils.relativePath(FROM, TO), 'd/y');
+  TO = '/a/b/c/d/e/y';
+  t.is(utils.relativePath(FROM, TO), 'd/e/y');
+  TO = '/a/b/y';
+  t.is(utils.relativePath(FROM, TO), '../y');
+  TO = '/a/y';
+  t.is(utils.relativePath(FROM, TO), '../../y');
+  TO = '/y';
+  t.is(utils.relativePath(FROM, TO), '../../../y');
+  TO = '/f/g/h/y';
+  t.is(utils.relativePath(FROM, TO), '../../../f/g/h/y');
+  FROM = '/a/a/a/';
+  TO = '/a/a';
+  t.is(utils.relativePath(FROM, TO), '..');
+  TO = '/a/a/a/a/a';
+  t.is(utils.relativePath(FROM, TO), 'a/a');
+  FROM = '/';
+  TO = '/y';
+  t.is(utils.relativePath(FROM, TO), 'y');
+  TO = '/a/y';
+  t.is(utils.relativePath(FROM, TO), 'a/y');
+  FROM = '/a/b/c';
+  TO = '/a/b/c/';
+  t.is(utils.relativePath(FROM, TO), '');
+  TO = '/a/b/c/d/';
+  t.is(utils.relativePath(FROM, TO), 'd');
+  TO = '/a/b/c/d/e/';
+  t.is(utils.relativePath(FROM, TO), 'd/e');
+  TO = '/a/b/';
+  t.is(utils.relativePath(FROM, TO), '..');
+  TO = '/a/';
+  t.is(utils.relativePath(FROM, TO), '../..');
 });

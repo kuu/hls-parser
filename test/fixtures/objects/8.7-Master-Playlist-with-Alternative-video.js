@@ -21,7 +21,8 @@ function createRendition(groupId) {
     type: 'VIDEO',
     uri: new URL(`http://node-hls-stream.com/${groupId}/dugout/audio-video.m3u8`),
     groupId,
-    name: 'Dugout'
+    name: 'Dugout',
+    isDefault: false
   }));
   return renditions;
 }

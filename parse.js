@@ -15,10 +15,6 @@ const {
 
 const print = debug('hls-parser');
 
-function INVALIDPLAYLIST(msg) {
-  utils.THROW(new Error(`Invalid Playlist : ${msg}`));
-}
-
 function unquote(str) {
   return utils.trim(str, '"');
 }
@@ -75,7 +71,7 @@ function parseResolution(str) {
 function parseIV(str) {
   const iv = utils.hexToByteSequence(str);
   if (iv.length !== 16) {
-    INVALIDPLAYLIST('IV must be a 128-bit unsigned integer');
+    utils.INVALIDPLAYLIST('IV must be a 128-bit unsigned integer');
   }
   return iv;
 }
@@ -248,7 +244,7 @@ function parseMasterPlaylist(lines, url) {
     } else if (name === 'EXT-X-STREAM-INF') {
       const uri = lines[index + 1];
       if (uri instanceof URL === false) {
-        INVALIDPLAYLIST('EXT-X-STREAM-INF is not followed by a URI line');
+        utils.INVALIDPLAYLIST('EXT-X-STREAM-INF is not followed by a URI line');
       }
       const variant = parseVariant(lines, attributes, uri);
       if (variant) {
@@ -370,7 +366,7 @@ function parseMediaPlaylist(lines, url) {
       playlist.offset = attributes['TIME-OFFSET'];
     } else if (line instanceof URL) {
       if (segmentStart === -1) {
-        INVALIDPLAYLIST('A URI line is not preceded by any segment tags');
+        utils.INVALIDPLAYLIST('A URI line is not preceded by any segment tags');
       }
       const segment = parseSegment(lines, line, segmentStart, index - 1, mediaSequence++, discontinuitySequence++);
       if (segment) {

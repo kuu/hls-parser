@@ -8,9 +8,9 @@ class Rendition {
     language,
     assocLanguage,
     name, // required
-    isDefault = false,
-    autoselect = false,
-    forced = false,
+    isDefault,
+    autoselect,
+    forced,
     instreamId, // required if type=CLOSED-CAPTIONS
     characteristics,
     channels
@@ -24,7 +24,7 @@ class Rendition {
     this.assocLanguage = assocLanguage;
     this.name = name;
     this.isDefault = isDefault;
-    this.autoselect = isDefault ? isDefault : autoselect;
+    this.autoselect = autoselect;
     this.forced = forced;
     this.instreamId = instreamId;
     this.characteristics = characteristics;
@@ -86,8 +86,8 @@ class Key {
     method, // required
     uri, // required unless method=NONE
     iv,
-    format = 'identity',
-    formatVersion = '1'
+    format,
+    formatVersion
   }) {
     utils.PARAMCHECK(method);
     utils.CONDITIONALPARAMCHECK([method !== 'NONE', uri]);
