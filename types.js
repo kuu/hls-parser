@@ -146,14 +146,14 @@ class Data {
 class Playlist extends Data {
   constructor({
     isMasterPlaylist, // required
-    uri, // required
+    uri,
     version,
     independentSegments = false,
     offset = 0.0,
     source
   }) {
     super('playlist');
-    utils.PARAMCHECK(isMasterPlaylist, uri);
+    utils.PARAMCHECK(isMasterPlaylist);
     this.isMasterPlaylist = isMasterPlaylist;
     this.uri = uri;
     this.version = version;

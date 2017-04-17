@@ -2,7 +2,6 @@ const {URL} = require('url');
 const {MasterPlaylist, SessionData} = require('../../../types');
 
 const playlist = new MasterPlaylist({
-  uri: new URL('http://node-hls-stream.com/8.8-Session-Data-in-a-Master-Playlist.m3u8'),
   sessionDataList: createSetssionDataList(),
 });
 
@@ -10,7 +9,7 @@ function createSetssionDataList() {
   const setssionDataList = [];
   setssionDataList.push(new SessionData({
     id: 'com.example.lyrics',
-    uri: new URL('http://node-hls-stream.com/lyrics.json')
+    uri: 'lyrics.json'
   }));
   setssionDataList.push(new SessionData({
     id: 'com.example.title',

@@ -1,4 +1,3 @@
-const {URL} = require('url');
 const debug = require('debug');
 const utils = require('./utils');
 const {
@@ -76,7 +75,7 @@ function parseIV(str) {
   return iv;
 }
 
-function parseAttributeList(param, baseUrl) {
+function parseAttributeList(param) {
   const list = utils.splitByCommaWithPreservingQuotes(param);
   const attributes = {};
   list.forEach(item => {
@@ -84,7 +83,7 @@ function parseAttributeList(param, baseUrl) {
     const val = unquote(value);
     switch (key) {
       case 'URI':
-        attributes[key] = utils.createUrl(val, baseUrl);
+        attributes[key] = val;
         break;
       case 'START-DATE':
       case 'END-DATE':
@@ -125,7 +124,7 @@ function parseAttributeList(param, baseUrl) {
   return attributes;
 }
 
-function parseTagParam(name, param, baseUrl) {
+function parseTagParam(name, param) {
   switch (name) {
     case 'EXTM3U':
     case 'EXT-X-DISCONTINUITY':
@@ -147,7 +146,7 @@ function parseTagParam(name, param, baseUrl) {
     case 'EXT-X-SESSION-DATA':
     case 'EXT-X-SESSION-KEY':
     case 'EXT-X-START':
-      return [null, parseAttributeList(param, baseUrl)];
+      return [null, parseAttributeList(param)];
     case 'EXTINF':
       return [parseEXTINF(param), null];
     case 'EXT-X-BYTERANGE':
@@ -233,8 +232,8 @@ function parseVariant(lines, variantAttrs, uri, iFrameOnly = false) {
   return variant;
 }
 
-function parseMasterPlaylist(lines, url) {
-  const playlist = new MasterPlaylist({uri: utils.createUrl(url)});
+function parseMasterPlaylist(lines) {
+  const playlist = new MasterPlaylist();
   for (const [index, line] of lines.entries()) {
     const name = line.name;
     const value = line.value;
@@ -243,8 +242,8 @@ function parseMasterPlaylist(lines, url) {
       playlist.version = value;
     } else if (name === 'EXT-X-STREAM-INF') {
       const uri = lines[index + 1];
-      if (uri instanceof URL === false) {
-        utils.INVALIDPLAYLIST('EXT-X-STREAM-INF is not followed by a URI line');
+      if (uri.startsWith('#EXT')) {
+        utils.INVALIDPLAYLIST('EXT-X-STREAM-INF mulst be followed by a URI line');
       }
       const variant = parseVariant(lines, attributes, uri);
       if (variant) {
@@ -330,8 +329,8 @@ function parseSegment(lines, uri, start, end, mediaSequenceNumber, discontinuity
   return segment;
 }
 
-function parseMediaPlaylist(lines, url) {
-  const playlist = new MediaPlaylist({uri: utils.createUrl(url)});
+function parseMediaPlaylist(lines) {
+  const playlist = new MediaPlaylist();
   let segmentStart = -1;
   let mediaSequence = 0;
   let discontinuitySequence = 0;
@@ -364,8 +363,10 @@ function parseMediaPlaylist(lines, url) {
       playlist.independentSegments = true;
     } else if (name === 'EXT-X-START') {
       playlist.offset = attributes['TIME-OFFSET'];
-    } else if (line instanceof URL) {
+    } else if (typeof line === 'string') {
+      // uri
       if (segmentStart === -1) {
+        console.log(`### ${name}`);
         utils.INVALIDPLAYLIST('A URI line is not preceded by any segment tags');
       }
       const segment = parseSegment(lines, line, segmentStart, index - 1, mediaSequence++, discontinuitySequence++);
@@ -386,91 +387,86 @@ function parseMediaPlaylist(lines, url) {
   return playlist;
 }
 
-class FileParser {
-  constructor(url) {
-    utils.PARAMCHECK(url);
-    this.baseUrl = url;
-    this.version = undefined;
-    this.isMasterPlaylist = undefined;
-  }
-
-  CHECKTAGCATEGORY(category) {
-    if (category === 'Segment' || category === 'MediaPlaylist') {
-      if (this.isMasterPlaylist === undefined) {
-        this.isMasterPlaylist = false;
-        return;
-      }
-      if (this.isMasterPlaylist) {
-        MIXEDTAGS();
-      }
+function CHECKTAGCATEGORY(category, params) {
+  if (category === 'Segment' || category === 'MediaPlaylist') {
+    if (params.isMasterPlaylist === undefined) {
+      params.isMasterPlaylist = false;
       return;
     }
-    if (category === 'MasterPlaylist') {
-      if (this.isMasterPlaylist === undefined) {
-        this.isMasterPlaylist = true;
-        return;
-      }
-      if (this.isMasterPlaylist === false) {
-        MIXEDTAGS();
-      }
+    if (params.isMasterPlaylist) {
+      MIXEDTAGS();
     }
-    // category === 'Basic' or 'MediaorMasterPlaylist' or 'Unknown'
+    return;
   }
-
-  parseTag(line) {
-    const [name, param] = splitTag(line);
-    const category = getTagCategory(name);
-    this.CHECKTAGCATEGORY(category);
-    if (category === 'Unknown') {
-      return null;
+  if (category === 'MasterPlaylist') {
+    if (params.isMasterPlaylist === undefined) {
+      params.isMasterPlaylist = true;
+      return;
     }
-    const [value, attributes] = parseTagParam(name, param, this.baseUrl);
-    return {name, category, value, attributes};
-  }
-
-  lexicalParse(text) {
-    const lines = [];
-    text.split('\n').forEach(l => {
-      const line = l.trim();
-      if (!line) {
-        // empty line
-        return;
-      }
-      if (line.startsWith('#')) {
-        if (line.startsWith('#EXT')) {
-          // tag
-          const tag = this.parseTag(line);
-          if (tag) {
-            lines.push(tag);
-          }
-          return;
-        }
-        // comment
-        return;
-      }
-      // uri
-      lines.push(utils.createUrl(line, this.baseUrl));
-    });
-    if (lines.length === 0 || lines[0].name !== 'EXTM3U') {
-      utils.THROW(new Error('Invalid Playlist: The EXTM3U tag MUST be the first line.'));
+    if (params.isMasterPlaylist === false) {
+      MIXEDTAGS();
     }
-    return lines;
   }
-
-  semanticParse(...params) {
-    if (this.isMasterPlaylist) {
-      return parseMasterPlaylist(...params);
-    }
-    return parseMediaPlaylist(...params);
-  }
-
+  // category === 'Basic' or 'MediaorMasterPlaylist' or 'Unknown'
 }
 
-function parse(text, url) {
-  print(`HLS.parse: ${url}`);
-  const fileParser = new FileParser(url);
-  const lines = fileParser.lexicalParse(text);
-  return fileParser.semanticParse(lines, url);
+function parseTag(line, params) {
+  const [name, param] = splitTag(line);
+  const category = getTagCategory(name);
+  CHECKTAGCATEGORY(category, params);
+  if (category === 'Unknown') {
+    return null;
+  }
+  const [value, attributes] = parseTagParam(name, param);
+  return {name, category, value, attributes};
+}
+
+function lexicalParse(text, params) {
+  const lines = [];
+  text.split('\n').forEach(l => {
+    const line = l.trim();
+    if (!line) {
+      // empty line
+      return;
+    }
+    if (line.startsWith('#')) {
+      if (line.startsWith('#EXT')) {
+        // tag
+        const tag = parseTag(line, params);
+        if (tag) {
+          lines.push(tag);
+        }
+        return;
+      }
+      // comment
+      return;
+    }
+    // uri
+    lines.push(line);
+  });
+  if (lines.length === 0 || lines[0].name !== 'EXTM3U') {
+    utils.THROW(new Error('Invalid Playlist: The EXTM3U tag MUST be the first line.'));
+  }
+  return lines;
+}
+
+function semanticParse(lines, params) {
+  if (params.isMasterPlaylist) {
+    return parseMasterPlaylist(lines);
+  }
+  return parseMediaPlaylist(lines);
+}
+
+function parse(text) {
+  print(`HLS.parse`);
+
+  const params = {
+    version: undefined,
+    isMasterPlaylist: undefined
+  };
+
+  const lines = lexicalParse(text, params);
+  return semanticParse(lines, params);
   /*
   return {
     compatibleVersion: 1
