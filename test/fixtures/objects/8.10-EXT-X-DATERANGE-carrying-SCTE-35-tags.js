@@ -3,7 +3,6 @@ const {MediaPlaylist, Segment, DateRange} = require('../../../types');
 const utils = require('../../../utils');
 
 const playlist = new MediaPlaylist({
-  uri: new URL('http://node-hls-stream.com/8.10-EXT-X-DATERANGE-carrying-SCTE-35-tags.m3u8'),
   targetDuration: 10,
   segments: createSegments()
 });
@@ -11,7 +10,7 @@ const playlist = new MediaPlaylist({
 function createSegments() {
   const segments = [];
   segments.push(new Segment({
-    uri: new URL('http://media.example.com/01.ts'),
+    uri: 'http://media.example.com/01.ts',
     duration: 10,
     title: '',
     mediaSequenceNumber: 0,
@@ -19,14 +18,14 @@ function createSegments() {
     programDateTime: new Date('2014-03-05T11:14:40Z')
   }));
   segments.push(new Segment({
-    uri: new URL('http://media.example.com/02.ts'),
+    uri: 'http://media.example.com/02.ts',
     duration: 10,
     title: '',
     mediaSequenceNumber: 1,
     discontinuitySequence: 1
   }));
   segments.push(new Segment({
-    uri: new URL('http://ads.example.com/ad-01.ts'),
+    uri: 'http://ads.example.com/ad-01.ts',
     duration: 10,
     title: '',
     mediaSequenceNumber: 2,
@@ -41,14 +40,14 @@ function createSegments() {
     })
   }));
   segments.push(new Segment({
-    uri: new URL('http://ads.example.com/ad-02.ts'),
+    uri: 'http://ads.example.com/ad-02.ts',
     duration: 10,
     title: '',
     mediaSequenceNumber: 3,
     discontinuitySequence: 3
   }));
   segments.push(new Segment({
-    uri: new URL('http://media.example.com/03.ts'),
+    uri: 'http://media.example.com/03.ts',
     duration: 10,
     title: '',
     mediaSequenceNumber: 4,
@@ -63,7 +62,7 @@ function createSegments() {
     })
   }));
   segments.push(new Segment({
-    uri: new URL('http://media.example.com/04.ts'),
+    uri: 'http://media.example.com/04.ts',
     duration: 3.003,
     title: '',
     mediaSequenceNumber: 5,

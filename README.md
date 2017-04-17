@@ -17,12 +17,12 @@ fetch('https://foo.com/bar.m3u8')
 })
 .then(data => {
   // Parse the playlist
-  const playlist = HLS.parse(data, url);
+  const playlist = HLS.parse(data);
   // You can access the playlist as a JS object
   if (playlist.isMasterPlaylist) {
-    console.log(`Master playlist: ${playlist.uri}`);
+    console.log('Master playlist');
   } else {
-    console.log(`Media playlist: ${playlist.uri}`);
+    console.log('Media playlist');
   }
   // Create a new playlist
   const {MediaPlaylist} = HLS.types;
@@ -31,7 +31,7 @@ fetch('https://foo.com/bar.m3u8')
     playlistType: 'VOD',
     segments: [
       new Segment({
-        uri: 'low.m3u8'
+        uri: 'low/1.m3u8'
         duration: 9,
         mediaSequenceNumber: 0,
         discontinuitySequence: 0
@@ -39,7 +39,8 @@ fetch('https://foo.com/bar.m3u8')
     ]
   }));
   // Convert the object into a text
-  console.log(`New playlist: ${HLS.stringify(newPlaylist)}`);
+  const text = HLS.stringify(newPlaylist);
+  console.log(`New playlist: ${text}`);
 })
 .catch(err => {
   console.error(err.stack);
@@ -47,26 +48,25 @@ fetch('https://foo.com/bar.m3u8')
 ```
 
 ## API
-### `HLS.parse(data, url)`
+### `HLS.parse(str)`
 Converts a text playlist into a structured JS object
 #### params
 | Name    | Type   | Required | Default | Description   |
 | ------- | ------ | -------- | ------- | ------------- |
-| data    | string | Yes      | N/A     | A text playlist that conforms to [the spec](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.1) |
-| url     | string | Yes      | N/A     | URL of the playlist, which will be used as a base URL of the playlists/segments encountered within the playlist |
+| str     | string | Yes      | N/A     | A text data that conforms to [the HLS playlist spec](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.1) |
 #### return value
-An instance of either `MasterPlaylist` or `MediaPlaylist` (See below.)
+An instance of either `MasterPlaylist` or `MediaPlaylist` (See **Data format** below.)
 
-### `HLS.stringify(playlist)`
+### `HLS.stringify(obj)`
 Converts a JS object into a plain text playlist
 #### params
 | Name    | Type   | Required | Default | Description   |
 | ------- | ------ | -------- | ------- | ------------- |
-| playlist    | `MasterPlaylist` or `MediaPlaylist` (See **Data format** below.)  | Yes      | N/A     | An object returned by `parse()` or a manually created object |
+| obj     | `MasterPlaylist` or `MediaPlaylist` (See **Data format** below.)  | Yes      | N/A     | An object returned by `HLS.parse()` or a manually created object |
 #### return value
-A text playlist that conforms to [the spec](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.1)
+A text data that conforms to [the HLS playlist spec](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.1)
 ### `HLS.types`
-An object property that holds all the classes described below.
+An object that holds all the classes described below.
 
 
 ## Data format
@@ -83,7 +83,7 @@ This section describes the structure of the object returned by `parse()` method.
 | Property         | Type          | Required | Default | Description   |
 | ---------------- | ------------- | -------- | ------- | ------------- |
 | `isMasterPlaylist` | boolean     | Yes      | N/A     | `true` if this playlist is a master playlist  |
-| `uri`              | `URL` (WHATWG) | Yes      | N/A     | Playlist URL  |
+| `uri`              | string | No      | undefined     | Playlist URL  |
 | `version`          | object | No       | undefined      | See [EXT-X-VERSION](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.1.2) |
 | `independentSegments` | boolean | No       | false      | See [EXT-X-INDEPENDENT-SEGMENTS](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.5.1) |
 | `offset` | object | No       | 0.0      | See [EXT-X-START](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.5.2) |
@@ -100,7 +100,7 @@ This section describes the structure of the object returned by `parse()` method.
 ### `Variant`
 | Property          | Type     | Required | Default   | Description   |
 | ----------------- | -------- | -------- | --------- | ------------- |
-| `uri`        | `URL` (WHATWG)  | Yes       | N/A        | URI of the variant playlist  |
+| `uri`        | string  | Yes       | N/A        | URI of the variant playlist  |
 | `isIFrameOnly`  | boolean   | No       | undefined | `true` if the variant is an I-frame media playlist. See [EXT-X-I-FRAME-STREAM-INF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.4.3) |
 | `bandwidth` | number  | Yes       | N/A        | See BANDWIDTH attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.4.2) |
 | `averageBandwidth`      | number    | No       | undefined | See AVERAGE-BANDWIDTH attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.4.2) |
@@ -118,7 +118,7 @@ This section describes the structure of the object returned by `parse()` method.
 | Property          | Type     | Required | Default   | Description   |
 | ----------------- | -------- | -------- | --------- | ------------- |
 | `type`  | string   | Yes       | N/A | See TYPE attribute in [EXT-X-MEDIA](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.4.1) |
-| `uri`        | `URL` (WHATWG)  | No       | undefined        | See URI attribute in [EXT-X-MEDIA](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.4.1)  |
+| `uri`        | string  | No       | undefined        | See URI attribute in [EXT-X-MEDIA](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.4.1)  |
 | `groupId`  | string   | Yes       | N/A | See GROUP-ID attribute in [EXT-X-MEDIA](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.4.1) |
 | `language` | string  | No       | undefined       | See LANGUAGE attribute in [EXT-X-MEDIA](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.4.1) |
 | `assocLanguage` | string  | No       | undefined       | See ASSOC-LANGUAGE attribute in [EXT-X-MEDIA](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.4.1) |
@@ -135,7 +135,7 @@ This section describes the structure of the object returned by `parse()` method.
 | ----------------- | -------- | -------- | --------- | ------------- |
 | `id`  | string   | Yes       | N/A | See DATA-ID attribute in [EXT-X-SESSION-DATA](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.4.4) |
 | `value`  | string   | No       | undefined | See VALUE attribute in [EXT-X-SESSION-DATA](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.4.4) |
-| `uri`        | `URL` (WHATWG)  | No       | undefined        | See URI attribute in [EXT-X-SESSION-DATA](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.4.4)  |
+| `uri`        | string  | No       | undefined        | See URI attribute in [EXT-X-SESSION-DATA](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.4.4)  |
 | `data`        | object | No       | undefined        | If `uri` is specified, the downloaded JSON data  |
 | `language`  | string   | No       | undefined | See LANGUAGE attribute in [EXT-X-SESSION-DATA](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.4.4) |
 
@@ -153,7 +153,7 @@ This section describes the structure of the object returned by `parse()` method.
 ### `Segment` (extends `Data`)
 | Property          | Type     | Required | Default   | Description   |
 | ----------------- | -------- | -------- | --------- | ------------- |
-| `uri`        | `URL` (WHATWG)  | Yes       | N/A        | URI of the media segment |
+| `uri`        | string  | Yes       | N/A        | URI of the media segment |
 | `mimeType`        | string  | No       | undefined        | MIME type of the media segment |
 | `data`        | `Buffer`   | No       | undefined        | downloaded data for the `uri` (the data is trimmed based on the `byterange`) |
 | `duration`  | number   | Yes       | N/A | See [EXTINF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.2.1) |
@@ -171,7 +171,7 @@ This section describes the structure of the object returned by `parse()` method.
 | Property          | Type     | Required | Default   | Description   |
 | ----------------- | -------- | -------- | --------- | ------------- |
 | `method`  | string   | Yes       | N/A | See METHOD attribute in [EXT-X-KEY](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.2.4) |
-| `uri`        | `URL` (WHATWG)  | No       | undefined        | See URI attribute in [EXT-X-KEY](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.2.4) |
+| `uri`        | string  | No       | undefined        | See URI attribute in [EXT-X-KEY](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.2.4) |
 | `data`        | `Buffer`(length=16) | No       | undefined        | If `uri` is specified, the downloaded key  |
 | `iv`        | `Buffer`(length=16)   | No       | undefined        | See IV attribute in [EXT-X-KEY](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.2.4) |
 | `format`  | string   | No       | undefined | See KEYFORMAT attribute in [EXT-X-KEY](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.2.4) |
@@ -180,7 +180,7 @@ This section describes the structure of the object returned by `parse()` method.
 ### `MediaInitializationSection`
 | Property          | Type     | Required | Default   | Description   |
 | ----------------- | -------- | -------- | --------- | ------------- |
-| `uri`        | `URL` (WHATWG)  | Yes       | N/A        | See URI attribute in [EXT-X-MAP](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.2.5) |
+| `uri`        | string  | Yes       | N/A        | See URI attribute in [EXT-X-MAP](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.2.5) |
 | `mimeType`        | string  | No       | undefined        | MIME type of the media initialization section |
 | `byterange`        | object ({length: number, offset: number})   | No       | undefined        | See BYTERANGE attribute in [EXT-X-MAP](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.2.5) |
 | `data`        | `Buffer` | No       | undefined        | The downloaded media initialization section (the data is trimmed based on the `byterange`)  |

@@ -24,13 +24,6 @@ class LineArray extends Array {
       super.push(elem);
     }
   }
-  createRelativeUri(uri) {
-    if (uri.origin === this.baseUri.origin) {
-      const basePath = this.baseUri.pathname;
-      return utils.relativePath(basePath.slice(0, basePath.lastIndexOf('/') + 1), uri.pathname);
-    }
-    return uri.href;
-  }
 }
 
 function buildMasterPlaylist(lines, playlist) {
@@ -53,7 +46,7 @@ function buildSessionData(lines, sessionData) {
   if (sessionData.value) {
     attrs.push(`VALUE="${sessionData.value}"`);
   } else if (sessionData.uri) {
-    attrs.push(`URI="${lines.createRelativeUri(sessionData.uri)}"`);
+    attrs.push(`URI="${sessionData.uri}"`);
   }
   lines.push(`#EXT-X-SESSION-DATA:${attrs.join(',')}`);
 }
@@ -62,7 +55,7 @@ function buildKey(lines, key, isSessionKey) {
   const name = isSessionKey ? '#EXT-X-SESSION-KEY' : '#EXT-X-KEY';
   const attrs = [`METHOD=${key.method}`];
   if (key.uri) {
-    attrs.push(`URI="${lines.createRelativeUri(key.uri)}"`);
+    attrs.push(`URI="${key.uri}"`);
   }
   if (key.iv) {
     if (key.iv.length !== 16) {
@@ -86,7 +79,7 @@ function buildVariant(lines, variant) {
     attrs.push(`AVERAGE-BANDWIDTH=${variant.averageBandwidth}`);
   }
   if (variant.isIFrameOnly) {
-    attrs.push(`URI="${lines.createRelativeUri(variant.uri)}"`);
+    attrs.push(`URI="${variant.uri}"`);
   }
   if (variant.codecs) {
     attrs.push(`CODECS="${variant.codecs}"`);
@@ -126,7 +119,7 @@ function buildVariant(lines, variant) {
   }
   lines.push(`${name}:${attrs.join(',')}`);
   if (!variant.isIFrameOnly) {
-    lines.push(`${lines.createRelativeUri(variant.uri)}`);
+    lines.push(`${variant.uri}`);
   }
 }
 
@@ -161,7 +154,7 @@ function buildRendition(lines, rendition) {
     attrs.push(`CHANNELS="${rendition.channels}"`);
   }
   if (rendition.uri) {
-    attrs.push(`URI="${lines.createRelativeUri(rendition.uri)}"`);
+    attrs.push(`URI="${rendition.uri}"`);
   }
   lines.push(`#EXT-X-MEDIA:${attrs.join(',')}`);
 }
@@ -208,11 +201,11 @@ function buildSegment(lines, segment) {
     buildDateRange(lines, segment.dateRange);
   }
   lines.push(`#EXTINF:${segment.duration},${segment.title}`);
-  lines.push(`${lines.createRelativeUri(segment.uri)}`);
+  lines.push(`${segment.uri}`);
 }
 
 function buildMap(lines, map) {
-  const attrs = [`URI="${lines.createRelativeUri(map.uri)}"`];
+  const attrs = [`URI="${map.uri}"`];
   if (map.byterange) {
     attrs.push(`BYTERANGE=${map.byterange}`);
   }
@@ -256,7 +249,7 @@ function buildDateRange(lines, dateRange) {
 function stringify(playlist) {
   print('HLS.stringify');
   utils.PARAMCHECK(playlist);
-  utils.ASSERT('Not a playlist', playlist.type === 'playlist' && playlist.uri);
+  utils.ASSERT('Not a playlist', playlist.type === 'playlist');
   const lines = new LineArray(playlist.uri);
   lines.push('#EXTM3U');
   if (playlist.version) {

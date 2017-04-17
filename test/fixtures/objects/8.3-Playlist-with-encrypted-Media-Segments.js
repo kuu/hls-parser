@@ -3,11 +3,10 @@ const {MediaPlaylist, Segment, Key} = require('../../../types');
 
 const mediaSequenceBase = 7794;
 
-const key1 = new Key({method: 'AES-128', uri: new URL('https://priv.example.com/key.php?r=52')});
-const key2 = new Key({method: 'AES-128', uri: new URL('https://priv.example.com/key.php?r=53')});
+const key1 = new Key({method: 'AES-128', uri: 'https://priv.example.com/key.php?r=52'});
+const key2 = new Key({method: 'AES-128', uri: 'https://priv.example.com/key.php?r=53'});
 
 const playlist = new MediaPlaylist({
-  uri: new URL('http://node-hls-stream.com/8.3-Playlist-with-encrypted-Media-Segments.m3u8'),
   version: 3,
   targetDuration: 15,
   mediaSequenceBase,
@@ -17,7 +16,7 @@ const playlist = new MediaPlaylist({
 function createSegments() {
   const segments = [];
   segments.push(new Segment({
-    uri: new URL('http://media.example.com/fileSequence52-A.ts'),
+    uri: 'http://media.example.com/fileSequence52-A.ts',
     duration: 2.833,
     title: '',
     mediaSequenceNumber: mediaSequenceBase + 0,
@@ -25,7 +24,7 @@ function createSegments() {
     key: key1
   }));
   segments.push(new Segment({
-    uri: new URL('http://media.example.com/fileSequence52-B.ts'),
+    uri: 'http://media.example.com/fileSequence52-B.ts',
     duration: 15.0,
     title: '',
     mediaSequenceNumber: mediaSequenceBase + 1,
@@ -33,7 +32,7 @@ function createSegments() {
     key: key1
   }));
   segments.push(new Segment({
-    uri: new URL('http://media.example.com/fileSequence52-C.ts'),
+    uri: 'http://media.example.com/fileSequence52-C.ts',
     duration: 13.333,
     title: '',
     mediaSequenceNumber: mediaSequenceBase + 2,
@@ -41,7 +40,7 @@ function createSegments() {
     key: key1
   }));
   segments.push(new Segment({
-    uri: new URL('http://media.example.com/fileSequence53-A.ts'),
+    uri: 'http://media.example.com/fileSequence53-A.ts',
     duration: 15.0,
     title: '',
     mediaSequenceNumber: mediaSequenceBase + 3,

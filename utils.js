@@ -1,5 +1,3 @@
-const {URL} = require('url');
-
 function THROW(err) {
   throw err;
 }
@@ -73,17 +71,6 @@ function byteSequenceToHex(sequence, start = 0, end = sequence.length) {
     array.push(`0${(sequence[i] & 0xFF).toString(16).toUpperCase()}`.slice(-2));
   }
   return `0x${array.join('')}`;
-}
-
-function createUrl(url, base) {
-  return tryCatch(
-    () => {
-      return new URL(url);
-    },
-    () => {
-      return new URL(url, base);
-    }
-  );
 }
 
 function tryCatch(body, errorHandler) {
@@ -303,7 +290,6 @@ module.exports = {
   toNumber,
   hexToByteSequence,
   byteSequenceToHex,
-  createUrl,
   tryCatch,
   splitAt,
   trim,

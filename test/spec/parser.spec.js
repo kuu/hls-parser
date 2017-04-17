@@ -6,7 +6,7 @@ const {Playlist} = HLS.types;
 
 fixtures.forEach(({name, m3u8, object}) => {
   test(name, t => {
-    const result = HLS.parse(m3u8, `http://node-hls-stream.com/${name}.m3u8`);
+    const result = HLS.parse(m3u8);
     if (deepEqual(t, result, object)) {
       t.pass();
     }

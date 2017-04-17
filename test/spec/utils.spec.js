@@ -60,15 +60,6 @@ test('utils.byteSequenceToHex', t => {
   t.is(utils.byteSequenceToHex(Buffer.from([255, 255, 256])), '0xFFFF00');
 });
 
-test('utils.createUrl', t => {
-  let url = utils.createUrl('http://abc.com');
-  t.is(url.href, 'http://abc.com/');
-  url = utils.createUrl('http://abc.com', 'http://def.com');
-  t.is(url.href, 'http://abc.com/');
-  url = utils.createUrl('/abc', 'http://def.com');
-  t.is(url.href, 'http://def.com/abc');
-});
-
 test('utils.tryCatch', t => {
   let result = utils.tryCatch(
     () => {
