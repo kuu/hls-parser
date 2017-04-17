@@ -194,10 +194,11 @@ function deepEqualVariant(t, actual, expected) {
     }
   }
   if (expected.currentRenditions) {
+    const expectedCurrentRenditions = expected.currentRenditions;
     const actualCurrentRenditions = actual.currentRenditions;
-    Object.entries(expected.currentRenditions).forEach(([key, value]) => {
-      if (actualCurrentRenditions[key] !== value) {
-        return t.fail(buildMessage('Variant.currentRenditions', actualCurrentRenditions[key], value));
+    Object.keys(expectedCurrentRenditions).forEach(key => {
+      if (actualCurrentRenditions[key] !== expectedCurrentRenditions[key]) {
+        return t.fail(buildMessage('Variant.currentRenditions', actualCurrentRenditions[key], expectedCurrentRenditions[key]));
       }
     });
   }
