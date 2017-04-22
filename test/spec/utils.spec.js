@@ -11,12 +11,23 @@ test('utils.THROW', t => {
 });
 
 test('utils.ASSERT', t => {
-  utils.ASSERT('No error occurs', 1, 2, 3);
+  utils.ASSERT('No error occurred', 1, 2, 3);
   try {
-    utils.ASSERT('Error occurs', 1, 2, false);
+    utils.ASSERT('Error occurred', 1, 2, false);
   } catch (err) {
     t.truthy(err);
-    t.is(err.message, 'Error occurs : Failed at [2]');
+    t.is(err.message, 'Error occurred : Failed at [2]');
+  }
+});
+
+test('utils.CONDITIONALASSERT', t => {
+  utils.CONDITIONALASSERT([true, 1], [true, 2], [true, 3]);
+  utils.CONDITIONALASSERT([false, 0], [false, 1], [false, 2]);
+  try {
+    utils.CONDITIONALASSERT([false, 0], [true, 1], [true, 0]);
+  } catch (err) {
+    t.truthy(err);
+    t.is(err.message, 'Conditional Assert : Failed at [2]');
   }
 });
 

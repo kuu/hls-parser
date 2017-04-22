@@ -10,6 +10,17 @@ function ASSERT(msg, ...params) {
   }
 }
 
+function CONDITIONALASSERT(...params) {
+  for (const [index, [cond, param]] of params.entries()) {
+    if (!cond) {
+      continue;
+    }
+    if (!param) {
+      THROW(new Error(`Conditional Assert : Failed at [${index}]`));
+    }
+  }
+}
+
 function PARAMCHECK(...params) {
   for (const [index, param] of params.entries()) {
     if (param === undefined) {
@@ -178,6 +189,7 @@ function hasOwnProp(obj, propName) {
 module.exports = {
   THROW,
   ASSERT: process.env.NODE_ENV === 'production' ? _empty : ASSERT,
+  CONDITIONALASSERT: process.env.NODE_ENV === 'production' ? _empty : CONDITIONALASSERT,
   PARAMCHECK: process.env.NODE_ENV === 'production' ? _empty : PARAMCHECK,
   CONDITIONALPARAMCHECK: process.env.NODE_ENV === 'production' ? _empty : CONDITIONALPARAMCHECK,
   INVALIDPLAYLIST,

@@ -16,7 +16,7 @@ class Rendition {
     channels
   }) {
     utils.PARAMCHECK(type, groupId, name);
-    utils.CONDITIONALPARAMCHECK([type === 'SUBTITLES', uri], [type === 'CLOSED-CAPTIONS', instreamId]);
+    utils.CONDITIONALASSERT([type === 'SUBTITLES', uri], [type === 'CLOSED-CAPTIONS', instreamId], [type === 'CLOSED-CAPTIONS', !uri], [forced, type === 'CLOSED-CAPTIONS']);
     this.type = type;
     this.uri = uri;
     this.groupId = groupId;
@@ -74,6 +74,7 @@ class SessionData {
     language
   }) {
     utils.PARAMCHECK(id, value || uri);
+    utils.ASSERT('SessionData cannot have both value and uri, shoud be either.', !(value && uri));
     this.id = id;
     this.value = value;
     this.uri = uri;
@@ -91,6 +92,7 @@ class Key {
   }) {
     utils.PARAMCHECK(method);
     utils.CONDITIONALPARAMCHECK([method !== 'NONE', uri]);
+    utils.CONDITIONALASSERT([method === 'NONE', !(uri || iv || format || formatVersion)]);
     this.method = method;
     this.uri = uri;
     this.iv = iv;
@@ -125,6 +127,7 @@ class DateRange {
   }) {
     utils.PARAMCHECK(id, start);
     utils.CONDITIONALPARAMCHECK([endOnNext === true, classId]);
+    utils.CONDITIONALASSERT([end, start <= end], [duration, duration >= 0], [plannedDuration, plannedDuration >= 0]);
     this.id = id;
     this.classId = classId;
     this.start = start;
@@ -149,7 +152,7 @@ class Playlist extends Data {
     uri,
     version,
     independentSegments = false,
-    offset = 0.0,
+    start,
     source
   }) {
     super('playlist');
@@ -158,7 +161,7 @@ class Playlist extends Data {
     this.uri = uri;
     this.version = version;
     this.independentSegments = independentSegments;
-    this.offset = offset;
+    this.start = start;
     this.source = source;
   }
 }
@@ -171,12 +174,12 @@ class MasterPlaylist extends Playlist {
       variants = [],
       currentVariant,
       sessionDataList = [],
-      sessionKey
+      sessionKeyList = []
     } = params;
     this.variants = variants;
     this.currentVariant = currentVariant;
     this.sessionDataList = sessionDataList;
-    this.sessionKey = sessionKey;
+    this.sessionKeyList = sessionKeyList;
   }
 }
 

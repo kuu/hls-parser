@@ -86,7 +86,7 @@ This section describes the structure of the object returned by `parse()` method.
 | `uri`              | string | No      | undefined     | Playlist URL  |
 | `version`          | object | No       | undefined      | See [EXT-X-VERSION](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.1.2) |
 | `independentSegments` | boolean | No       | false      | See [EXT-X-INDEPENDENT-SEGMENTS](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.5.1) |
-| `offset` | object | No       | 0.0      | See [EXT-X-START](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.5.2) |
+| `start` | object({offset: number, precise: boolean}) | No       | undefined      | See [EXT-X-START](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.5.2) |
 | `source` | string     | No      | undefined     | The unprocessed text of the playlist  |
 
 ### `MasterPlaylist` (extends `Playlist`)
@@ -95,7 +95,7 @@ This section describes the structure of the object returned by `parse()` method.
 | `variants`        | [`Variant`]  | No       | []        | See [ EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.4.2) and [EXT-X-I-FRAME-STREAM-INF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.4.3)  |
 | `currentVariant`  | number   | No       | undefined | Array index that points to the chosen item in `variants` |
 | `sessionDataList` | [`SessionData`]  | No       | []        | See [EXT-X-SESSION-DATA](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.4.4) |
-| `sessionKey`      | `Key`    | No       | undefined | See [EXT-X-SESSION-KEY](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.4.5) |
+| `sessionKeyList`      | [`Key`]    | No       | [] | See [EXT-X-SESSION-KEY](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.4.5) |
 
 ### `Variant`
 | Property          | Type     | Required | Default   | Description   |
@@ -136,7 +136,6 @@ This section describes the structure of the object returned by `parse()` method.
 | `id`  | string   | Yes       | N/A | See DATA-ID attribute in [EXT-X-SESSION-DATA](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.4.4) |
 | `value`  | string   | No       | undefined | See VALUE attribute in [EXT-X-SESSION-DATA](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.4.4) |
 | `uri`        | string  | No       | undefined        | See URI attribute in [EXT-X-SESSION-DATA](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.4.4)  |
-| `data`        | object | No       | undefined        | If `uri` is specified, the downloaded JSON data  |
 | `language`  | string   | No       | undefined | See LANGUAGE attribute in [EXT-X-SESSION-DATA](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.4.4) |
 
 ### `MediaPlaylist` (extends `Playlist`)
@@ -154,8 +153,6 @@ This section describes the structure of the object returned by `parse()` method.
 | Property          | Type     | Required | Default   | Description   |
 | ----------------- | -------- | -------- | --------- | ------------- |
 | `uri`        | string  | Yes       | N/A        | URI of the media segment |
-| `mimeType`        | string  | No       | undefined        | MIME type of the media segment |
-| `data`        | `Buffer`   | No       | undefined        | downloaded data for the `uri` (the data is trimmed based on the `byterange`) |
 | `duration`  | number   | Yes       | N/A | See [EXTINF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.2.1) |
 | `title`  | string   | No       | undefined | See [EXTINF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.2.1) |
 | `byterange`  | object ({length: number, offset: number})   | No       | undefined | See [EXT-X-BYTERANGE](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.2.2) |
@@ -172,7 +169,6 @@ This section describes the structure of the object returned by `parse()` method.
 | ----------------- | -------- | -------- | --------- | ------------- |
 | `method`  | string   | Yes       | N/A | See METHOD attribute in [EXT-X-KEY](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.2.4) |
 | `uri`        | string  | No       | undefined        | See URI attribute in [EXT-X-KEY](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.2.4) |
-| `data`        | `Buffer`(length=16) | No       | undefined        | If `uri` is specified, the downloaded key  |
 | `iv`        | `Buffer`(length=16)   | No       | undefined        | See IV attribute in [EXT-X-KEY](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.2.4) |
 | `format`  | string   | No       | undefined | See KEYFORMAT attribute in [EXT-X-KEY](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.2.4) |
 | `formatVersion`  | string   | No       | undefined | See KEYFORMATVERSIONS attribute in [EXT-X-KEY](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.2.4) |
@@ -181,9 +177,7 @@ This section describes the structure of the object returned by `parse()` method.
 | Property          | Type     | Required | Default   | Description   |
 | ----------------- | -------- | -------- | --------- | ------------- |
 | `uri`        | string  | Yes       | N/A        | See URI attribute in [EXT-X-MAP](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.2.5) |
-| `mimeType`        | string  | No       | undefined        | MIME type of the media initialization section |
 | `byterange`        | object ({length: number, offset: number})   | No       | undefined        | See BYTERANGE attribute in [EXT-X-MAP](https://tools.ietf.org/html/draft-pantos-http-live-streaming-21#section-4.3.2.5) |
-| `data`        | `Buffer` | No       | undefined        | The downloaded media initialization section (the data is trimmed based on the `byterange`)  |
 
 ### `DateRange`
 | Property          | Type     | Required | Default   | Description   |

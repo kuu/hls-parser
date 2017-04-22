@@ -28,7 +28,7 @@ function createSegments() {
     duration: 15.0,
     title: '',
     mediaSequenceNumber: mediaSequenceBase + 1,
-    discontinuitySequence: 1,
+    discontinuitySequence: 0,
     key: key1
   }));
   segments.push(new Segment({
@@ -36,7 +36,7 @@ function createSegments() {
     duration: 13.333,
     title: '',
     mediaSequenceNumber: mediaSequenceBase + 2,
-    discontinuitySequence: 2,
+    discontinuitySequence: 0,
     key: key1
   }));
   segments.push(new Segment({
@@ -44,7 +44,7 @@ function createSegments() {
     duration: 15.0,
     title: '',
     mediaSequenceNumber: mediaSequenceBase + 3,
-    discontinuitySequence: 3,
+    discontinuitySequence: 0,
     key: key2
   }));
   return segments;
