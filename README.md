@@ -7,44 +7,37 @@
 
 Provides synchronous functions to read/write HLS playlists
 
+## Install
+[![NPM](https://nodei.co/npm/hls-parser.png?mini=true)](https://nodei.co/npm/hls-parser/)
+
 ## Usage
 ```js
 const HLS = require('hls-parser');
 
-fetch('https://foo.com/bar.m3u8')
-.then(result => {
-  return result.text();
-})
-.then(data => {
-  // Parse the playlist
-  const playlist = HLS.parse(data);
-  // You can access the playlist as a JS object
-  if (playlist.isMasterPlaylist) {
-    console.log('Master playlist');
-  } else {
-    console.log('Media playlist');
-  }
-  // Create a new playlist
-  const {MediaPlaylist} = HLS.types;
-  const newPlaylist = new MediaPlaylist({
-    targetDuration: 9,
-    playlistType: 'VOD',
-    segments: [
-      new Segment({
-        uri: 'low/1.m3u8'
-        duration: 9,
-        mediaSequenceNumber: 0,
-        discontinuitySequence: 0
-      })
-    ]
-  }));
-  // Convert the object into a text
-  const text = HLS.stringify(newPlaylist);
-  console.log(`New playlist: ${text}`);
-})
-.catch(err => {
-  console.error(err.stack);
-});
+// Parse the playlist
+const playlist = HLS.parse(textData);
+// You can access the playlist as a JS object
+if (playlist.isMasterPlaylist) {
+  // Master playlist
+} else {
+  // Media playlist
+}
+// Create a new playlist
+const {MediaPlaylist, Segment} = HLS.types;
+const newPlaylist = new MediaPlaylist({
+  targetDuration: 9,
+  playlistType: 'VOD',
+  segments: [
+    new Segment({
+      uri: 'low/1.m3u8'
+      duration: 9,
+      mediaSequenceNumber: 0,
+      discontinuitySequence: 0
+    })
+  ]
+}));
+// Convert the object into a text
+const text = HLS.stringify(newPlaylist);
 ```
 
 ## API
