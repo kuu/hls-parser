@@ -80,8 +80,15 @@ function deepEqual(t, actual, expected) {
         }
       }
     }
-    if (errorMessage = deepEqualKey(t, actual.sessionKey, expected.sessionKey)) {
-      return t.fail(errorMessage);
+    if (expected.sessionKeyList) {
+      if (!actual.sessionKeyList || actual.sessionKeyList.length !== expected.sessionKeyList.length) {
+        return t.fail(buildMessage('MasterPlaylist.sessionKeyList', actual.sessionKeyList, expected.sessionKeyList));
+      }
+      for (const [index, actualSessionKey] of actual.sessionKeyList.entries()) {
+        if (errorMessage = deepEqualKey(t, actualSessionKey, expected.sessionKeyList[index])) {
+          return t.fail(errorMessage);
+        }
+      }
     }
   } else {
     // MediaPlaylist
