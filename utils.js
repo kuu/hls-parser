@@ -1,3 +1,20 @@
+if (!isNode()) {
+  this.Buffer = {
+    from: array => {
+      return array.map(item => {
+        if (typeof item !== 'number' || Number.isNaN(item)) {
+          return 0;
+        }
+        return item;
+      });
+    }
+  };
+}
+
+function isNode() {
+  return typeof global === 'object' && this === global;
+}
+
 function THROW(err) {
   throw err;
 }
