@@ -6,7 +6,8 @@
   "scripts": {
     "lint": "xo",
     "coverage": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
-    "test": "npm run lint && nsp check && ava --verbose"
+    "build": "rm -fR ./dist; webpack",
+    "test": "npm run lint && npm run build && nsp check && ava --verbose"
   },
   "repository": {
     "type": "git",
@@ -28,9 +29,12 @@
   "dependencies": {},
   "devDependencies": {
     "ava": "^0.19.1",
+    "babel-loader": "^7.0.0",
+    "babel-preset-es2015": "^6.24.1",
     "coveralls": "^2.13.0",
     "nsp": "^2.6.3",
     "nyc": "^10.2.0",
+    "webpack": "^2.5.1",
     "xo": "^0.18.1"
   },
   "engines": {

@@ -12,7 +12,8 @@ Provides synchronous functions to read/write HLS playlists
 
 ## Usage
 ```js
-const HLS = require('hls-parser');
+const HLS = require('hls-parser'); // For node
+// For browsers, just use dist/hls-parser.min.js defined as a UMD module.
 
 // Parse the playlist
 const playlist = HLS.parse(textData);
@@ -24,7 +25,7 @@ if (playlist.isMasterPlaylist) {
 }
 // Create a new playlist
 const {MediaPlaylist, Segment} = HLS.types;
-const newPlaylist = new MediaPlaylist({
+const obj = new MediaPlaylist({
   targetDuration: 9,
   playlistType: 'VOD',
   segments: [
@@ -37,7 +38,7 @@ const newPlaylist = new MediaPlaylist({
   ]
 }));
 // Convert the object into a text
-const text = HLS.stringify(newPlaylist);
+const text = HLS.stringify(obj);
 ```
 
 ## API
