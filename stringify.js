@@ -1,7 +1,4 @@
-const debug = require('debug');
 const utils = require('./utils');
-
-const print = debug('hls-parser');
 
 class LineArray extends Array {
   constructor(baseUri) {
@@ -249,7 +246,6 @@ function buildDateRange(lines, dateRange) {
 }
 
 function stringify(playlist) {
-  print('HLS.stringify');
   utils.PARAMCHECK(playlist);
   utils.ASSERT('Not a playlist', playlist.type === 'playlist');
   const lines = new LineArray(playlist.uri);
