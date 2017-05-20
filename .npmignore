@@ -40,4 +40,4 @@ test
 .node-version
 .travis.yml
 .npmignore
-.webpack.config.js
+webpack.config.js
