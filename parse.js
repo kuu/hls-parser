@@ -1,4 +1,3 @@
-const debug = require('debug');
 const utils = require('./utils');
 const {
   Rendition,
@@ -11,8 +10,6 @@ const {
   MediaPlaylist,
   Segment
 } = require('./types');
-
-const print = debug('hls-parser');
 
 function unquote(str) {
   return utils.trim(str, '"');
@@ -682,8 +679,6 @@ function semanticParse(lines, params) {
 }
 
 function parse(text) {
-  print(`HLS.parse`);
-
   const params = {
     version: undefined,
     isMasterPlaylist: undefined,

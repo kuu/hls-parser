@@ -25,9 +25,7 @@
     "url": "https://github.com/kuu/hls-parser/issues"
   },
   "homepage": "https://github.com/kuu/hls-parser#readme",
-  "dependencies": {
-    "debug": "^2.6.3"
-  },
+  "dependencies": {},
   "devDependencies": {
     "ava": "^0.19.1",
     "coveralls": "^2.13.0",
