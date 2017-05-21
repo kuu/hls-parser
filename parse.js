@@ -689,7 +689,9 @@ function parse(text) {
   };
 
   const lines = lexicalParse(text, params);
-  return semanticParse(lines, params);
+  const playlist = semanticParse(lines, params);
+  playlist.source = text;
+  return playlist;
 }
 
 module.exports = parse;
