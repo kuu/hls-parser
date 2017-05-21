@@ -44,8 +44,6 @@ function INVALIDPLAYLIST(msg) {
   THROW(new Error(`Invalid Playlist : ${msg}`));
 }
 
-function _empty() {}
-
 function toNumber(str, radix = 10) {
   if (typeof str === 'number') {
     return str;
@@ -188,10 +186,10 @@ function hasOwnProp(obj, propName) {
 
 module.exports = {
   THROW,
-  ASSERT: process.env.NODE_ENV === 'production' ? _empty : ASSERT,
-  CONDITIONALASSERT: process.env.NODE_ENV === 'production' ? _empty : CONDITIONALASSERT,
-  PARAMCHECK: process.env.NODE_ENV === 'production' ? _empty : PARAMCHECK,
-  CONDITIONALPARAMCHECK: process.env.NODE_ENV === 'production' ? _empty : CONDITIONALPARAMCHECK,
+  ASSERT,
+  CONDITIONALASSERT,
+  PARAMCHECK,
+  CONDITIONALPARAMCHECK,
   INVALIDPLAYLIST,
   toNumber,
   hexToByteSequence,
