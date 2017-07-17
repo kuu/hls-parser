@@ -1,4 +1,3 @@
-const {URL} = require('url');
 const {MasterPlaylist, Variant} = require('../../../types');
 
 const playlist = new MasterPlaylist({
