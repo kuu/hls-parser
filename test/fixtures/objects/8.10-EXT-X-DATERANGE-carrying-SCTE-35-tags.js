@@ -1,4 +1,3 @@
-const {URL} = require('url');
 const {MediaPlaylist, Segment, DateRange} = require('../../../types');
 const utils = require('../../../utils');
 

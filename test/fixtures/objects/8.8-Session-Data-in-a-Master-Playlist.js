@@ -1,4 +1,3 @@
-const {URL} = require('url');
 const {MasterPlaylist, SessionData} = require('../../../types');
 
 const playlist = new MasterPlaylist({

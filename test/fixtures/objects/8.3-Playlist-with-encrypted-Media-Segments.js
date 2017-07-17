@@ -1,4 +1,3 @@
-const {URL} = require('url');
 const {MediaPlaylist, Segment, Key} = require('../../../types');
 
 const mediaSequenceBase = 7794;

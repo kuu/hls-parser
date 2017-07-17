@@ -1,4 +1,3 @@
-const {URL} = require('url');
 const {MasterPlaylist, Variant, Rendition} = require('../../../types');
 
 function createRendition(groupId) {
