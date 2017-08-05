@@ -1,22 +1,36 @@
 const utils = require('./utils');
 
+const ALLOW_REDUNDANCY = [
+  '#EXTINF',
+  '#EXT-X-BYTERANGE',
+  '#EXT-X-DISCONTINUITY',
+  '#EXT-X-STREAM-INF'
+];
+
+const SKIP_IF_REDUNDANT = [
+  '#EXT-X-KEY',
+  '#EXT-X-MEDIA'
+];
+
 class LineArray extends Array {
   constructor(baseUri) {
     super();
     this.baseUri = baseUri;
   }
+
   // @override
   push(...elems) {
     // redundancy check
     for (const elem of elems) {
-      if (elem.startsWith('#EXTINF') ||
-        elem.startsWith('#EXT-X-BYTERANGE') ||
-        elem.startsWith('#EXT-X-DISCONTINUITY')) {
+      if (ALLOW_REDUNDANCY.some(item => elem.startsWith(item))) {
         super.push(elem);
         continue;
       }
       if (this.includes(elem)) {
-        continue;
+        if (SKIP_IF_REDUNDANT.some(item => elem.startsWith(item))) {
+          continue;
+        }
+        utils.INVALIDPLAYLIST(`Redundant item (${elem})`);
       }
       super.push(elem);
     }
