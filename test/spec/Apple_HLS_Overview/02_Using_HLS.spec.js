@@ -1,5 +1,5 @@
 const test = require('ava');
-const HLS = require('../../../');
+const HLS = require('../../..');
 const utils = require('../../helpers/utils');
 
 // Starting with iOS 3.1, if the client is unable to reload the index file for a stream (due to a 404 error, for example),

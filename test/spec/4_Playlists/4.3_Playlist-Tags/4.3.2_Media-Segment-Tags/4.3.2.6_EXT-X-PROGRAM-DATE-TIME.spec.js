@@ -1,5 +1,5 @@
 const test = require('ava');
-const HLS = require('../../../../../');
+const HLS = require('../../../../..');
 
 // It applies only to the next Media Segment.
 test('#EXT-X-PROGRAM-DATE-TIME_01', t => {

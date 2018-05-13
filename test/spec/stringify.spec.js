@@ -1,7 +1,7 @@
 const test = require('ava');
 const fixtures = require('../helpers/fixtures');
 const utils = require('../helpers/utils');
-const HLS = require('../../');
+const HLS = require('../..');
 
 fixtures.forEach(({name, m3u8, object}) => {
   test(name, t => {

@@ -1,5 +1,5 @@
 const test = require('ava');
-const HLS = require('../../../../../');
+const HLS = require('../../../../..');
 const utils = require('../../../../helpers/utils');
 
 // The URI line is REQUIRED

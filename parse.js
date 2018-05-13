@@ -75,7 +75,8 @@ function parseIV(str) {
 function parseUserAttribute(str) {
   if (str.startsWith('"')) {
     return unquote(str);
-  } else if (str.startsWith('0x') || str.startsWith('0X')) {
+  }
+  if (str.startsWith('0x') || str.startsWith('0X')) {
     return utils.hexToByteSequence(str);
   }
   return utils.toNumber(str);
@@ -189,8 +190,7 @@ function splitTag(line) {
   return [line.slice(1, index).trim(), line.slice(index + 1).trim()];
 }
 
-function parseRendition(line) {
-  const attributes = line.attributes;
+function parseRendition({attributes}) {
   const rendition = new Rendition({
     type: attributes['TYPE'],
     uri: attributes['URI'],
@@ -265,8 +265,7 @@ function parseVariant(lines, variantAttrs, uri, iFrameOnly = false, params) {
       if (variantAttrs[renditionType] === renditionAttrs['GROUP-ID']) {
         addRendition(variant, line, renditionType);
         if (renditionType === 'CLOSED-CAPTIONS') {
-          for (const rendition of variant.closedCaptions) {
-            const instreamId = rendition.instreamId;
+          for (const {instreamId} of variant.closedCaptions) {
             if (instreamId && instreamId.startsWith('SERVICE') && params.compatibleVersion < 7) {
               params.compatibleVersion = 7;
               break;
@@ -314,10 +313,7 @@ function sameKey(key1, key2) {
 
 function parseMasterPlaylist(lines, params) {
   const playlist = new MasterPlaylist();
-  for (const [index, line] of lines.entries()) {
-    const name = line.name;
-    const value = line.value;
-    const attributes = line.attributes;
+  for (const [index, {name, value, attributes}] of lines.entries()) {
     if (name === 'EXT-X-VERSION') {
       playlist.version = value;
     } else if (name === 'EXT-X-STREAM-INF') {
@@ -382,9 +378,7 @@ function parseMasterPlaylist(lines, params) {
 function parseSegment(lines, uri, start, end, mediaSequenceNumber, discontinuitySequence, params) {
   const segment = new Segment({uri, mediaSequenceNumber, discontinuitySequence});
   for (let i = start; i <= end; i++) {
-    const name = lines[i].name;
-    const value = lines[i].value;
-    const attributes = lines[i].attributes;
+    const {name, value, attributes} = lines[i];
     if (name === 'EXTINF') {
       if (!Number.isInteger(value.duration) && params.compatibleVersion < 3) {
         params.compatibleVersion = 3;
@@ -448,13 +442,11 @@ function parseMediaPlaylist(lines, params) {
   let segmentStart = -1;
   let mediaSequence = 0;
   let discontinuitySequence = 0;
-  let key = null;
-  let map = null;
+  let currentKey = null;
+  let currentMap = null;
   for (const [index, line] of lines.entries()) {
-    const name = line.name;
-    const value = line.value;
-    const attributes = line.attributes;
-    if (line.category === 'Segment') {
+    const {name, value, attributes, category} = line;
+    if (category === 'Segment') {
       if (segmentStart === -1) {
         segmentStart = index;
       }
@@ -510,25 +502,26 @@ function parseMediaPlaylist(lines, params) {
       }
       const segment = parseSegment(lines, line, segmentStart, index - 1, mediaSequence++, discontinuitySequence, params);
       if (segment) {
-        if (segment.discontinuity) {
+        const {discontinuity, key, map, byterange, uri} = segment;
+        if (discontinuity) {
           segment.discontinuitySequence = ++discontinuitySequence;
         }
-        if (segment.key) {
-          key = segment.key;
-        } else if (key) {
-          segment.key = key;
+        if (key) {
+          currentKey = key;
+        } else if (currentKey) {
+          segment.key = currentKey;
         }
-        if (segment.map) {
-          map = segment.map;
-        } else if (map) {
-          segment.map = map;
+        if (map) {
+          currentMap = map;
+        } else if (currentMap) {
+          segment.map = currentMap;
         }
-        if (segment.byterange && segment.byterange.offset === -1) {
-          const segments = playlist.segments;
+        if (byterange && byterange.offset === -1) {
+          const {segments} = playlist;
           if (segments.length > 0) {
             const prevSegment = segments[segments.length - 1];
-            if (prevSegment.byterange && prevSegment.uri === segment.uri) {
-              segment.byterange.offset = prevSegment.byterange.offset + prevSegment.byterange.length;
+            if (prevSegment.byterange && prevSegment.uri === uri) {
+              byterange.offset = prevSegment.byterange.offset + prevSegment.byterange.length;
             } else {
               utils.INVALIDPLAYLIST('If offset of EXT-X-BYTERANGE is not present, a previous Media Segment MUST be a sub-range of the same media resource');
             }
@@ -551,13 +544,12 @@ function checkDateRange(segments) {
   let hasDateRange = false;
   let hasProgramDateTime = false;
   for (let i = segments.length - 1; i >= 0; i--) {
-    const segment = segments[i];
-    if (segment.programDateTime) {
+    const {programDateTime, dateRange} = segments[i];
+    if (programDateTime) {
       hasProgramDateTime = true;
     }
-    if (segment.dateRange) {
+    if (dateRange) {
       hasDateRange = true;
-      const dateRange = segment.dateRange;
       if (dateRange.endOnNext && (dateRange.end || dateRange.duration)) {
         utils.INVALIDPLAYLIST('An EXT-X-DATERANGE tag with an END-ON-NEXT=YES attribute MUST NOT contain DURATION or END-DATE attributes.');
       }
