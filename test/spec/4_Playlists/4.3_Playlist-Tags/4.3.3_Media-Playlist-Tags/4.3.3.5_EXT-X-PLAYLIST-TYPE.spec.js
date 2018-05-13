@@ -1,5 +1,5 @@
 const test = require('ava');
-const HLS = require('../../../../../');
+const HLS = require('../../../../..');
 
 // #EXT-X-PLAYLIST-TYPE:<EVENT|VOD>
 test('#EXT-X-PLAYLIST-TYPE_01', t => {

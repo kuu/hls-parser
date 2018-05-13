@@ -1,4 +1,4 @@
-const HLS = require('../../');
+const HLS = require('../..');
 
 function parsePass(t, text) {
   let obj;

@@ -1,5 +1,5 @@
 const path = require('path');
-const webpack = require('webpack');
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
   entry: {
@@ -13,19 +13,27 @@ module.exports = {
     library: 'HLS',
     libraryTarget: 'umd'
   },
-  plugins: [
-    new webpack.optimize.UglifyJsPlugin({include: /\.min\.js$/, minimize: true})
-  ],
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.js$/,
         exclude: /node_modules/,
         loader: 'babel-loader',
-        query: {
+        options: {
           presets: ['es2015']
         }
       }
+    ]
+  },
+  optimization: {
+    minimizer: [
+      new UglifyJSPlugin({
+        uglifyOptions: {
+          compress: {
+            drop_console: true
+          }
+        }
+      })
     ]
   }
 };

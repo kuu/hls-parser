@@ -1,5 +1,5 @@
 const test = require('ava');
-const HLS = require('../../../../../');
+const HLS = require('../../../../..');
 const utils = require('../../../../helpers/utils');
 
 // If the Media Playlist file does not contain an EXT-X-MEDIA-SEQUENCE

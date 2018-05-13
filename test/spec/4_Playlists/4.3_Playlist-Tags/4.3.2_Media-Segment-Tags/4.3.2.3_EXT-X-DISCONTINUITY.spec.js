@@ -1,5 +1,5 @@
 const test = require('ava');
-const HLS = require('../../../../../');
+const HLS = require('../../../../..');
 
 // The EXT-X-DISCONTINUITY tag indicates a discontinuity between the
 // Media Segment that follows it and the one that preceded it.
