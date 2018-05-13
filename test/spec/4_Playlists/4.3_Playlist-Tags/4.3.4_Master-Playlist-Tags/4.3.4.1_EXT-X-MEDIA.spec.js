@@ -151,6 +151,14 @@ test('#EXT-X-MEDIA_08', t => {
     #EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="test",NAME="ja",URI="/audio/ja.m3u8"
     #EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="test",NAME="fr",URI="/audio/fr.m3u8"
   `);
+  utils.bothPass(t, `
+    #EXTM3U
+    #EXT-X-STREAM-INF:BANDWIDTH=1280000,AUDIO="test"
+    /video/main.m3u8
+    #EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="test",NAME="en",DEFAULT=YES,URI="/audio/en.m3u8"
+    #EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="test",NAME="ja",URI="/audio/ja.m3u8"
+    #EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="test2",NAME="ja",URI="/audio/ja.m3u8"
+  `);
 });
 
 // A Group MUST NOT have more than one member with a DEFAULT attribute of YES.
