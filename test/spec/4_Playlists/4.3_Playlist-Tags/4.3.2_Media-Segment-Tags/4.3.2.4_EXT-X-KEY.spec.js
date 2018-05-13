@@ -81,6 +81,13 @@ test('#EXT-X-KEY_04', t => {
     #EXTINF:10,
     http://example.com/2
   `);
+  utils.bothPass(t, `
+    #EXTM3U
+    #EXT-X-TARGETDURATION:10
+    #EXT-X-KEY:METHOD=NONE
+    #EXTINF:10,
+    http://example.com/2
+  `);
 });
 
 // Use of the IV attribute REQUIRES a compatibility version number of

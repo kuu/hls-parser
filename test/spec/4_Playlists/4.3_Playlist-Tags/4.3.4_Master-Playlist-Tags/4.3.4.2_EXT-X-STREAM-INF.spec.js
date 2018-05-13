@@ -96,7 +96,7 @@ test('#EXT-X-STREAM-INF_06', t => {
   `);
 });
 
-// it MUST match the value of the
+// CLOSED-CAPTIONS: it MUST match the value of the
 // GROUP-ID attribute of an EXT-X-MEDIA tag elsewhere in the Playlist
 // whose TYPE attribute is CLOSED-CAPTIONS
 test('#EXT-X-STREAM-INF_07', t => {
@@ -111,6 +111,36 @@ test('#EXT-X-STREAM-INF_07', t => {
     #EXT-X-STREAM-INF:BANDWIDTH=1280000,CLOSED-CAPTIONS="test"
     /video/main.m3u8
     #EXT-X-MEDIA:TYPE=CLOSED-CAPTIONS,GROUP-ID="test",NAME="en",DEFAULT=YES,INSTREAM-ID="CC1"  `);
+});
+
+// CLOSED-CAPTIONS: The value can be either a quoted-string or an enumerated-string with the value NONE.
+test('#EXT-X-STREAM-INF_07-01', t => {
+  utils.bothPass(t, `
+    #EXTM3U
+    #EXT-X-STREAM-INF:BANDWIDTH=1280000,CLOSED-CAPTIONS=NONE
+    /video/main.m3u8
+  `);
+  const playlist = HLS.parse(`
+    #EXTM3U
+    #EXT-X-STREAM-INF:BANDWIDTH=1280000,CLOSED-CAPTIONS=NONE
+    /video/main.m3u8
+    #EXT-X-MEDIA:TYPE=CLOSED-CAPTIONS,GROUP-ID="test",NAME="en",DEFAULT=YES,INSTREAM-ID="CC1"
+  `);
+  t.is(playlist.variants[0].closedCaptions.length, 0);
+});
+
+// CLOSED-CAPTIONS: If the value is the enumerated-string value NONE,
+// all EXT-X-STREAM-INF tags MUST have this attribute with a value of NONE,
+// indicating that there are no closed captions in any Variant Stream in the Master Playlist.
+test('#EXT-X-STREAM-INF_07-02', t => {
+  utils.parseFail(t, `
+    #EXTM3U
+    #EXT-X-STREAM-INF:BANDWIDTH=1280000,CLOSED-CAPTIONS=NONE
+    /video/main.m3u8
+    #EXT-X-STREAM-INF:BANDWIDTH=2040000,CLOSED-CAPTIONS="test"
+    /video/high.m3u8
+    #EXT-X-MEDIA:TYPE=CLOSED-CAPTIONS,GROUP-ID="test",NAME="en",DEFAULT=YES,INSTREAM-ID="CC1"
+  `);
 });
 
 // The URI attribute of the EXT-X-MEDIA tag is REQUIRED if the media

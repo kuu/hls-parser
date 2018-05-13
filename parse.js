@@ -237,9 +237,12 @@ function addRendition(variant, line, type) {
   }
 }
 
-function matchTypes(attrs, variant) {
+function matchTypes(attrs, variant, params) {
   ['AUDIO', 'VIDEO', 'SUBTITLES', 'CLOSED-CAPTIONS'].forEach(type => {
-    if (attrs[type] && !variant[utils.camelify(type)].find(item => item.groupId === attrs[type])) {
+    if (type === 'CLOSED-CAPTIONS' && attrs[type] === 'NONE') {
+      params.isClosedCaptionsNone = true;
+      variant.closedCaptions = [];
+    } else if (attrs[type] && !variant[utils.camelify(type)].find(item => item.groupId === attrs[type])) {
       utils.INVALIDPLAYLIST(`${type} attribute MUST match the value of the GROUP-ID attribute of an EXT-X-MEDIA tag whose TYPE attribute is ${type}.`);
     }
   });
@@ -275,7 +278,7 @@ function parseVariant(lines, variantAttrs, uri, iFrameOnly = false, params) {
       }
     }
   }
-  matchTypes(variantAttrs, variant);
+  matchTypes(variantAttrs, variant, params);
   variant.isIFrameOnly = iFrameOnly;
   return variant;
 }
@@ -370,6 +373,13 @@ function parseMasterPlaylist(lines, params) {
         utils.INVALIDPLAYLIST('EXT-X-START: TIME-OFFSET attribute is REQUIRED');
       }
       playlist.start = {offset: attributes['TIME-OFFSET'], precise: attributes['PRECISE'] || false};
+    }
+  }
+  if (params.isClosedCaptionsNone) {
+    for (const variant of playlist.variants) {
+      if (variant.closedCaptions.length > 0) {
+        utils.INVALIDPLAYLIST('If there is a variant with CLOSED-CAPTIONS attribute of NONE, all EXT-X-STREAM-INF tags MUST have this attribute with a value of NONE');
+      }
     }
   }
   return playlist;
@@ -677,6 +687,7 @@ function parse(text) {
     hasMap: false,
     targetDuration: 0,
     compatibleVersion: 1,
+    isClosedCaptionsNone: false,
     hash: {}
   };
 
