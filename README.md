@@ -1,6 +1,7 @@
 [![Build Status](https://travis-ci.org/kuu/hls-parser.svg?branch=master)](https://travis-ci.org/kuu/hls-parser)
 [![Coverage Status](https://coveralls.io/repos/github/kuu/hls-parser/badge.svg?branch=master)](https://coveralls.io/github/kuu/hls-parser?branch=master)
 [![Dependency Status](https://david-dm.org/kuu/hls-parser.svg)](https://david-dm.org/kuu/hls-parser)
+[![Development Dependency Status](https://david-dm.org/kuu/hls-parser/dev-status.svg)](https://david-dm.org/kuu/hls-parser#info=devDependencies)
 [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo)
 
 # hls-parser
