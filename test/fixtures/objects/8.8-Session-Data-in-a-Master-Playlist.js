@@ -1,7 +1,7 @@
 const {MasterPlaylist, SessionData} = require('../../../types');
 
 const playlist = new MasterPlaylist({
-  sessionDataList: createSetssionDataList(),
+  sessionDataList: createSetssionDataList()
 });
 
 function createSetssionDataList() {

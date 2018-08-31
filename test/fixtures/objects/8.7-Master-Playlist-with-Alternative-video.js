@@ -7,14 +7,14 @@ function createRendition(groupId) {
     uri: `${groupId}/main/audio-video.m3u8`,
     groupId,
     name: 'Main',
-    isDefault: groupId === 'mid' ? false : true
+    isDefault: !(groupId === 'mid')
   }));
   renditions.push(new Rendition({
     type: 'VIDEO',
     uri: `${groupId}/centerfield/audio-video.m3u8`,
     groupId,
     name: 'Centerfield',
-    isDefault: groupId === 'mid' ? true : false
+    isDefault: groupId === 'mid'
   }));
   renditions.push(new Rendition({
     type: 'VIDEO',
@@ -27,7 +27,7 @@ function createRendition(groupId) {
 }
 
 const playlist = new MasterPlaylist({
-  variants: createVariants(),
+  variants: createVariants()
 });
 
 function createVariants() {

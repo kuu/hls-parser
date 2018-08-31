@@ -1,7 +1,7 @@
 const {MasterPlaylist, Variant} = require('../../../types');
 
 const playlist = new MasterPlaylist({
-  variants: createVariants(),
+  variants: createVariants()
 });
 
 function createVariants() {
