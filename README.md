@@ -107,7 +107,7 @@ This section describes the structure of the object returned by `parse()` method.
 | `video`      | [`Rendition`(type='VIDEO')]    | No       | [] | See VIDEO attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.4.2)  |
 | `subtitles`      | [`Rendition`(type='SUBTITLES')]    | No       | [] | See SUBTITLES attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.4.2)  |
 | `closedCaptions`      | [`Rendition`(type='CLOSED-CAPTIONS')]    | No       | [] | See CLOSED-CAPTIONS attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.4.2) |
-| `currentRenditions`      | object ({AUDIO: number, VIDEO: number, SUBTITLES: number, CLOSED-CAPTIONS: number})   | No       | {} | A hash object that contains array indices that points to the chosen `Rendition` for each type |
+| `currentRenditions`      | object ({audio: number, video: number, subtitles: number, closedCaptions: number})   | No       | {} | A hash object that contains array indices that points to the chosen `Rendition` for each type |
 
 ### `Rendition`
 | Property          | Type     | Required | Default   | Description   |
