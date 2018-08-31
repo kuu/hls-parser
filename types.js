@@ -46,7 +46,7 @@ class Variant {
     video = [],
     subtitles = [],
     closedCaptions = [],
-    currentRenditions = {AUDIO: 0, VIDEO: 0, SUBTITLES: 0, 'CLOSED-CAPTIONS': 0}
+    currentRenditions = {audio: 0, video: 0, subtitles: 0, closedCaptions: 0}
   }) {
     // utils.PARAMCHECK(uri, bandwidth, codecs);
     utils.PARAMCHECK(uri, bandwidth); // the spec states that CODECS is required but not true in the real world

@@ -37,14 +37,14 @@ function createVariants() {
     bandwidth: 1280000,
     codecs: 'avc1.640029,mp4a.40.2',
     video: createRendition('low'),
-    currentRenditions: {'VIDEO': 0}
+    currentRenditions: {video: 0}
   }));
   variants.push(new Variant({
     uri: 'mid/main/audio-video.m3u8',
     bandwidth: 2560000,
     codecs: 'avc1.640029,mp4a.40.2',
     video: createRendition('mid'),
-    currentRenditions: {'VIDEO': 1}
+    currentRenditions: {video: 1}
   }));
   variants.push(new Variant({
     uri: 'hi/main/audio-video.m3u8',
