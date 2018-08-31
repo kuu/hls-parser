@@ -38,7 +38,7 @@ function createRendition() {
 }
 
 const playlist = new MasterPlaylist({
-  variants: createVariants(),
+  variants: createVariants()
 });
 
 function createVariants() {
