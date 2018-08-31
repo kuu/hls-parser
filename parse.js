@@ -233,7 +233,7 @@ function addRendition(variant, line, type) {
   }
   renditions.push(rendition);
   if (rendition.isDefault) {
-    variant.currentRenditions[type] = renditions.length - 1;
+    variant.currentRenditions[utils.camelify(type)] = renditions.length - 1;
   }
 }
 
