@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "xo",
     "coverage": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
-    "build": "rm -fR ./dist; webpack --mode production",
+    "build": "rm -fR ./dist; webpack --mode development ; webpack --mode production",
     "test": "npm run lint && npm run build && nsp check && ava --verbose"
   },
   "repository": {
