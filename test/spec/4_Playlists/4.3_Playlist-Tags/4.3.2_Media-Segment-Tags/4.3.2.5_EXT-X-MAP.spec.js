@@ -40,6 +40,7 @@ test('#EXT-X-MAP_01', t => {
   t.is(playlist.segments[0].map.uri, 'http://example.com/map-1');
   t.is(playlist.segments[1].map.uri, 'http://example.com/map-1');
   t.is(playlist.segments[2].map.uri, 'http://example.com/map-2');
+  HLS.stringify(playlist);
 });
 
 // URI: This attribute is REQUIRED.
