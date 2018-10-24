@@ -4,6 +4,7 @@ const ALLOW_REDUNDANCY = [
   '#EXTINF',
   '#EXT-X-BYTERANGE',
   '#EXT-X-DISCONTINUITY',
+  '#EXT-X-MAP',
   '#EXT-X-STREAM-INF'
 ];
 
