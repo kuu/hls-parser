@@ -21,11 +21,11 @@ test('#EXT-X-DISCONTINUITY-SEQUENCE_01', t => {
 // The EXT-X-DISCONTINUITY-SEQUENCE tag MUST appear before the first
 // Media Segment in the Playlist.
 test('#EXT-X-DISCONTINUITY-SEQUENCE_02', t => {
-  utils.parseFail(t, `
+  utils.bothPass(t, `
     #EXTM3U
     #EXT-X-TARGETDURATION:10
-    #EXTINF:9,
     #EXT-X-DISCONTINUITY-SEQUENCE:20
+    #EXTINF:9,
     http://example.com/1
     #EXT-X-DISCONTINUITY
     #EXTINF:10,
@@ -44,8 +44,8 @@ test('#EXT-X-DISCONTINUITY-SEQUENCE_02', t => {
   utils.bothPass(t, `
     #EXTM3U
     #EXT-X-TARGETDURATION:10
-    #EXT-X-DISCONTINUITY-SEQUENCE:20
     #EXTINF:9,
+    #EXT-X-DISCONTINUITY-SEQUENCE:20
     http://example.com/1
     #EXT-X-DISCONTINUITY
     #EXTINF:10,
