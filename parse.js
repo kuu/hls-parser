@@ -451,6 +451,7 @@ function parseMediaPlaylist(lines, params) {
   const playlist = new MediaPlaylist();
   let segmentStart = -1;
   let mediaSequence = 0;
+  let discontinuityFound = false;
   let discontinuitySequence = 0;
   let currentKey = null;
   let currentMap = null;
@@ -459,6 +460,9 @@ function parseMediaPlaylist(lines, params) {
     if (category === 'Segment') {
       if (segmentStart === -1) {
         segmentStart = index;
+      }
+      if (name === 'EXT-X-DISCONTINUITY') {
+        discontinuityFound = true;
       }
       continue;
     }
@@ -471,13 +475,16 @@ function parseMediaPlaylist(lines, params) {
     } else if (name === 'EXT-X-TARGETDURATION') {
       playlist.targetDuration = params.targetDuration = value;
     } else if (name === 'EXT-X-MEDIA-SEQUENCE') {
-      if (playlist.segments.length > 0 || segmentStart !== -1) {
+      if (playlist.segments.length > 0) {
         utils.INVALIDPLAYLIST('The EXT-X-MEDIA-SEQUENCE tag MUST appear before the first Media Segment in the Playlist.');
       }
       playlist.mediaSequenceBase = mediaSequence = value;
     } else if (name === 'EXT-X-DISCONTINUITY-SEQUENCE') {
-      if (playlist.segments.length > 0 || segmentStart !== -1) {
+      if (playlist.segments.length > 0) {
         utils.INVALIDPLAYLIST('The EXT-X-DISCONTINUITY-SEQUENCE tag MUST appear before the first Media Segment in the Playlist.');
+      }
+      if (discontinuityFound) {
+        utils.INVALIDPLAYLIST('The EXT-X-DISCONTINUITY-SEQUENCE tag MUST appear before any EXT-X-DISCONTINUITY tag.');
       }
       playlist.discontinuitySequenceBase = discontinuitySequence = value;
     } else if (name === 'EXT-X-ENDLIST') {

@@ -20,11 +20,11 @@ test('#EXT-X-MEDIA-SEQUENCE_01', t => {
 // The EXT-X-MEDIA-SEQUENCE tag MUST appear before the first Media
 // Segment in the Playlist.
 test('#EXT-X-MEDIA-SEQUENCE_02', t => {
-  utils.parseFail(t, `
+  utils.bothPass(t, `
     #EXTM3U
     #EXT-X-TARGETDURATION:10
-    #EXTINF:9,
     #EXT-X-MEDIA-SEQUENCE:20
+    #EXTINF:9,
     http://example.com/1
     #EXTINF:10,
     http://example.com/2
@@ -41,8 +41,8 @@ test('#EXT-X-MEDIA-SEQUENCE_02', t => {
   utils.bothPass(t, `
     #EXTM3U
     #EXT-X-TARGETDURATION:10
-    #EXT-X-MEDIA-SEQUENCE:20
     #EXTINF:9,
+    #EXT-X-MEDIA-SEQUENCE:20
     http://example.com/1
     #EXTINF:10,
     http://example.com/2
