@@ -215,7 +215,7 @@ function buildSegment(lines, segment) {
     buildDateRange(lines, segment.dateRange);
   }
   lines.push(`#EXTINF:${segment.duration},${unescape(encodeURIComponent(segment.title || ''))}`);
-  lines.push(`${segment.uri}`);
+  Array.prototype.push.call(lines, `${segment.uri}`); // URIs could be redundant when EXT-X-BYTERANGE is used
 }
 
 function buildMap(lines, map) {
