@@ -197,7 +197,7 @@ function buildMediaPlaylist(lines, playlist) {
 
 function buildSegment(lines, segment) {
   if (segment.byterange) {
-    lines.push(`#EXT-X-BYTERANGE:${segment.byterange.length}@${segment.byterange.offset}`);
+    lines.push(`#EXT-X-BYTERANGE:${buildByteRange(segment.byterange)}`);
   }
   if (segment.discontinuity) {
     lines.push(`#EXT-X-DISCONTINUITY`);
@@ -221,9 +221,13 @@ function buildSegment(lines, segment) {
 function buildMap(lines, map) {
   const attrs = [`URI="${map.uri}"`];
   if (map.byterange) {
-    attrs.push(`BYTERANGE=${map.byterange}`);
+    attrs.push(`BYTERANGE=${buildByteRange(map.byterange)}`);
   }
   lines.push(`#EXT-X-MAP:${attrs.join(',')}`);
+}
+
+function buildByteRange(byterange) {
+    return `${byterange.length}@${byterange.offset}`;
 }
 
 function buildDateRange(lines, dateRange) {
