@@ -227,7 +227,7 @@ function buildMap(lines, map) {
 }
 
 function buildByteRange(byterange) {
-    return `${byterange.length}@${byterange.offset}`;
+  return `${byterange.length}@${byterange.offset}`;
 }
 
 function buildDateRange(lines, dateRange) {
