@@ -87,6 +87,7 @@ function buildKey(lines, key, isSessionKey) {
 function buildVariant(lines, variant) {
   const name = variant.isIFrameOnly ? '#EXT-X-I-FRAME-STREAM-INF' : '#EXT-X-STREAM-INF';
   const attrs = [`BANDWIDTH=${variant.bandwidth}`];
+  attrs.push(`NAME=${variant.bandwidth}`)
   if (variant.averageBandwidth) {
     attrs.push(`AVERAGE-BANDWIDTH=${variant.averageBandwidth}`);
   }
