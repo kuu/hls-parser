@@ -9,10 +9,6 @@
     "build": "rm -fR ./dist; webpack --mode development ; webpack --mode production",
     "test": "npm run lint && npm run build && npm audit --audit-level high && ava --verbose"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/kuu/hls-parser.git"
-  },
   "keywords": [
     "HLS",
     "media",
@@ -22,10 +18,6 @@
   ],
   "author": "Kuu Miyazaki",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/kuu/hls-parser/issues"
-  },
-  "homepage": "https://github.com/kuu/hls-parser#readme",
   "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.2.2",
