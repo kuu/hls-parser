@@ -1,5 +1,7 @@
 const HLS = require('../..');
 
+HLS.setOptions({strictMode: true});
+
 function parsePass(t, text) {
   let obj;
   try {

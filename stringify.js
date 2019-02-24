@@ -38,6 +38,11 @@ class LineArray extends Array {
   }
 }
 
+function buildDecimalFloatingNumber(num, fixed) {
+  const rounded = Math.round(num * 1000) / 1000;
+  return fixed ? rounded.toFixed(fixed) : rounded;
+}
+
 function buildMasterPlaylist(lines, playlist) {
   for (const sessionData of playlist.sessionDataList) {
     buildSessionData(lines, sessionData);
@@ -100,7 +105,7 @@ function buildVariant(lines, variant) {
     attrs.push(`RESOLUTION=${variant.resolution.width}x${variant.resolution.height}`);
   }
   if (variant.frameRate) {
-    attrs.push(`FRAME-RATE=${variant.frameRate}`);
+    attrs.push(`FRAME-RATE=${buildDecimalFloatingNumber(variant.frameRate, 3)}`);
   }
   if (variant.hdcpLevel) {
     attrs.push(`HDCP-LEVEL=${variant.hdcpLevel}`);
@@ -188,14 +193,14 @@ function buildMediaPlaylist(lines, playlist) {
     lines.push(`#EXT-X-I-FRAMES-ONLY`);
   }
   for (const segment of playlist.segments) {
-    buildSegment(lines, segment);
+    buildSegment(lines, segment, playlist.version);
   }
   if (playlist.endlist) {
     lines.push(`#EXT-X-ENDLIST`);
   }
 }
 
-function buildSegment(lines, segment) {
+function buildSegment(lines, segment, version = 1) {
   if (segment.byterange) {
     lines.push(`#EXT-X-BYTERANGE:${buildByteRange(segment.byterange)}`);
   }
@@ -214,7 +219,8 @@ function buildSegment(lines, segment) {
   if (segment.dateRange) {
     buildDateRange(lines, segment.dateRange);
   }
-  lines.push(`#EXTINF:${segment.duration},${unescape(encodeURIComponent(segment.title || ''))}`);
+  const duration = version < 3 ? Math.round(segment.duration) : buildDecimalFloatingNumber(segment.duration);
+  lines.push(`#EXTINF:${duration},${unescape(encodeURIComponent(segment.title || ''))}`);
   Array.prototype.push.call(lines, `${segment.uri}`); // URIs could be redundant when EXT-X-BYTERANGE is used
 }
 
@@ -273,10 +279,10 @@ function stringify(playlist) {
     lines.push(`#EXT-X-VERSION:${playlist.version}`);
   }
   if (playlist.independentSegments) {
-    lines.push(`#EXT-X-INDEPENDENT-SEGMENTS:${playlist.independentSegments}`);
+    lines.push('#EXT-X-INDEPENDENT-SEGMENTS');
   }
   if (playlist.start) {
-    lines.push(`#EXT-X-START:TIME-OFFSET=${playlist.start.offset}${playlist.start.precise ? ',PRECISE=YES' : ''}`);
+    lines.push(`#EXT-X-START:TIME-OFFSET=${buildDecimalFloatingNumber(playlist.start.offset)}${playlist.start.precise ? ',PRECISE=YES' : ''}`);
   }
   if (playlist.isMasterPlaylist) {
     buildMasterPlaylist(lines, playlist);

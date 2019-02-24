@@ -1,17 +1,22 @@
+let options = {};
+
 function THROW(err) {
+  if (!options.strictMode) {
+    return console.error(err.message);
+  }
   throw err;
 }
 
-function ASSERT(msg, ...params) {
-  for (const [index, param] of params.entries()) {
+function ASSERT(msg, ...options) {
+  for (const [index, param] of options.entries()) {
     if (!param) {
       THROW(new Error(`${msg} : Failed at [${index}]`));
     }
   }
 }
 
-function CONDITIONALASSERT(...params) {
-  for (const [index, [cond, param]] of params.entries()) {
+function CONDITIONALASSERT(...options) {
+  for (const [index, [cond, param]] of options.entries()) {
     if (!cond) {
       continue;
     }
@@ -21,16 +26,16 @@ function CONDITIONALASSERT(...params) {
   }
 }
 
-function PARAMCHECK(...params) {
-  for (const [index, param] of params.entries()) {
+function PARAMCHECK(...options) {
+  for (const [index, param] of options.entries()) {
     if (param === undefined) {
       THROW(new Error(`Param Check : Failed at [${index}]`));
     }
   }
 }
 
-function CONDITIONALPARAMCHECK(...params) {
-  for (const [index, [cond, param]] of params.entries()) {
+function CONDITIONALPARAMCHECK(...options) {
+  for (const [index, [cond, param]] of options.entries()) {
     if (!cond) {
       continue;
     }
@@ -184,6 +189,14 @@ function hasOwnProp(obj, propName) {
   return Object.hasOwnProperty.call(obj, propName);
 }
 
+function setOptions(newOptions = {}) {
+  options = Object.assign(options, newOptions);
+}
+
+function getOptions() {
+  return Object.assign({}, options);
+}
+
 module.exports = {
   THROW,
   ASSERT,
@@ -200,5 +213,7 @@ module.exports = {
   splitByCommaWithPreservingQuotes,
   camelify,
   formatDate,
-  hasOwnProp
+  hasOwnProp,
+  setOptions,
+  getOptions
 };
