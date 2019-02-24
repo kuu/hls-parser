@@ -1,6 +1,8 @@
 const test = require('ava');
 const utils = require('../../utils');
 
+utils.setOptions({strictMode: true});
+
 test('utils.THROW', t => {
   try {
     utils.THROW(new Error('abc'));
@@ -137,4 +139,13 @@ test('utils.formatDate', t => {
   const LOCALDATE = '2000-01-01T08:59:59.999+09:00';
   const UTC = '1999-12-31T23:59:59.999Z';
   t.is(utils.formatDate(new Date(LOCALDATE)), UTC);
+});
+
+test('utils.setOptions/getOptions', t => {
+  const params = {a: 1, b: 'b', c: [1, 2, 3], strictMode: true};
+  utils.setOptions(params);
+  t.deepEqual(params, utils.getOptions());
+  params.strictMode = false;
+  t.notDeepEqual(params, utils.getOptions());
+  t.is(utils.getOptions().strictMode, true);
 });
