@@ -19,6 +19,5 @@ test('Redundant_Streams_01', t => {
   `;
   const obj = HLS.parse(sourceText);
   const text = HLS.stringify(obj);
-  console.log(utils.stripCommentsAndEmptyLines(sourceText));
   t.is(text, utils.stripCommentsAndEmptyLines(sourceText));
 });

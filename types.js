@@ -139,6 +139,23 @@ class DateRange {
   }
 }
 
+class SpliceInfo {
+  constructor({
+    type, // required
+    duration, // required if the type is 'OUT'
+    tagName, // required if the type is 'RAW'
+    value
+  }) {
+    utils.PARAMCHECK(type);
+    utils.CONDITIONALPARAMCHECK([type === 'OUT', duration]);
+    utils.CONDITIONALPARAMCHECK([type === 'RAW', tagName]);
+    this.type = type;
+    this.duration = duration;
+    this.tagName = tagName;
+    this.value = value;
+  }
+}
+
 class Data {
   constructor(type) {
     utils.PARAMCHECK(type);
@@ -222,7 +239,8 @@ class Segment extends Data {
     key,
     map,
     programDateTime,
-    dateRange
+    dateRange,
+    markers = []
   }) {
     super('segment');
     utils.PARAMCHECK(uri, mediaSequenceNumber, discontinuitySequence);
@@ -239,6 +257,7 @@ class Segment extends Data {
     this.map = map;
     this.programDateTime = programDateTime;
     this.dateRange = dateRange;
+    this.markers = markers;
   }
 }
 
@@ -249,6 +268,7 @@ module.exports = {
   Key,
   MediaInitializationSection,
   DateRange,
+  SpliceInfo,
   Playlist,
   MasterPlaylist,
   MediaPlaylist,

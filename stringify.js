@@ -219,6 +219,9 @@ function buildSegment(lines, segment, version = 1) {
   if (segment.dateRange) {
     buildDateRange(lines, segment.dateRange);
   }
+  if (segment.markers.length > 0) {
+    buildMarkers(lines, segment.markers);
+  }
   const duration = version < 3 ? Math.round(segment.duration) : buildDecimalFloatingNumber(segment.duration);
   lines.push(`#EXTINF:${duration},${unescape(encodeURIComponent(segment.title || ''))}`);
   Array.prototype.push.call(lines, `${segment.uri}`); // URIs could be redundant when EXT-X-BYTERANGE is used
@@ -268,6 +271,19 @@ function buildDateRange(lines, dateRange) {
     }
   });
   lines.push(`#EXT-X-DATERANGE:${attrs.join(',')}`);
+}
+
+function buildMarkers(lines, markers) {
+  for (const marker of markers) {
+    if (marker.type === 'OUT') {
+      lines.push(`#EXT-X-CUE-OUT:${marker.duration}`);
+    } else if (marker.type === 'IN') {
+      lines.push('#EXT-X-CUE-IN');
+    } else if (marker.type === 'RAW') {
+      const value = marker.value ? `:${marker.value}` : '';
+      lines.push(`#${marker.tagName}${value}`);
+    }
+  }
 }
 
 function stringify(playlist) {

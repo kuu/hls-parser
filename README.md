@@ -175,6 +175,7 @@ This section describes the structure of the object returned by `parse()` method.
 | `map`  | `MediaInitializationSection`   | No       | undefined | See [EXT-X-MAP](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.2.5) |
 | `programDateTime`  | `Date`   | No       | undefined | See [EXT-X-PROGRAM-DATE-TIME](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.2.6) |
 | `dateRange`  | `DateRange`   | No       | undefined | See [EXT-X-DATERANGE](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.2.7) |
+| `markers`  | [`SpliceInfo`]   | No       | undefined | SCTE-35 messages associated with this segment|
 
 ### `Key`
 | Property          | Type     | Required | Default   | Description   |
@@ -202,3 +203,13 @@ This section describes the structure of the object returned by `parse()` method.
 | `plannedDuration`        | number  | No       | undefined        | See PLANNED-DURATION attribute in [EXT-X-DATERANGE](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.2.7) |
 | `endOnNext`        | boolean  | No       | undefined        | See END-ON-NEXT attribute in [EXT-X-DATERANGE](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.2.7) |
 | `attributes`        | object  | No       | {}        | A hash object that holds SCTE35 attributes and user defined attributes. See SCTE35-* and X-<client-attribute> attributes in [EXT-X-DATERANGE](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.2.7) |
+
+### `SpliceInfo`
+Only `EXT-X-CUE-OUT` and `EXT-X-CUE-IN` tags are supported. Other SCTE-35-related tags are stored as raw (string) values.
+
+| Property          | Type     | Required | Default   | Description   |
+| ----------------- | -------- | -------- | --------- | ------------- |
+| `type`  | string   | Yes       | N/A | {'OUT', 'IN', 'RAW'} |
+| `duration`        | number   | No       | undefined        | Required if the `type` is 'OUT' |
+| `tagName`        | string   | No       | undefined        | Holds the tag name if any unsupported tag are found. Required if the `type` is 'RAW' |
+| `value`        | string   | No       | undefined        | Holds a raw (string) value for the unsupported tag. |
