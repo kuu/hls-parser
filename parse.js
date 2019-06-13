@@ -6,6 +6,7 @@ const {
   Key,
   MediaInitializationSection,
   DateRange,
+  SpliceInfo,
   MasterPlaylist,
   MediaPlaylist,
   Segment
@@ -27,6 +28,13 @@ function getTagCategory(tagName) {
     case 'EXT-X-MAP':
     case 'EXT-X-PROGRAM-DATE-TIME':
     case 'EXT-X-DATERANGE':
+    case 'EXT-X-CUE-OUT':
+    case 'EXT-X-CUE-IN':
+    case 'EXT-X-CUE-OUT-CONT':
+    case 'EXT-X-CUE':
+    case 'EXT-OATCLS-SCTE35':
+    case 'EXT-X-ASSET':
+    case 'EXT-X-SCTE35':
       return 'Segment';
     case 'EXT-X-TARGETDURATION':
     case 'EXT-X-MEDIA-SEQUENCE':
@@ -149,11 +157,13 @@ function parseTagParam(name, param) {
     case 'EXT-X-ENDLIST':
     case 'EXT-X-I-FRAMES-ONLY':
     case 'EXT-X-INDEPENDENT-SEGMENTS':
+    case 'EXT-X-CUE-IN':
       return [null, null];
     case 'EXT-X-VERSION':
     case 'EXT-X-TARGETDURATION':
     case 'EXT-X-MEDIA-SEQUENCE':
     case 'EXT-X-DISCONTINUITY-SEQUENCE':
+    case 'EXT-X-CUE-OUT':
       return [utils.toNumber(param), null];
     case 'EXT-X-KEY':
     case 'EXT-X-MAP':
@@ -442,6 +452,27 @@ function parseSegment(lines, uri, start, end, mediaSequenceNumber, discontinuity
         endOnNext: attributes['END-ON-NEXT'],
         attributes: attrs
       });
+    } else if (name === 'EXT-X-CUE-OUT') {
+      segment.markers.push(new SpliceInfo({
+        type: 'OUT',
+        duration: value
+      }));
+    } else if (name === 'EXT-X-CUE-IN') {
+      segment.markers.push(new SpliceInfo({
+        type: 'IN'
+      }));
+    } else if (
+      name === 'EXT-X-CUE-OUT-CONT' ||
+      name === 'EXT-X-CUE' ||
+      name === 'EXT-OATCLS-SCTE35' ||
+      name === 'EXT-X-ASSET' ||
+      name === 'EXT-X-SCTE35'
+    ) {
+      segment.markers.push(new SpliceInfo({
+        type: 'RAW',
+        tagName: name,
+        value
+      }));
     }
   }
   return segment;
