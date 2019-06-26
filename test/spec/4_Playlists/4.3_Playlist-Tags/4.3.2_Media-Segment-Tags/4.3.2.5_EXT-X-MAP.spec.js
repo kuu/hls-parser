@@ -109,3 +109,25 @@ test('#EXT-X-MAP_04', t => {
     http://example.com/1
   `);
 });
+
+// The tag place should be preserved
+test('#EXT-X-MAP_05', t => {
+  const sourceText = `
+    #EXTM3U
+    #EXT-X-VERSION:6
+    #EXT-X-TARGETDURATION:10
+    #EXT-X-MAP:URI="http://example.com/map-1"
+    #EXTINF:10,
+    http://example.com/1
+    #EXTINF:10,
+    http://example.com/2
+    #EXT-X-MAP:URI="http://example.com/map-2"
+    #EXTINF:10,
+    http://example.com/3
+    #EXTINF:10,
+    http://example.com/4
+  `;
+  const obj = HLS.parse(sourceText);
+  const text = HLS.stringify(obj);
+  t.is(text, utils.stripCommentsAndEmptyLines(sourceText));
+});

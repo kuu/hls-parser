@@ -111,3 +111,25 @@ test('#EXT-X-KEY_05', t => {
   `);
   t.is(playlist.segments[0].key.iv.length, 16);
 });
+
+// The tag place should be preserved
+test('#EXT-X-KEY_06', t => {
+  const sourceText = `
+    #EXTM3U
+    #EXT-X-VERSION:5
+    #EXT-X-TARGETDURATION:10
+    #EXT-X-KEY:METHOD=AES-128,URI="http://example.com/key-1",KEYFORMAT="identity"
+    #EXTINF:10,
+    http://example.com/1
+    #EXTINF:10,
+    http://example.com/2
+    #EXT-X-KEY:METHOD=AES-128,URI="http://example.com/key-2",KEYFORMAT="identity"
+    #EXTINF:10,
+    http://example.com/3
+    #EXTINF:10,
+    http://example.com/4
+  `;
+  const obj = HLS.parse(sourceText);
+  const text = HLS.stringify(obj);
+  t.is(text, utils.stripCommentsAndEmptyLines(sourceText));
+});

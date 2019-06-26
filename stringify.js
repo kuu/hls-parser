@@ -4,12 +4,12 @@ const ALLOW_REDUNDANCY = [
   '#EXTINF',
   '#EXT-X-BYTERANGE',
   '#EXT-X-DISCONTINUITY',
-  '#EXT-X-MAP',
   '#EXT-X-STREAM-INF'
 ];
 
 const SKIP_IF_REDUNDANT = [
   '#EXT-X-KEY',
+  '#EXT-X-MAP',
   '#EXT-X-MEDIA'
 ];
 
