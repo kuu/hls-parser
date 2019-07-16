@@ -4,7 +4,9 @@ const ALLOW_REDUNDANCY = [
   '#EXTINF',
   '#EXT-X-BYTERANGE',
   '#EXT-X-DISCONTINUITY',
-  '#EXT-X-STREAM-INF'
+  '#EXT-X-STREAM-INF',
+  '#EXT-X-CUE-OUT',
+  '#EXT-X-CUE-IN'
 ];
 
 const SKIP_IF_REDUNDANT = [
@@ -23,6 +25,10 @@ class LineArray extends Array {
   push(...elems) {
     // redundancy check
     for (const elem of elems) {
+      if (!elem.startsWith('#')) {
+        super.push(elem);
+        continue;
+      }
       if (ALLOW_REDUNDANCY.some(item => elem.startsWith(item))) {
         super.push(elem);
         continue;

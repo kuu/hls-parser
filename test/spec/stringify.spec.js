@@ -3,7 +3,7 @@ const fixtures = require('../helpers/fixtures');
 const utils = require('../helpers/utils');
 const HLS = require('../..');
 
-HLS.setOptions({strictMode: false});
+HLS.setOptions({strictMode: true});
 
 fixtures.forEach(({name, m3u8, object}) => {
   test(name, t => {
