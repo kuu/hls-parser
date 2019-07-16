@@ -23,6 +23,10 @@ class LineArray extends Array {
   push(...elems) {
     // redundancy check
     for (const elem of elems) {
+      if (!elem.startsWith('#')) {
+        super.push(elem);
+        continue;
+      }
       if (ALLOW_REDUNDANCY.some(item => elem.startsWith(item))) {
         super.push(elem);
         continue;
