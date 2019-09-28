@@ -71,7 +71,7 @@ function hexToByteSequence(str) {
   }
   const numArray = [];
   for (let i = 0; i < str.length; i += 2) {
-    numArray.push(toNumber(str.substr(i, 2), 16));
+    numArray.push(toNumber(str.slice(i, i + 2), 16));
   }
   return Buffer.from(numArray);
 }

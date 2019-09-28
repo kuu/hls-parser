@@ -258,7 +258,7 @@ function matchTypes(attrs, variant, params) {
   });
 }
 
-function parseVariant(lines, variantAttrs, uri, iFrameOnly = false, params) {
+function parseVariant(lines, variantAttrs, uri, iFrameOnly, params) {
   const variant = new Variant({
     uri,
     bandwidth: variantAttrs['BANDWIDTH'],
