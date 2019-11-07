@@ -170,7 +170,8 @@ class Playlist extends Data {
     version,
     independentSegments = false,
     start,
-    source
+    source,
+    allowClosedCaptionsNone = false
   }) {
     super('playlist');
     utils.PARAMCHECK(isMasterPlaylist);
@@ -180,6 +181,7 @@ class Playlist extends Data {
     this.independentSegments = independentSegments;
     this.start = start;
     this.source = source;
+    this.allowClosedCaptionsNone = allowClosedCaptionsNone;
   }
 }
 
