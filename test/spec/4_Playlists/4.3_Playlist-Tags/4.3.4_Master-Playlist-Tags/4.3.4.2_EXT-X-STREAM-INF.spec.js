@@ -151,8 +151,8 @@ test('#EXT-X-STREAM-INF_07-03', t => {
   #EXT-X-STREAM-INF:BANDWIDTH=2040000,CLOSED-CAPTIONS=NONE
   /video/high.m3u8
   `;
+  HLS.setOptions({allowClosedCaptionsNone: true});
   const obj = HLS.parse(sourceText);
-  obj.allowClosedCaptionsNone = true;
   const text = HLS.stringify(obj);
   t.is(text, utils.stripCommentsAndEmptyLines(sourceText));
 });

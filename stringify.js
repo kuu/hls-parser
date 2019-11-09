@@ -57,7 +57,7 @@ function buildMasterPlaylist(lines, playlist) {
     buildKey(lines, sessionKey, true);
   }
   for (const variant of playlist.variants) {
-    buildVariant(lines, variant, playlist);
+    buildVariant(lines, variant);
   }
 }
 
@@ -95,7 +95,7 @@ function buildKey(lines, key, isSessionKey) {
   lines.push(`${name}:${attrs.join(',')}`);
 }
 
-function buildVariant(lines, variant, playlist) {
+function buildVariant(lines, variant) {
   const name = variant.isIFrameOnly ? '#EXT-X-I-FRAME-STREAM-INF' : '#EXT-X-STREAM-INF';
   const attrs = [`BANDWIDTH=${variant.bandwidth}`];
   if (variant.averageBandwidth) {
@@ -134,7 +134,7 @@ function buildVariant(lines, variant, playlist) {
       buildRendition(lines, rendition);
     }
   }
-  if (playlist.allowClosedCaptionsNone && variant.closedCaptions.length === 0) {
+  if (utils.getOptions().allowClosedCaptionsNone && variant.closedCaptions.length === 0) {
     attrs.push(`CLOSED-CAPTIONS=NONE`);
   } else if (variant.closedCaptions.length > 0) {
     attrs.push(`CLOSED-CAPTIONS="${variant.closedCaptions[0].groupId}"`);

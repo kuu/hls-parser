@@ -71,7 +71,8 @@ Updates the option values
 ##### supported options
 | Name       | Type    | Default | Description   |
 | ---------- | ------- | ------- | ------------- |
-| strictMode | boolean | false   | If true, the function throws an error when `parse`/`stringify` failed. If false, the function just logs the error and continues to run.|
+| `strictMode` | boolean | false   | If true, the function throws an error when `parse`/`stringify` failed. If false, the function just logs the error and continues to run.|
+| `allowClosedCaptionsNone` | boolean | false | If true, `CLOSED-CAPTIONS` attribute on the `EXT-X-STREAM-INF` tag will be set to the enumerated-string value NONE when there are no closed-captions. See [CLOSED-CAPTIONS](https://tools.ietf.org/html/rfc8216#section-4.3.4.2) |
 
 ### `HLS.getOptions()`
 Retrieves the current option values
@@ -101,7 +102,6 @@ This section describes the structure of the object returned by `parse()` method.
 | `independentSegments` | boolean | No       | false      | See [EXT-X-INDEPENDENT-SEGMENTS](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.5.1) |
 | `start` | object({offset: number, precise: boolean}) | No       | undefined      | See [EXT-X-START](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.5.2) |
 | `source` | string     | No      | undefined     | The unprocessed text of the playlist  |
-| `allowClosedCaptionsNone` | boolean | No | false | `true` if `CLOSED-CAPTIONS` attribute should be set to the enumerated-string value NONE when there are no closed-captions. See [CLOSED-CAPTIONS](https://tools.ietf.org/html/rfc8216#section-4.3.4.2) |
 
 ### `MasterPlaylist` (extends `Playlist`)
 | Property          | Type     | Required | Default   | Description   |
