@@ -134,7 +134,9 @@ function buildVariant(lines, variant) {
       buildRendition(lines, rendition);
     }
   }
-  if (variant.closedCaptions.length > 0) {
+  if (utils.getOptions().allowClosedCaptionsNone && variant.closedCaptions.length === 0) {
+    attrs.push(`CLOSED-CAPTIONS=NONE`);
+  } else if (variant.closedCaptions.length > 0) {
     attrs.push(`CLOSED-CAPTIONS="${variant.closedCaptions[0].groupId}"`);
     for (const rendition of variant.closedCaptions) {
       buildRendition(lines, rendition);
