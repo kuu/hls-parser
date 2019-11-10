@@ -3,7 +3,9 @@
 [![Dependency Status](https://david-dm.org/kuu/hls-parser.svg)](https://david-dm.org/kuu/hls-parser)
 [![Development Dependency Status](https://david-dm.org/kuu/hls-parser/dev-status.svg)](https://david-dm.org/kuu/hls-parser#info=devDependencies)
 [![Known Vulnerabilities](https://snyk.io/test/github/kuu/hls-parser/badge.svg)](https://snyk.io/test/github/kuu/hls-parser)
+[![npm Downloads](https://img.shields.io/npm/dw/hls-parser.svg?style=flat-square)](https://npmjs.com/hls-parser)
 [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo)
+
 
 # hls-parser
 
