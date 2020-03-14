@@ -13,6 +13,7 @@ Provides synchronous functions to read/write HLS playlists (conforms to [the HLS
 
 ## Install
 [![NPM](https://nodei.co/npm/hls-parser.png?mini=true)](https://nodei.co/npm/hls-parser/)
+[![](https://data.jsdelivr.com/v1/package/npm/hls-parser/badge)](https://www.jsdelivr.com/package/npm/hls-parser?path=dist)
 
 ## Usage
 ```js
