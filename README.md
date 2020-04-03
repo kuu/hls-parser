@@ -9,7 +9,7 @@
 
 # hls-parser
 
-Provides synchronous functions to read/write HLS playlists (conforms to [the HLS spec rev.23](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23))
+Provides synchronous functions to read/write HLS playlists (conforms to [the HLS spec rev.23](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23) and [the Apple Low-Latency Spec rev. 2020/02/05](https://developer.apple.com/documentation/http_live_streaming/protocol_extension_for_low-latency_hls_preliminary_specification))
 
 ## Install
 [![NPM](https://nodei.co/npm/hls-parser.png?mini=true)](https://nodei.co/npm/hls-parser/)
@@ -35,42 +35,54 @@ const obj = new MediaPlaylist({
   playlistType: 'VOD',
   segments: [
     new Segment({
-      uri: 'low/1.m3u8'
-      duration: 9,
-      mediaSequenceNumber: 0,
-      discontinuitySequence: 0
+      uri: 'low/1.m3u8',
+      duration: 9
     })
   ]
-}));
+});
 // Convert the object into a text
-const text = HLS.stringify(obj);
+HLS.stringify(obj);
+/*
+#EXTM3U
+#EXT-X-TARGETDURATION:9
+#EXT-X-PLAYLIST-TYPE:VOD
+#EXTINF:9,
+low/1.m3u8
+*/
 ```
 
 ## API
+
 ### `HLS.parse(str)`
 Converts a text playlist into a structured JS object
+
 #### params
 | Name    | Type   | Required | Default | Description   |
 | ------- | ------ | -------- | ------- | ------------- |
 | str     | string | Yes      | N/A     | A text data that conforms to [the HLS playlist spec](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.1) |
+
 #### return value
 An instance of either `MasterPlaylist` or `MediaPlaylist` (See **Data format** below.)
 
 ### `HLS.stringify(obj)`
 Converts a JS object into a plain text playlist
+
 #### params
 | Name    | Type   | Required | Default | Description   |
 | ------- | ------ | -------- | ------- | ------------- |
 | obj     | `MasterPlaylist` or `MediaPlaylist` (See **Data format** below.)  | Yes      | N/A     | An object returned by `HLS.parse()` or a manually created object |
+
 #### return value
 A text data that conforms to [the HLS playlist spec](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.1)
 
 ### `HLS.setOptions(obj)`
 Updates the option values
+
 #### params
 | Name    | Type   | Required | Default | Description   |
 | ------- | ------ | -------- | ------- | ------------- |
 | obj     | Object | Yes      | {}     | An object holding option values which will be used to overwrite the internal option values.  |
+
 ##### supported options
 | Name       | Type    | Default | Description   |
 | ---------- | ------- | ------- | ------------- |
@@ -79,6 +91,7 @@ Updates the option values
 
 ### `HLS.getOptions()`
 Retrieves the current option values
+
 #### return value
 A cloned object containing the current option values
 
@@ -94,7 +107,7 @@ This section describes the structure of the object returned by `parse()` method.
 ### `Data`
 | Property         | Type          | Required | Default | Description   |
 | ---------------- | ------------- | -------- | ------- | ------------- |
-| `type` | string     | Yes      | N/A     | Either `playlist` or `segment`}  |
+| `type` | string     | Yes      | N/A     | Either `playlist` or `segment` or `part`}  |
 
 ### `Playlist` (extends `Data`)
 | Property         | Type          | Required | Default | Description   |
@@ -165,22 +178,38 @@ This section describes the structure of the object returned by `parse()` method.
 | `playlistType`              | string | No       | undefined        | See [EXT-X-PLAYLIST-TYPE](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.3.5) |
 | `isIFrame`                  | boolean | No       | undefined        | See [EXT-X-I-FRAMES-ONLY](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.3.6) |
 | `segments`                  | [`Segment`] | No       | []        | A list of available segments |
+| `lowLatencyCompatibility`  | object ({canBlockReload: boolean, canSkipUntil: number, holdBack: number, partHoldBack: number})   | No       | undefined | See `CAN-BLOCK-RELOAD`, `CAN-SKIP-UNTIL`, `HOLD-BACK`, and `PART-HOLD-BACK` attributes in [EXT-X-SERVER-CONTROL](https://developer.apple.com/documentation/http_live_streaming/protocol_extension_for_low-latency_hls_preliminary_specification#3281374) |
+| `partTargetDuration`            | number | No*      | undefined        | *Required if the playlist contains one or more `EXT-X-PART` tags. See [EXT-X-PART-INF](https://developer.apple.com/documentation/http_live_streaming/protocol_extension_for_low-latency_hls_preliminary_specification#3282434) |
+| `renditionReports`  | [`RenditionReport`]   | No       | [] | Update status of the associated renditions |
+| `skip`  | number   | No       | 0 | See [EXT-X-SKIP](https://developer.apple.com/documentation/http_live_streaming/protocol_extension_for_low-latency_hls_preliminary_specification#3282433) |
 
 ### `Segment` (extends `Data`)
 | Property          | Type     | Required | Default   | Description   |
 | ----------------- | -------- | -------- | --------- | ------------- |
-| `uri`        | string  | Yes       | N/A        | URI of the media segment |
-| `duration`  | number   | Yes       | N/A | See [EXTINF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.2.1) |
+| `uri`        | string  | Yes*       | N/A        | URI of the media segment. *Not required if the segment contains `EXT-X-PRELOAD-HINT` tag |
+| `duration`  | number   | Yes*       | N/A | See [EXTINF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.2.1) *Not required if the segment contains `EXT-X-PRELOAD-HINT` tag |
 | `title`  | string   | No       | undefined | See [EXTINF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.2.1) |
 | `byterange`  | object ({length: number, offset: number})   | No       | undefined | See [EXT-X-BYTERANGE](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.2.2) |
 | `discontinuity`  | boolean   | No       | undefined | See [EXT-X-DISCONTINUITY](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.2.3) |
-| `mediaSequenceNumber`  | number   | Yes       | N/A | See the description about 'Media Sequence Number' in [3. Media Segments](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#page-5) |
-| `discontinuitySequence`  | number   | Yes       | N/A | See the description about 'Discontinuity Sequence Number' in [6.2.1. General Server Responsibilities](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-6.2.1) |
+| `mediaSequenceNumber`  | number   | No       | 0 | See the description about 'Media Sequence Number' in [3. Media Segments](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#page-5) |
+| `discontinuitySequence`  | number   | No       | 0 | See the description about 'Discontinuity Sequence Number' in [6.2.1. General Server Responsibilities](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-6.2.1) |
 | `key`  | `Key`   | No       | undefined | See [EXT-X-KEY](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.2.4) |
 | `map`  | `MediaInitializationSection`   | No       | undefined | See [EXT-X-MAP](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.2.5) |
 | `programDateTime`  | `Date`   | No       | undefined | See [EXT-X-PROGRAM-DATE-TIME](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.2.6) |
 | `dateRange`  | `DateRange`   | No       | undefined | See [EXT-X-DATERANGE](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.2.7) |
-| `markers`  | [`SpliceInfo`]   | No       | undefined | SCTE-35 messages associated with this segment|
+| `markers`  | [`SpliceInfo`]   | No       | [] | SCTE-35 messages associated with this segment|
+| `parts`  | [`PartialSegment`]   | No       | [] | Partial Segments that constitute this segment |
+
+### `PartialSegment` (extends `Data`)
+| Property          | Type     | Required | Default   | Description   |
+| ----------------- | -------- | -------- | --------- | ------------- |
+| `hint`        | boolean  | No       | false        | `true` indicates a hinted resource (`TYPE=PART`) See [EXT-X-PRELOAD-HINT](https://developer.apple.com/documentation/http_live_streaming/protocol_extension_for_low-latency_hls_preliminary_specification#3526694) |
+| `uri`        | string  | Yes       | N/A        | See `URI` attribute in [EXT-X-PART](https://developer.apple.com/documentation/http_live_streaming/protocol_extension_for_low-latency_hls_preliminary_specification#3282436) |
+| `duration`  | number   | Yes*       | N/A | See `DURATION` attribute in [EXT-X-PART](https://developer.apple.com/documentation/http_live_streaming/protocol_extension_for_low-latency_hls_preliminary_specification#3282436) *Not required if `hint` is `true`|
+| `independent`  | boolean   | No       | undefined | See `INDEPENDENT` attribute in [EXT-X-PART](https://developer.apple.com/documentation/http_live_streaming/protocol_extension_for_low-latency_hls_preliminary_specification#3282436) |
+| `byterange`  | object ({length: number, offset: number})   | No       | undefined | See `BYTERANGE` attribute in [EXT-X-PART](https://developer.apple.com/documentation/http_live_streaming/protocol_extension_for_low-latency_hls_preliminary_specification#3282436) |
+| `gap`  | boolean   | No       | undefined | See `GAP` attribute in [EXT-X-PART](https://developer.apple.com/documentation/http_live_streaming/protocol_extension_for_low-latency_hls_preliminary_specification#3282436) |
+
 
 ### `Key`
 | Property          | Type     | Required | Default   | Description   |
@@ -194,6 +223,7 @@ This section describes the structure of the object returned by `parse()` method.
 ### `MediaInitializationSection`
 | Property          | Type     | Required | Default   | Description   |
 | ----------------- | -------- | -------- | --------- | ------------- |
+| `hint`        | boolean  | No       | false        | `true` indicates a hinted resource (`TYPE=MAP`) See [EXT-X-PRELOAD-HINT](https://developer.apple.com/documentation/http_live_streaming/protocol_extension_for_low-latency_hls_preliminary_specification#3526694) |
 | `uri`        | string  | Yes       | N/A        | See URI attribute in [EXT-X-MAP](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.2.5) |
 | `byterange`        | object ({length: number, offset: number})   | No       | undefined        | See BYTERANGE attribute in [EXT-X-MAP](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.2.5) |
 
@@ -218,3 +248,10 @@ Only `EXT-X-CUE-OUT` and `EXT-X-CUE-IN` tags are supported. Other SCTE-35-relate
 | `duration`        | number   | No       | undefined        | Required if the `type` is 'OUT' |
 | `tagName`        | string   | No       | undefined        | Holds the tag name if any unsupported tag are found. Required if the `type` is 'RAW' |
 | `value`        | string   | No       | undefined        | Holds a raw (string) value for the unsupported tag. |
+
+### `RenditionReport`
+| Property          | Type     | Required | Default   | Description   |
+| ----------------- | -------- | -------- | --------- | ------------- |
+| `uri`        | string  | Yes       | N/A        | See `URI` attribute in [EXT-X-RENDITION-REPORT](https://developer.apple.com/documentation/http_live_streaming/protocol_extension_for_low-latency_hls_preliminary_specification#3282435) |
+| `lastMSN`        | number  | No       | undefined  | See `LAST-MSN` attribute in [EXT-X-RENDITION-REPORT](https://developer.apple.com/documentation/http_live_streaming/protocol_extension_for_low-latency_hls_preliminary_specification#3282435) |
+| `lastPart`        | number  | No       | undefined | See `LAST-PART` attribute in [EXT-X-RENDITION-REPORT](https://developer.apple.com/documentation/http_live_streaming/protocol_extension_for_low-latency_hls_preliminary_specification#3282435) |

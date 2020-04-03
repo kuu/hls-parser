@@ -9,7 +9,9 @@ const {
   SpliceInfo,
   MasterPlaylist,
   MediaPlaylist,
-  Segment
+  Segment,
+  PartialSegment,
+  RenditionReport
 } = require('./types');
 
 function unquote(str) {
@@ -35,6 +37,8 @@ function getTagCategory(tagName) {
     case 'EXT-OATCLS-SCTE35':
     case 'EXT-X-ASSET':
     case 'EXT-X-SCTE35':
+    case 'EXT-X-PART':
+    case 'EXT-X-PRELOAD-HINT':
       return 'Segment';
     case 'EXT-X-TARGETDURATION':
     case 'EXT-X-MEDIA-SEQUENCE':
@@ -42,6 +46,10 @@ function getTagCategory(tagName) {
     case 'EXT-X-ENDLIST':
     case 'EXT-X-PLAYLIST-TYPE':
     case 'EXT-X-I-FRAMES-ONLY':
+    case 'EXT-X-SERVER-CONTROL':
+    case 'EXT-X-PART-INF':
+    case 'EXT-X-RENDITION-REPORT':
+    case 'EXT-X-SKIP':
       return 'MediaPlaylist';
     case 'EXT-X-MEDIA':
     case 'EXT-X-STREAM-INF':
@@ -127,6 +135,9 @@ function parseAttributeList(param) {
       case 'AUTOSELECT':
       case 'FORCED':
       case 'PRECISE':
+      case 'CAN-BLOCK-RELOAD':
+      case 'INDEPENDENT':
+      case 'GAP':
         attributes[key] = val === 'YES';
         break;
       case 'DURATION':
@@ -135,6 +146,15 @@ function parseAttributeList(param) {
       case 'AVERAGE-BANDWIDTH':
       case 'FRAME-RATE':
       case 'TIME-OFFSET':
+      case 'CAN-SKIP-UNTIL':
+      case 'HOLD-BACK':
+      case 'PART-HOLD-BACK':
+      case 'PART-TARGET':
+      case 'BYTERANGE-START':
+      case 'BYTERANGE-LENGTH':
+      case 'LAST-MSN':
+      case 'LAST-PART':
+      case 'SKIPPED-SEGMENTS':
         attributes[key] = utils.toNumber(val);
         break;
       default:
@@ -174,6 +194,12 @@ function parseTagParam(name, param) {
     case 'EXT-X-SESSION-DATA':
     case 'EXT-X-SESSION-KEY':
     case 'EXT-X-START':
+    case 'EXT-X-SERVER-CONTROL':
+    case 'EXT-X-PART-INF':
+    case 'EXT-X-PART':
+    case 'EXT-X-PRELOAD-HINT':
+    case 'EXT-X-RENDITION-REPORT':
+    case 'EXT-X-SKIP':
       return [null, parseAttributeList(param)];
     case 'EXTINF':
       return [parseEXTINF(param), null];
@@ -397,6 +423,8 @@ function parseMasterPlaylist(lines, params) {
 
 function parseSegment(lines, uri, start, end, mediaSequenceNumber, discontinuitySequence, params) {
   const segment = new Segment({uri, mediaSequenceNumber, discontinuitySequence});
+  let mapHint = false;
+  let partHint = false;
   for (let i = start; i <= end; i++) {
     const {name, value, attributes} = lines[i];
     if (name === 'EXTINF') {
@@ -414,8 +442,14 @@ function parseSegment(lines, uri, start, end, mediaSequenceNumber, discontinuity
       }
       segment.byterange = value;
     } else if (name === 'EXT-X-DISCONTINUITY') {
+      if (segment.parts.length > 0) {
+        utils.INVALIDPLAYLIST('EXT-X-DISCONTINUITY must appear before the first EXT-X-PART tag of the Parent Segment.');
+      }
       segment.discontinuity = true;
     } else if (name === 'EXT-X-KEY') {
+      if (segment.parts.length > 0) {
+        utils.INVALIDPLAYLIST('EXT-X-KEY must appear before the first EXT-X-PART tag of the Parent Segment.');
+      }
       setCompatibleVersionOfKey(params, attributes);
       segment.key = new Key({
         method: attributes['METHOD'],
@@ -425,6 +459,9 @@ function parseSegment(lines, uri, start, end, mediaSequenceNumber, discontinuity
         formatVersion: attributes['KEYFORMATVERSIONS']
       });
     } else if (name === 'EXT-X-MAP') {
+      if (segment.parts.length > 0) {
+        utils.INVALIDPLAYLIST('EXT-X-MAP must appear before the first EXT-X-PART tag of the Parent Segment.');
+      }
       if (params.compatibleVersion < 5) {
         params.compatibleVersion = 5;
       }
@@ -473,6 +510,39 @@ function parseSegment(lines, uri, start, end, mediaSequenceNumber, discontinuity
         tagName: name,
         value
       }));
+    } else if (name === 'EXT-X-PRELOAD-HINT' && !attributes['TYPE']) {
+      utils.INVALIDPLAYLIST('EXT-X-PRELOAD-HINT: TYPE attribute is mandatory');
+    } else if (name === 'EXT-X-PRELOAD-HINT' && attributes['TYPE'] === 'PART' && partHint) {
+      utils.INVALIDPLAYLIST('Servers should not add more than one EXT-X-PRELOAD-HINT tag with the same TYPE attribute to a Playlist.');
+    } else if ((name === 'EXT-X-PART' || name === 'EXT-X-PRELOAD-HINT') && !attributes['URI']) {
+      utils.INVALIDPLAYLIST('EXT-X-PART / EXT-X-PRELOAD-HINT: URI attribute is mandatory');
+    } else if (name === 'EXT-X-PRELOAD-HINT' && attributes['TYPE'] === 'MAP') {
+      if (mapHint) {
+        utils.INVALIDPLAYLIST('Servers should not add more than one EXT-X-PRELOAD-HINT tag with the same TYPE attribute to a Playlist.');
+      }
+      mapHint = true;
+      params.hasMap = true;
+      segment.map = new MediaInitializationSection({
+        hint: true,
+        uri: attributes['URI'],
+        byterange: {length: attributes['BYTERANGE-LENGTH'], offset: attributes['BYTERANGE-START'] || 0}
+      });
+    } else if (name === 'EXT-X-PART' || (name === 'EXT-X-PRELOAD-HINT' && attributes['TYPE'] === 'PART')) {
+      if (name === 'EXT-X-PART' && !attributes['DURATION']) {
+        utils.INVALIDPLAYLIST('EXT-X-PART: DURATION attribute is mandatory');
+      }
+      if (name === 'EXT-X-PRELOAD-HINT') {
+        partHint = true;
+      }
+      const partialSegment = new PartialSegment({
+        hint: (name === 'EXT-X-PRELOAD-HINT'),
+        uri: attributes['URI'],
+        byterange: (name === 'EXT-X-PART' ? attributes['BYTERANGE'] : {length: attributes['BYTERANGE-LENGTH'], offset: attributes['BYTERANGE-START'] || 0}),
+        duration: attributes['DURATION'],
+        independent: attributes['INDEPENDENT'],
+        gap: attributes['GAP']
+      });
+      segment.parts.push(partialSegment);
     }
   }
   return segment;
@@ -486,6 +556,7 @@ function parseMediaPlaylist(lines, params) {
   let discontinuitySequence = 0;
   let currentKey = null;
   let currentMap = null;
+  let containsParts = false;
   for (const [index, line] of lines.entries()) {
     const {name, value, attributes, category} = line;
     if (category === 'Segment') {
@@ -540,6 +611,42 @@ function parseMediaPlaylist(lines, params) {
         utils.INVALIDPLAYLIST('EXT-X-START: TIME-OFFSET attribute is REQUIRED');
       }
       playlist.start = {offset: attributes['TIME-OFFSET'], precise: attributes['PRECISE'] || false};
+    } else if (name === 'EXT-X-SERVER-CONTROL') {
+      if (!attributes['CAN-BLOCK-RELOAD']) {
+        utils.INVALIDPLAYLIST('EXT-X-SERVER-CONTROL: CAN-BLOCK-RELOAD=YES is mandatory for Low-Latency HLS');
+      }
+      playlist.lowLatencyCompatibility = {
+        canBlockReload: attributes['CAN-BLOCK-RELOAD'],
+        canSkipUntil: attributes['CAN-SKIP-UNTIL'],
+        holdBack: attributes['HOLD-BACK'],
+        partHoldBack: attributes['PART-HOLD-BACK']
+      };
+    } else if (name === 'EXT-X-PART-INF') {
+      if (!attributes['PART-TARGET']) {
+        utils.INVALIDPLAYLIST('EXT-X-PART-INF: PART-TARGET attribute is mandatory');
+      }
+      playlist.partTargetDuration = attributes['PART-TARGET'];
+    } else if (name === 'EXT-X-RENDITION-REPORT') {
+      if (!attributes['URI']) {
+        utils.INVALIDPLAYLIST('EXT-X-RENDITION-REPORT: URI attribute is mandatory');
+      }
+      if (attributes['URI'].search(/^[a-z]+:/) === 0) {
+        utils.INVALIDPLAYLIST('EXT-X-RENDITION-REPORT: URI must be relative to the playlist uri');
+      }
+      playlist.renditionReports.push(new RenditionReport({
+        uri: attributes['URI'],
+        lastMSN: attributes['LAST-MSN'],
+        lastPart: attributes['LAST-PART']
+      }));
+    } else if (name === 'EXT-X-SKIP') {
+      if (!attributes['SKIPPED-SEGMENTS']) {
+        utils.INVALIDPLAYLIST('EXT-X-SKIP: SKIPPED-SEGMENTS attribute is mandatory');
+      }
+      if (params.compatibleVersion < 9) {
+        params.compatibleVersion = 9;
+      }
+      playlist.skip = attributes['SKIPPED-SEGMENTS'];
+      mediaSequence += playlist.skip;
     } else if (typeof line === 'string') {
       // uri
       if (segmentStart === -1) {
@@ -550,40 +657,60 @@ function parseMediaPlaylist(lines, params) {
       }
       const segment = parseSegment(lines, line, segmentStart, index - 1, mediaSequence++, discontinuitySequence, params);
       if (segment) {
-        const {discontinuity, key, map, byterange, uri} = segment;
-        if (discontinuity) {
-          segment.discontinuitySequence = ++discontinuitySequence;
+        [discontinuitySequence, currentKey, currentMap] = addSegment(playlist, segment, discontinuitySequence, currentKey, currentMap);
+        if (!containsParts && segment.parts.length > 0) {
+          containsParts = true;
         }
-        if (key) {
-          currentKey = key;
-        } else if (currentKey) {
-          segment.key = currentKey;
-        }
-        if (map) {
-          currentMap = map;
-        } else if (currentMap) {
-          segment.map = currentMap;
-        }
-        if (byterange && byterange.offset === -1) {
-          const {segments} = playlist;
-          if (segments.length > 0) {
-            const prevSegment = segments[segments.length - 1];
-            if (prevSegment.byterange && prevSegment.uri === uri) {
-              byterange.offset = prevSegment.byterange.offset + prevSegment.byterange.length;
-            } else {
-              utils.INVALIDPLAYLIST('If offset of EXT-X-BYTERANGE is not present, a previous Media Segment MUST be a sub-range of the same media resource');
-            }
-          } else {
-            utils.INVALIDPLAYLIST('If offset of EXT-X-BYTERANGE is not present, a previous Media Segment MUST appear in the Playlist file');
-          }
-        }
-        playlist.segments.push(segment);
       }
       segmentStart = -1;
     }
   }
+  if (segmentStart !== -1) {
+    const segment = parseSegment(lines, '', segmentStart, lines.length - 1, mediaSequence++, discontinuitySequence, params);
+    if (segment) {
+      const {parts} = segment;
+      if (parts.length > 0 && !playlist.endlist && !parts[parts.length - 1].hint) {
+        utils.INVALIDPLAYLIST('If the Playlist contains EXT-X-PART tags and does not contain an EXT-X-ENDLIST tag, the Playlist must contain an EXT-X-PRELOAD-HINT tag with a TYPE=PART attribute');
+      }
+      addSegment(playlist, segment, currentKey, currentMap);
+      if (!containsParts && segment.parts.length > 0) {
+        containsParts = true;
+      }
+    }
+  }
   checkDateRange(playlist.segments);
+  if (playlist.lowLatencyCompatibility) {
+    checkLowLatencyCompatibility(playlist, containsParts);
+  }
   return playlist;
+}
+
+function addSegment(playlist, segment, discontinuitySequence, currentKey, currentMap) {
+  const {discontinuity, key, map, byterange, uri} = segment;
+  if (discontinuity) {
+    segment.discontinuitySequence = discontinuitySequence + 1;
+  }
+  if (!key) {
+    segment.key = currentKey;
+  }
+  if (!map) {
+    segment.map = currentMap;
+  }
+  if (byterange && byterange.offset === -1) {
+    const {segments} = playlist;
+    if (segments.length > 0) {
+      const prevSegment = segments[segments.length - 1];
+      if (prevSegment.byterange && prevSegment.uri === uri) {
+        byterange.offset = prevSegment.byterange.offset + prevSegment.byterange.length;
+      } else {
+        utils.INVALIDPLAYLIST('If offset of EXT-X-BYTERANGE is not present, a previous Media Segment MUST be a sub-range of the same media resource');
+      }
+    } else {
+      utils.INVALIDPLAYLIST('If offset of EXT-X-BYTERANGE is not present, a previous Media Segment MUST appear in the Playlist file');
+    }
+  }
+  playlist.segments.push(segment);
+  return [segment.discontinuitySequence, segment.key, segment.map];
 }
 
 function checkDateRange(segments) {
@@ -631,6 +758,53 @@ function checkDateRange(segments) {
   }
 }
 
+function checkLowLatencyCompatibility({lowLatencyCompatibility, targetDuration, partTargetDuration, segments, renditionReports}, containsParts) {
+  const {canSkipUntil, holdBack, partHoldBack} = lowLatencyCompatibility;
+  if (canSkipUntil < targetDuration * 6) {
+    utils.INVALIDPLAYLIST('The Skip Boundary must be at least six times the EXT-X-TARGETDURATION.');
+  }
+  // Its value is a floating-point number of seconds and .
+  if (holdBack < targetDuration * 3) {
+    utils.INVALIDPLAYLIST('HOLD-BACK must be at least three times the EXT-X-TARGETDURATION.');
+  }
+  if (containsParts) {
+    if (partTargetDuration === undefined) {
+      utils.INVALIDPLAYLIST('EXT-X-PART-INF is required if a Playlist contains one or more EXT-X-PART tags');
+    }
+    if (partHoldBack === undefined) {
+      utils.INVALIDPLAYLIST('EXT-X-PART: PART-HOLD-BACK attribute is mandatory');
+    }
+    if (partHoldBack < partTargetDuration) {
+      utils.INVALIDPLAYLIST('PART-HOLD-BACK must be at least PART-TARGET');
+    }
+    for (const [segmentIndex, {parts}] of segments.entries()) {
+      if (parts.length > 0 && segmentIndex < segments.length - 3) {
+        utils.INVALIDPLAYLIST('Remove EXT-X-PART tags from the Playlist after they are greater than three target durations from the end of the Playlist.');
+      }
+      for (const [partIndex, {duration}] of parts.entries()) {
+        if (duration === undefined) {
+          continue;
+        }
+        if (duration > partTargetDuration) {
+          utils.INVALIDPLAYLIST('PART-TARGET is the maximum duration of any Partial Segment');
+        }
+        if (partIndex < parts.length - 1 && duration < partTargetDuration * 0.85) {
+          utils.INVALIDPLAYLIST('All Partial Segments except the last part of a segment must have a duration of at least 85% of PART-TARGET');
+        }
+      }
+    }
+  }
+  for (const report of renditionReports) {
+    const lastSegment = segments[segments.length - 1];
+    if (!report.lastMSN) {
+      report.lastMSN = lastSegment.mediaSequenceNumber;
+    }
+    if (!report.lastPart && lastSegment.parts.length > 0) {
+      report.lastPart = lastSegment.parts.length - 1;
+    }
+  }
+}
+
 function CHECKTAGCATEGORY(category, params) {
   if (category === 'Segment' || category === 'MediaPlaylist') {
     if (params.isMasterPlaylist === undefined) {
@@ -661,7 +835,7 @@ function parseTag(line, params) {
   if (category === 'Unknown') {
     return null;
   }
-  if (category === 'MediaPlaylist') {
+  if (category === 'MediaPlaylist' && name !== 'EXT-X-RENDITION-REPORT') {
     if (params.hash[name]) {
       utils.INVALIDPLAYLIST('There MUST NOT be more than one Media Playlist tag of each type in any Media Playlist');
     }

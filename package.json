@@ -53,6 +53,7 @@
     "esnext": true,
     "space": true,
     "rules": {
+      "ava/no-ignored-test-files": 0,
       "camelcase": 0,
       "capitalized-comments": 0,
       "dot-notation": 0,
