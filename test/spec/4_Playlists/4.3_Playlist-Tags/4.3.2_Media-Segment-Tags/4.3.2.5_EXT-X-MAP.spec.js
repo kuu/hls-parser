@@ -49,7 +49,7 @@ test('#EXT-X-MAP_02', t => {
     #EXTM3U
     #EXT-X-VERSION:6
     #EXT-X-TARGETDURATION:10
-    #EXT-X-MAP:BYTERANGE=256@128
+    #EXT-X-MAP:BYTERANGE="256@128"
     #EXTINF:10,
     http://example.com/1
   `);
@@ -57,7 +57,7 @@ test('#EXT-X-MAP_02', t => {
     #EXTM3U
     #EXT-X-VERSION:6
     #EXT-X-TARGETDURATION:10
-    #EXT-X-MAP:URI="http://example.com/map-1",BYTERANGE=256@128
+    #EXT-X-MAP:URI="http://example.com/map-1",BYTERANGE="256@128"
     #EXTINF:10,
     http://example.com/1
   `);
@@ -73,7 +73,7 @@ test('#EXT-X-MAP_03', t => {
     #EXT-X-VERSION:4
     #EXT-X-TARGETDURATION:10
     #EXT-X-I-FRAMES-ONLY
-    #EXT-X-MAP:URI="http://example.com/map-1",BYTERANGE=256@128
+    #EXT-X-MAP:URI="http://example.com/map-1",BYTERANGE="256@128"
     #EXTINF:10,
     http://example.com/1
   `);
@@ -82,7 +82,7 @@ test('#EXT-X-MAP_03', t => {
     #EXT-X-VERSION:5
     #EXT-X-TARGETDURATION:10
     #EXT-X-I-FRAMES-ONLY
-    #EXT-X-MAP:URI="http://example.com/map-1",BYTERANGE=256@128
+    #EXT-X-MAP:URI="http://example.com/map-1",BYTERANGE="256@128"
     #EXTINF:10,
     http://example.com/1
   `);
@@ -96,7 +96,7 @@ test('#EXT-X-MAP_04', t => {
     #EXTM3U
     #EXT-X-VERSION:5
     #EXT-X-TARGETDURATION:10
-    #EXT-X-MAP:URI="http://example.com/map-1",BYTERANGE=256@128
+    #EXT-X-MAP:URI="http://example.com/map-1",BYTERANGE="256@128"
     #EXTINF:10,
     http://example.com/1
   `);
@@ -104,7 +104,7 @@ test('#EXT-X-MAP_04', t => {
     #EXTM3U
     #EXT-X-VERSION:6
     #EXT-X-TARGETDURATION:10
-    #EXT-X-MAP:URI="http://example.com/map-1",BYTERANGE=256@128
+    #EXT-X-MAP:URI="http://example.com/map-1",BYTERANGE="256@128"
     #EXTINF:10,
     http://example.com/1
   `);
