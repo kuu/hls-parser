@@ -238,7 +238,7 @@ function buildSegment(lines, segment, version = 1) {
 function buildMap(lines, map) {
   const attrs = [`URI="${map.uri}"`];
   if (map.byterange) {
-    attrs.push(`BYTERANGE=${buildByteRange(map.byterange)}`);
+    attrs.push(`BYTERANGE="${buildByteRange(map.byterange)}"`);
   }
   lines.push(`#EXT-X-MAP:${attrs.join(',')}`);
 }
