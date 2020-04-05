@@ -45,8 +45,21 @@ class LineArray extends Array {
 }
 
 function buildDecimalFloatingNumber(num, fixed) {
-  const rounded = Math.round(num * 1000) / 1000;
+  let roundFactor = 1000;
+  if (fixed) {
+    roundFactor = 10 ** fixed;
+  }
+  const rounded = Math.round(num * roundFactor) / roundFactor;
   return fixed ? rounded.toFixed(fixed) : rounded;
+}
+
+function getNumberOfDecimalPlaces(num) {
+  const str = num.toString(10);
+  const index = str.indexOf('.');
+  if (index === -1) {
+    return 0;
+  }
+  return str.length - index - 1;
 }
 
 function buildMasterPlaylist(lines, playlist) {
@@ -188,6 +201,24 @@ function buildMediaPlaylist(lines, playlist) {
   if (playlist.targetDuration) {
     lines.push(`#EXT-X-TARGETDURATION:${playlist.targetDuration}`);
   }
+  if (playlist.lowLatencyCompatibility) {
+    const {canBlockReload, canSkipUntil, holdBack, partHoldBack} = playlist.lowLatencyCompatibility;
+    const params = [];
+    params.push(`CAN-BLOCK-RELOAD=${canBlockReload ? 'YES' : 'NO'}`);
+    if (canSkipUntil !== undefined) {
+      params.push(`CAN-SKIP-UNTIL=${canSkipUntil}`);
+    }
+    if (holdBack !== undefined) {
+      params.push(`HOLD-BACK=${holdBack}`);
+    }
+    if (partHoldBack !== undefined) {
+      params.push(`PART-HOLD-BACK=${partHoldBack}`);
+    }
+    lines.push(`#EXT-X-SERVER-CONTROL:${params.join(',')}`);
+  }
+  if (playlist.partTargetDuration) {
+    lines.push(`#EXT-X-PART-INF:PART-TARGET=${playlist.partTargetDuration}`);
+  }
   if (playlist.mediaSequenceBase) {
     lines.push(`#EXT-X-MEDIA-SEQUENCE:${playlist.mediaSequenceBase}`);
   }
@@ -200,15 +231,28 @@ function buildMediaPlaylist(lines, playlist) {
   if (playlist.isIFrame) {
     lines.push(`#EXT-X-I-FRAMES-ONLY`);
   }
+  if (playlist.skip > 0) {
+    lines.push(`#EXT-X-SKIP:SKIPPED-SEGMENTS=${playlist.skip}`);
+  }
   for (const segment of playlist.segments) {
     buildSegment(lines, segment, playlist.version);
   }
   if (playlist.endlist) {
     lines.push(`#EXT-X-ENDLIST`);
   }
+  for (const report of playlist.renditionReports) {
+    const params = [];
+    params.push(`URI="${report.uri}"`);
+    params.push(`LAST-MSN=${report.lastMSN}`);
+    if (report.lastPart !== undefined) {
+      params.push(`LAST-PART=${report.lastPart}`);
+    }
+    lines.push(`#EXT-X-RENDITION-REPORT:${params.join(',')}`);
+  }
 }
 
 function buildSegment(lines, segment, version = 1) {
+  let hint = false;
   if (segment.byterange) {
     lines.push(`#EXT-X-BYTERANGE:${buildByteRange(segment.byterange)}`);
   }
@@ -230,7 +274,13 @@ function buildSegment(lines, segment, version = 1) {
   if (segment.markers.length > 0) {
     buildMarkers(lines, segment.markers);
   }
-  const duration = version < 3 ? Math.round(segment.duration) : buildDecimalFloatingNumber(segment.duration);
+  if (segment.parts.length > 0) {
+    hint = buildParts(lines, segment.parts);
+  }
+  if (hint) {
+    return;
+  }
+  const duration = version < 3 ? Math.round(segment.duration) : buildDecimalFloatingNumber(segment.duration, getNumberOfDecimalPlaces(segment.duration));
   lines.push(`#EXTINF:${duration},${unescape(encodeURIComponent(segment.title || ''))}`);
   Array.prototype.push.call(lines, `${segment.uri}`); // URIs could be redundant when EXT-X-BYTERANGE is used
 }
@@ -243,8 +293,8 @@ function buildMap(lines, map) {
   lines.push(`#EXT-X-MAP:${attrs.join(',')}`);
 }
 
-function buildByteRange(byterange) {
-  return `${byterange.length}@${byterange.offset}`;
+function buildByteRange({offset, length}) {
+  return `${length}@${offset}`;
 }
 
 function buildDateRange(lines, dateRange) {
@@ -292,6 +342,41 @@ function buildMarkers(lines, markers) {
       lines.push(`#${marker.tagName}${value}`);
     }
   }
+}
+
+function buildParts(lines, parts) {
+  let hint = false;
+  for (const part of parts) {
+    if (part.hint) {
+      const params = [];
+      params.push('TYPE=PART');
+      params.push(`URI="${part.uri}"`);
+      if (part.byterange) {
+        const {offset, length} = part.byterange;
+        params.push(`BYTERANGE-START=${offset}`);
+        if (length) {
+          params.push(`BYTERANGE-LENGTH=${length}`);
+        }
+      }
+      lines.push(`#EXT-X-PRELOAD-HINT:${params.join(',')}`);
+      hint = true;
+    } else {
+      const params = [];
+      params.push(`DURATION=${part.duration}`);
+      params.push(`URI="${part.uri}"`);
+      if (part.byterange) {
+        params.push(`BYTERANGE=${buildByteRange(part.byterange)}`);
+      }
+      if (part.independent) {
+        params.push('INDEPENDENT=YES');
+      }
+      if (part.gap) {
+        params.push('GAP=YES');
+      }
+      lines.push(`#EXT-X-PART:${params.join(',')}`);
+    }
+  }
+  return hint;
 }
 
 function stringify(playlist) {

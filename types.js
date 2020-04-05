@@ -16,7 +16,7 @@ class Rendition {
     channels
   }) {
     utils.PARAMCHECK(type, groupId, name);
-    utils.CONDITIONALASSERT([type === 'SUBTITLES', uri], [type === 'CLOSED-CAPTIONS', instreamId], [type === 'CLOSED-CAPTIONS', !uri], [forced, type === 'CLOSED-CAPTIONS']);
+    utils.CONDITIONALASSERT([type === 'SUBTITLES', uri], [type === 'CLOSED-CAPTIONS', instreamId], [type === 'CLOSED-CAPTIONS', !uri], [forced, type === 'SUBTITLES']);
     this.type = type;
     this.uri = uri;
     this.groupId = groupId;
@@ -103,11 +103,13 @@ class Key {
 
 class MediaInitializationSection {
   constructor({
+    hint = false,
     uri, // required
     mimeType,
     byterange
   }) {
     utils.PARAMCHECK(uri);
+    this.hint = hint;
     this.uri = uri;
     this.mimeType = mimeType;
     this.byterange = byterange;
@@ -212,6 +214,10 @@ class MediaPlaylist extends Playlist {
       playlistType,
       isIFrame,
       segments = [],
+      lowLatencyCompatibility,
+      partTargetDuration,
+      renditionReports = [],
+      skip = 0,
       hash
     } = params;
     this.targetDuration = targetDuration;
@@ -221,29 +227,34 @@ class MediaPlaylist extends Playlist {
     this.playlistType = playlistType;
     this.isIFrame = isIFrame;
     this.segments = segments;
+    this.lowLatencyCompatibility = lowLatencyCompatibility;
+    this.partTargetDuration = partTargetDuration;
+    this.renditionReports = renditionReports;
+    this.skip = skip;
     this.hash = hash;
   }
 }
 
 class Segment extends Data {
   constructor({
-    uri, // required
+    uri,
     mimeType,
     data,
     duration,
     title,
     byterange,
     discontinuity,
-    mediaSequenceNumber,
-    discontinuitySequence,
+    mediaSequenceNumber = 0,
+    discontinuitySequence = 0,
     key,
     map,
     programDateTime,
     dateRange,
-    markers = []
+    markers = [],
+    parts = []
   }) {
     super('segment');
-    utils.PARAMCHECK(uri, mediaSequenceNumber, discontinuitySequence);
+    // utils.PARAMCHECK(uri, mediaSequenceNumber, discontinuitySequence);
     this.uri = uri;
     this.mimeType = mimeType;
     this.data = data;
@@ -258,6 +269,41 @@ class Segment extends Data {
     this.programDateTime = programDateTime;
     this.dateRange = dateRange;
     this.markers = markers;
+    this.parts = parts;
+  }
+}
+
+class PartialSegment extends Data {
+  constructor({
+    hint = false,
+    uri, // required
+    duration,
+    independent,
+    byterange,
+    gap
+  }) {
+    super('part');
+    utils.PARAMCHECK(uri);
+    this.hint = hint;
+    this.uri = uri;
+    this.duration = duration;
+    this.independent = independent;
+    this.duration = duration;
+    this.byterange = byterange;
+    this.gap = gap;
+  }
+}
+
+class RenditionReport {
+  constructor({
+    uri, // required
+    lastMSN,
+    lastPart
+  }) {
+    utils.PARAMCHECK(uri);
+    this.uri = uri;
+    this.lastMSN = lastMSN;
+    this.lastPart = lastPart;
   }
 }
 
@@ -272,5 +318,7 @@ module.exports = {
   Playlist,
   MasterPlaylist,
   MediaPlaylist,
-  Segment
+  Segment,
+  PartialSegment,
+  RenditionReport
 };

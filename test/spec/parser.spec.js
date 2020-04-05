@@ -2,6 +2,8 @@ const test = require('ava');
 const fixtures = require('../helpers/fixtures');
 const HLS = require('../..');
 
+HLS.setOptions({strictMode: true});
+
 const {Playlist} = HLS.types;
 
 fixtures.forEach(({name, m3u8, object}) => {
