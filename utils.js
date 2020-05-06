@@ -55,11 +55,11 @@ function toNumber(str, radix = 10) {
   }
   let num;
   if (radix === 10) {
-    num = parseFloat(str, radix);
+    num = Number.parseFloat(str, radix);
   } else {
-    num = parseInt(str, radix);
+    num = Number.parseInt(str, radix);
   }
-  if (isNaN(num)) {
+  if (Number.isNaN(num)) {
     return 0;
   }
   return num;
