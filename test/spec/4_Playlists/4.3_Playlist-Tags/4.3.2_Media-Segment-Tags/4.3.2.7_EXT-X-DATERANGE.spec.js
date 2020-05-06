@@ -24,6 +24,8 @@ test('#EXT-X-DATERANGE_01', t => {
 });
 
 // START-DATE attribute is REQUIRED.
+//   * removed because START-DATE is omitted in case of 8.10-EXT-X-DATERANGE-carrying-SCTE-35-tags
+/*
 test('#EXT-X-DATERANGE_02', t => {
   utils.parseFail(t, `
     #EXTM3U
@@ -38,6 +40,19 @@ test('#EXT-X-DATERANGE_02', t => {
     #EXT-X-TARGETDURATION:10
     #EXT-X-PROGRAM-DATE-TIME:2010-02-19T14:54:23.031Z
     #EXT-X-DATERANGE:START-DATE="2010-02-19T14:54:23Z",ID="ads"
+    #EXTINF:10,
+    http://example.com/1
+  `);
+});
+*/
+
+// START-DATE attribute is not REQUIRED
+test('#EXT-X-DATERANGE_02', t => {
+  utils.bothPass(t, `
+    #EXTM3U
+    #EXT-X-TARGETDURATION:10
+    #EXT-X-PROGRAM-DATE-TIME:2010-02-19T14:54:23.031Z
+    #EXT-X-DATERANGE:ID="ads"
     #EXTINF:10,
     http://example.com/1
   `);
