@@ -1,6 +1,6 @@
 {
   "name": "hls-parser",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "A simple library to read/write HLS playlists",
   "main": "index.js",
   "scripts": {
