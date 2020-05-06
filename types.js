@@ -120,16 +120,16 @@ class DateRange {
   constructor({
     id, // required
     classId, // required if endOnNext is true
-    start, // required
+    start,
     end,
     duration,
     plannedDuration,
     endOnNext,
     attributes = {}
   }) {
-    utils.PARAMCHECK(id, start);
+    utils.PARAMCHECK(id);
     utils.CONDITIONALPARAMCHECK([endOnNext === true, classId]);
-    utils.CONDITIONALASSERT([end, start <= end], [duration, duration >= 0], [plannedDuration, plannedDuration >= 0]);
+    utils.CONDITIONALASSERT([end, start], [end, start <= end], [duration, duration >= 0], [plannedDuration, plannedDuration >= 0]);
     this.id = id;
     this.classId = classId;
     this.start = start;

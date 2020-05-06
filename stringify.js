@@ -299,9 +299,11 @@ function buildByteRange({offset, length}) {
 
 function buildDateRange(lines, dateRange) {
   const attrs = [
-    `ID="${dateRange.id}"`,
-    `START-DATE="${utils.formatDate(dateRange.start)}"`
+    `ID="${dateRange.id}"`
   ];
+  if (dateRange.start) {
+    attrs.push(`START-DATE="${utils.formatDate(dateRange.start)}"`);
+  }
   if (dateRange.end) {
     attrs.push(`END-DATE="${dateRange.end}"`);
   }

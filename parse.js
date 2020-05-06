@@ -723,7 +723,7 @@ function checkDateRange(segments) {
     if (programDateTime) {
       hasProgramDateTime = true;
     }
-    if (dateRange) {
+    if (dateRange && dateRange.start) {
       hasDateRange = true;
       if (dateRange.endOnNext && (dateRange.end || dateRange.duration)) {
         utils.INVALIDPLAYLIST('An EXT-X-DATERANGE tag with an END-ON-NEXT=YES attribute MUST NOT contain DURATION or END-DATE attributes.');
