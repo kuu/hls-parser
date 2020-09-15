@@ -131,3 +131,27 @@ test('#EXT-X-MAP_05', t => {
   const text = HLS.stringify(obj);
   t.is(text, utils.stripCommentsAndEmptyLines(sourceText));
 });
+
+// The same tag can appear multiple times
+test('#EXT-X-MAP_06', t => {
+  const sourceText = `
+    #EXTM3U
+    #EXT-X-VERSION:6
+    #EXT-X-TARGETDURATION:10
+    #EXT-X-MAP:URI="http://example.com/map-1"
+    #EXTINF:10,
+    http://example.com/1
+    #EXT-X-MAP:URI="http://example.com/map-2"
+    #EXTINF:10,
+    http://example.com/2
+    #EXT-X-MAP:URI="http://example.com/map-1"
+    #EXTINF:10,
+    http://example.com/3
+    #EXT-X-MAP:URI="http://example.com/map-2"
+    #EXTINF:10,
+    http://example.com/4
+  `;
+  const obj = HLS.parse(sourceText);
+  const text = HLS.stringify(obj);
+  t.is(text, utils.stripCommentsAndEmptyLines(sourceText));
+});
