@@ -52,11 +52,7 @@ function stripSpaces(text) {
   let insideDoubleQuotes = false;
   for (const ch of text) {
     if (ch === '"') {
-      if (insideDoubleQuotes) {
-        insideDoubleQuotes = false;
-      } else {
-        insideDoubleQuotes = true;
-      }
+      insideDoubleQuotes = !insideDoubleQuotes;
     } else if (ch === ' ') {
       if (!insideDoubleQuotes) {
         continue;
