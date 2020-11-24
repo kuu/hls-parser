@@ -5,8 +5,8 @@
 http://media.example.com/first.ts
 #EXTINF:9.009,
 http://media.example.com/second.ts
-#EXT-X-BYTERANGE:128@256
 #EXTINF:9.009,
+#EXT-X-BYTERANGE:128@256
 http://media.example.com/second.ts
 #EXTINF:3.003,
 http://media.example.com/third.ts

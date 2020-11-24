@@ -256,9 +256,6 @@ function buildMediaPlaylist(lines, playlist) {
 
 function buildSegment(lines, segment, lastKey, lastMap, version = 1) {
   let hint = false;
-  if (segment.byterange) {
-    lines.push(`#EXT-X-BYTERANGE:${buildByteRange(segment.byterange)}`);
-  }
   if (segment.discontinuity) {
     lines.push(`#EXT-X-DISCONTINUITY`);
   }
@@ -293,6 +290,9 @@ function buildSegment(lines, segment, lastKey, lastMap, version = 1) {
   }
   const duration = version < 3 ? Math.round(segment.duration) : buildDecimalFloatingNumber(segment.duration, getNumberOfDecimalPlaces(segment.duration));
   lines.push(`#EXTINF:${duration},${unescape(encodeURIComponent(segment.title || ''))}`);
+  if (segment.byterange) {
+    lines.push(`#EXT-X-BYTERANGE:${buildByteRange(segment.byterange)}`);
+  }
   Array.prototype.push.call(lines, `${segment.uri}`); // URIs could be redundant when EXT-X-BYTERANGE is used
   return [lastKey, lastMap];
 }
