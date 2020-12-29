@@ -2,10 +2,10 @@ let options = {};
 
 function THROW(err) {
   if (!options.strictMode) {
-      if (options.silent !== true) {
-        console.error(err.message);
-      }
-      return;
+    if (!options.silent) {
+      console.error(err.message);
+    }
+    return;
   }
   throw err;
 }
