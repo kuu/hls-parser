@@ -1,4 +1,5 @@
 const test = require('ava');
+const rewire = require('rewire');
 const utils = require('../../utils');
 
 utils.setOptions({strictMode: true});
@@ -148,4 +149,48 @@ test('utils.setOptions/getOptions', t => {
   params.strictMode = false;
   t.notDeepEqual(params, utils.getOptions());
   t.is(utils.getOptions().strictMode, true);
+});
+
+test('utils.THROW.strictMode', t => {
+  const message = 'Error Message';
+  utils.setOptions({strictMode: false});
+  try {
+    utils.THROW({message});
+  } catch {
+    t.fail();
+  }
+  utils.setOptions({strictMode: true});
+  try {
+    utils.THROW({message});
+    t.fail();
+  } catch (e) {
+    t.is(e.message, message);
+  }
+  t.pass();
+});
+
+test('utils.THROW.silent', t => {
+  let silent = false;
+  const utils = rewire('../../utils');
+  const errorHandler = msg => {
+    if (silent) {
+      t.is(msg, 'end');
+    } else {
+      t.is(msg, message);
+    }
+  };
+  utils.__set__({
+    console: {
+      error: errorHandler,
+      log: console.log
+    }
+  });
+  const message = 'Error Message';
+  utils.setOptions({strictMode: false});
+  utils.THROW({message});
+  silent = true;
+  utils.setOptions({silent});
+  utils.THROW({message});
+  console.error('end');
+  utils.setOptions({strictMode: true});
 });

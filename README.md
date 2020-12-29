@@ -88,6 +88,7 @@ Updates the option values
 | ---------- | ------- | ------- | ------------- |
 | `strictMode` | boolean | false   | If true, the function throws an error when `parse`/`stringify` failed. If false, the function just logs the error and continues to run.|
 | `allowClosedCaptionsNone` | boolean | false | If true, `CLOSED-CAPTIONS` attribute on the `EXT-X-STREAM-INF` tag will be set to the enumerated-string value NONE when there are no closed-captions. See [CLOSED-CAPTIONS](https://tools.ietf.org/html/rfc8216#section-4.3.4.2) |
+| `silent` | boolean | false   | If true, `console.error` will be suppressed.|
 
 ### `HLS.getOptions()`
 Retrieves the current option values
