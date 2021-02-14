@@ -11,6 +11,7 @@ const {
   MediaPlaylist,
   Segment,
   PartialSegment,
+  PrefetchSegment,
   RenditionReport
 } = require('./types');
 
@@ -48,6 +49,7 @@ function getTagCategory(tagName) {
     case 'EXT-X-I-FRAMES-ONLY':
     case 'EXT-X-SERVER-CONTROL':
     case 'EXT-X-PART-INF':
+    case 'EXT-X-PREFETCH':
     case 'EXT-X-RENDITION-REPORT':
     case 'EXT-X-SKIP':
       return 'MediaPlaylist';
@@ -626,6 +628,12 @@ function parseMediaPlaylist(lines, params) {
         utils.INVALIDPLAYLIST('EXT-X-PART-INF: PART-TARGET attribute is mandatory');
       }
       playlist.partTargetDuration = attributes['PART-TARGET'];
+    } else if (name === 'EXT-X-PREFETCH') {
+      playlist.prefetchSegments.push(
+        new PrefetchSegment({
+          uri: value
+        })
+      );
     } else if (name === 'EXT-X-RENDITION-REPORT') {
       if (!attributes['URI']) {
         utils.INVALIDPLAYLIST('EXT-X-RENDITION-REPORT: URI attribute is mandatory');
@@ -835,7 +843,7 @@ function parseTag(line, params) {
   if (category === 'Unknown') {
     return null;
   }
-  if (category === 'MediaPlaylist' && name !== 'EXT-X-RENDITION-REPORT') {
+  if (category === 'MediaPlaylist' && name !== 'EXT-X-RENDITION-REPORT' && name !== 'EXT-X-PREFETCH') {
     if (params.hash[name]) {
       utils.INVALIDPLAYLIST('There MUST NOT be more than one Media Playlist tag of each type in any Media Playlist');
     }

@@ -214,6 +214,7 @@ class MediaPlaylist extends Playlist {
       playlistType,
       isIFrame,
       segments = [],
+      prefetchSegments = [],
       lowLatencyCompatibility,
       partTargetDuration,
       renditionReports = [],
@@ -227,6 +228,7 @@ class MediaPlaylist extends Playlist {
     this.playlistType = playlistType;
     this.isIFrame = isIFrame;
     this.segments = segments;
+    this.prefetchSegments = prefetchSegments;
     this.lowLatencyCompatibility = lowLatencyCompatibility;
     this.partTargetDuration = partTargetDuration;
     this.renditionReports = renditionReports;
@@ -294,6 +296,16 @@ class PartialSegment extends Data {
   }
 }
 
+class PrefetchSegment extends Data {
+  constructor({
+    uri // required
+  }) {
+    super('prefetch');
+    utils.PARAMCHECK(uri);
+    this.uri = uri;
+  }
+}
+
 class RenditionReport {
   constructor({
     uri, // required
@@ -320,5 +332,6 @@ module.exports = {
   MediaPlaylist,
   Segment,
   PartialSegment,
+  PrefetchSegment,
   RenditionReport
 };

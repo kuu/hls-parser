@@ -211,6 +211,11 @@ This section describes the structure of the object returned by `parse()` method.
 | `byterange`  | object ({length: number, offset: number})   | No       | undefined | See `BYTERANGE` attribute in [EXT-X-PART](https://developer.apple.com/documentation/http_live_streaming/protocol_extension_for_low-latency_hls_preliminary_specification#3282436) |
 | `gap`  | boolean   | No       | undefined | See `GAP` attribute in [EXT-X-PART](https://developer.apple.com/documentation/http_live_streaming/protocol_extension_for_low-latency_hls_preliminary_specification#3282436) |
 
+### `PrefetchSegment` (extends `Data`)
+| Property          | Type     | Required | Default   | Description   |
+| ----------------- | -------- | -------- | --------- | ------------- |
+| `uri`        | string  | Yes       | N/A        | See value of [EXT-X-PREFETCH](https://github.com/video-dev/hlsjs-rfcs/blob/lhls-spec/proposals/0001-lhls.md) |
+
 
 ### `Key`
 | Property          | Type     | Required | Default   | Description   |
