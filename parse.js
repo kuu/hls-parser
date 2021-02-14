@@ -280,7 +280,7 @@ function matchTypes(attrs, variant, params) {
     if (type === 'CLOSED-CAPTIONS' && attrs[type] === 'NONE') {
       params.isClosedCaptionsNone = true;
       variant.closedCaptions = [];
-    } else if (attrs[type] && !variant[utils.camelify(type)].find(item => item.groupId === attrs[type])) {
+    } else if (attrs[type] && !variant[utils.camelify(type)].some(item => item.groupId === attrs[type])) {
       utils.INVALIDPLAYLIST(`${type} attribute MUST match the value of the GROUP-ID attribute of an EXT-X-MEDIA tag whose TYPE attribute is ${type}.`);
     }
   });
@@ -378,7 +378,7 @@ function parseMasterPlaylist(lines, params) {
         uri: attributes['URI'],
         language: attributes['LANGUAGE']
       });
-      if (playlist.sessionDataList.find(item => item.id === sessionData.id && item.language === sessionData.language)) {
+      if (playlist.sessionDataList.some(item => item.id === sessionData.id && item.language === sessionData.language)) {
         utils.INVALIDPLAYLIST('A Playlist MUST NOT contain more than one EXT-X-SESSION-DATA tag with the same DATA-ID attribute and the same LANGUAGE attribute.');
       }
       playlist.sessionDataList.push(sessionData);
@@ -393,7 +393,7 @@ function parseMasterPlaylist(lines, params) {
         format: attributes['KEYFORMAT'],
         formatVersion: attributes['KEYFORMATVERSIONS']
       });
-      if (playlist.sessionKeyList.find(item => sameKey(item, sessionKey))) {
+      if (playlist.sessionKeyList.some(item => sameKey(item, sessionKey))) {
         utils.INVALIDPLAYLIST('A Master Playlist MUST NOT contain more than one EXT-X-SESSION-KEY tag with the same METHOD, URI, IV, KEYFORMAT, and KEYFORMATVERSIONS attribute values.');
       }
       setCompatibleVersionOfKey(params, attributes);
