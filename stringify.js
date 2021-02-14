@@ -240,6 +240,9 @@ function buildMediaPlaylist(lines, playlist) {
   for (const segment of playlist.segments) {
     [lastKey, lastMap] = buildSegment(lines, segment, lastKey, lastMap, playlist.version);
   }
+  for (const segment of playlist.prefetchSegments) {
+    lines.push(`#EXT-X-PREFETCH:${segment.uri}`);
+  }
   if (playlist.endlist) {
     lines.push(`#EXT-X-ENDLIST`);
   }
