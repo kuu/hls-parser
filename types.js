@@ -298,11 +298,19 @@ class PartialSegment extends Data {
 
 class PrefetchSegment extends Data {
   constructor({
-    uri // required
+    uri, // required
+    discontinuity,
+    mediaSequenceNumber = 0,
+    discontinuitySequence = 0,
+    key
   }) {
     super('prefetch');
     utils.PARAMCHECK(uri);
     this.uri = uri;
+    this.discontinuity = discontinuity;
+    this.mediaSequenceNumber = mediaSequenceNumber;
+    this.discontinuitySequence = discontinuitySequence;
+    this.key = key;
   }
 }
 
