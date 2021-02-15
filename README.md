@@ -9,7 +9,7 @@
 
 # hls-parser
 
-Provides synchronous functions to read/write HLS playlists (conforms to [the HLS spec rev.23](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23) and [the Apple Low-Latency Spec rev. 2020/02/05](https://developer.apple.com/documentation/http_live_streaming/protocol_extension_for_low-latency_hls_preliminary_specification))
+Provides synchronous functions to read/write HLS playlists (conforms to [the HLS spec rev.23](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23), [the Apple Low-Latency Spec rev. 2020/02/05](https://developer.apple.com/documentation/http_live_streaming/protocol_extension_for_low-latency_hls_preliminary_specification), and [HLS.js's Low-Latency spec](https://github.com/video-dev/hlsjs-rfcs/blob/lhls-spec/proposals/0001-lhls.md))
 
 ## Install
 [![NPM](https://nodei.co/npm/hls-parser.png?mini=true)](https://nodei.co/npm/hls-parser/)
@@ -179,6 +179,7 @@ This section describes the structure of the object returned by `parse()` method.
 | `playlistType`              | string | No       | undefined        | See [EXT-X-PLAYLIST-TYPE](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.3.5) |
 | `isIFrame`                  | boolean | No       | undefined        | See [EXT-X-I-FRAMES-ONLY](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.3.6) |
 | `segments`                  | [`Segment`] | No       | []        | A list of available segments |
+| `prefetchSegments`          | [`PrefetchSegment`] | No       | []        | A list of available prefetch segments |
 | `lowLatencyCompatibility`  | object ({canBlockReload: boolean, canSkipUntil: number, holdBack: number, partHoldBack: number})   | No       | undefined | See `CAN-BLOCK-RELOAD`, `CAN-SKIP-UNTIL`, `HOLD-BACK`, and `PART-HOLD-BACK` attributes in [EXT-X-SERVER-CONTROL](https://developer.apple.com/documentation/http_live_streaming/protocol_extension_for_low-latency_hls_preliminary_specification#3281374) |
 | `partTargetDuration`            | number | No*      | undefined        | *Required if the playlist contains one or more `EXT-X-PART` tags. See [EXT-X-PART-INF](https://developer.apple.com/documentation/http_live_streaming/protocol_extension_for_low-latency_hls_preliminary_specification#3282434) |
 | `renditionReports`  | [`RenditionReport`]   | No       | [] | Update status of the associated renditions |
@@ -215,7 +216,9 @@ This section describes the structure of the object returned by `parse()` method.
 | Property          | Type     | Required | Default   | Description   |
 | ----------------- | -------- | -------- | --------- | ------------- |
 | `uri`        | string  | Yes       | N/A        | See value of [EXT-X-PREFETCH](https://github.com/video-dev/hlsjs-rfcs/blob/lhls-spec/proposals/0001-lhls.md) |
-
+| `discontinuity`  | boolean   | No       | undefined | See [EXT-X-PREFETCH-DISCONTINUITY](https://github.com/video-dev/hlsjs-rfcs/blob/lhls-spec/proposals/0001-lhls.md) |
+| `mediaSequenceNumber`  | number   | No       | 0 | See the description about 'Media Sequence Number' in [3. Media Segments](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#page-5) |
+| `discontinuitySequence`  | number   | No       | 0 | See the description about 'Discontinuity Sequence Number' in [6.2.1. General Server Responsibilities](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-6.2.1) |
 
 ### `Key`
 | Property          | Type     | Required | Default   | Description   |

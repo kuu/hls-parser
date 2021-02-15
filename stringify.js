@@ -240,7 +240,13 @@ function buildMediaPlaylist(lines, playlist) {
   for (const segment of playlist.segments) {
     [lastKey, lastMap] = buildSegment(lines, segment, lastKey, lastMap, playlist.version);
   }
+  if (playlist.prefetchSegments.length > 2) {
+    utils.INVALIDPLAYLIST('The server must deliver no more than two prefetch segments');
+  }
   for (const segment of playlist.prefetchSegments) {
+    if (segment.discontinuity) {
+      lines.push(`#EXT-X-PREFETCH-DISCONTINUITY`);
+    }
     lines.push(`#EXT-X-PREFETCH:${segment.uri}`);
   }
   if (playlist.endlist) {
