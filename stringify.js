@@ -301,8 +301,12 @@ function buildSegment(lines, segment, lastKey, lastMap, version = 1) {
     return [lastKey, lastMap];
   }
   const duration = version < 3 ? Math.round(segment.duration) : buildDecimalFloatingNumber(segment.duration, getNumberOfDecimalPlaces(segment.duration));
-  lines.push(`#EXTINF:${duration},${unescape(encodeURIComponent(segment.title || ''))}`);
-  Array.prototype.push.call(lines, `${segment.uri}`); // URIs could be redundant when EXT-X-BYTERANGE is used
+  if (duration > 0) {
+    lines.push(`#EXTINF:${duration},${unescape(encodeURIComponent(segment.title || ''))}`);
+  }
+  if (segment.uri) {
+    Array.prototype.push.call(lines, `${segment.uri}`); // URIs could be redundant when EXT-X-BYTERANGE is used
+  }
   return [lastKey, lastMap];
 }
 

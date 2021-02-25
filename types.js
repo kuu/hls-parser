@@ -254,7 +254,7 @@ class Segment extends Data {
     dateRange,
     markers = [],
     parts = []
-  }) {
+  } = {}) {
     super('segment');
     // utils.PARAMCHECK(uri, mediaSequenceNumber, discontinuitySequence);
     this.uri = uri;

@@ -258,6 +258,32 @@ Only `EXT-X-CUE-OUT` and `EXT-X-CUE-IN` tags are supported. Other SCTE-35-relate
 | `tagName`        | string   | No       | undefined        | Holds the tag name if any unsupported tag are found. Required if the `type` is 'RAW' |
 | `value`        | string   | No       | undefined        | Holds a raw (string) value for the unsupported tag. |
 
+If you want to add a trailing `EXT-X-CUE-IN` (e.g. in case the playlist ends with ads segments,) just create an empty segment:
+```js
+const empty = new Segment();
+empty.markers.push({type: 'IN'});
+
+const playlist = new MediaPlaylist({
+  targetDuration: 10,
+  segments: [...ads, empty]
+});
+
+HLS.stringify(playlist);
+/*
+#EXTM3U
+#EXT-X-TARGETDURATION:10
+#EXT-X-DISCONTINUITY
+#EXT-X-CUE-OUT:30
+#EXTINF:10,
+https://example.com/0.ts
+#EXTINF:10,
+https://example.com/1.ts
+#EXTINF:10,
+https://example.com/2.ts
+#EXT-X-CUE-IN
+*/
+```
+
 ### `RenditionReport`
 | Property          | Type     | Required | Default   | Description   |
 | ----------------- | -------- | -------- | --------- | ------------- |

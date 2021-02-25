@@ -1,4 +1,5 @@
 const test = require('ava');
+const HLS = require('../../../../..');
 const utils = require('../../../../helpers/utils');
 
 // This tag is REQUIRED for each Media Segment
@@ -55,4 +56,18 @@ test('#EXTINF_03', t => {
     #EXTINF:10,${unescape(encodeURIComponent('\u3042'))}
     http://example.com/1
   `);
+});
+
+// Skip if duration is zero
+test('#EXTINF_04', t => {
+  const {MediaPlaylist, Segment} = HLS.types;
+  const playlist = new MediaPlaylist({
+    targetDuration: 10,
+    segments: [new Segment()]
+  });
+  const expected = `
+    #EXTM3U
+    #EXT-X-TARGETDURATION:10
+  `;
+  t.is(HLS.stringify(playlist), utils.stripCommentsAndEmptyLines(expected));
 });
