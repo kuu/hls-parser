@@ -200,6 +200,7 @@ function buildRendition(rendition) {
 function buildMediaPlaylist(lines, playlist) {
   let lastKey = '';
   let lastMap = '';
+  let unclosedCueIn = false;
 
   if (playlist.targetDuration) {
     lines.push(`#EXT-X-TARGETDURATION:${playlist.targetDuration}`);
@@ -238,7 +239,16 @@ function buildMediaPlaylist(lines, playlist) {
     lines.push(`#EXT-X-SKIP:SKIPPED-SEGMENTS=${playlist.skip}`);
   }
   for (const segment of playlist.segments) {
-    [lastKey, lastMap] = buildSegment(lines, segment, lastKey, lastMap, playlist.version);
+    let markerType = '';
+    [lastKey, lastMap, markerType] = buildSegment(lines, segment, lastKey, lastMap, playlist.version);
+    if (markerType === 'OUT') {
+      unclosedCueIn = true;
+    } else if (markerType === 'IN' && unclosedCueIn) {
+      unclosedCueIn = false;
+    }
+  }
+  if (playlist.playlistType === 'VOD' && unclosedCueIn) {
+    lines.push('#EXT-X-CUE-IN');
   }
   if (playlist.prefetchSegments.length > 2) {
     utils.INVALIDPLAYLIST('The server must deliver no more than two prefetch segments');
@@ -265,6 +275,8 @@ function buildMediaPlaylist(lines, playlist) {
 
 function buildSegment(lines, segment, lastKey, lastMap, version = 1) {
   let hint = false;
+  let markerType = '';
+
   if (segment.byterange) {
     lines.push(`#EXT-X-BYTERANGE:${buildByteRange(segment.byterange)}`);
   }
@@ -292,7 +304,7 @@ function buildSegment(lines, segment, lastKey, lastMap, version = 1) {
     lines.push(buildDateRange(segment.dateRange));
   }
   if (segment.markers.length > 0) {
-    buildMarkers(lines, segment.markers);
+    markerType = buildMarkers(lines, segment.markers);
   }
   if (segment.parts.length > 0) {
     hint = buildParts(lines, segment.parts);
@@ -303,7 +315,7 @@ function buildSegment(lines, segment, lastKey, lastMap, version = 1) {
   const duration = version < 3 ? Math.round(segment.duration) : buildDecimalFloatingNumber(segment.duration, getNumberOfDecimalPlaces(segment.duration));
   lines.push(`#EXTINF:${duration},${unescape(encodeURIComponent(segment.title || ''))}`);
   Array.prototype.push.call(lines, `${segment.uri}`); // URIs could be redundant when EXT-X-BYTERANGE is used
-  return [lastKey, lastMap];
+  return [lastKey, lastMap, markerType];
 }
 
 function buildMap(map) {
@@ -355,16 +367,20 @@ function buildDateRange(dateRange) {
 }
 
 function buildMarkers(lines, markers) {
+  let type = '';
   for (const marker of markers) {
     if (marker.type === 'OUT') {
+      type = 'OUT';
       lines.push(`#EXT-X-CUE-OUT:${marker.duration}`);
     } else if (marker.type === 'IN') {
+      type = 'IN';
       lines.push('#EXT-X-CUE-IN');
     } else if (marker.type === 'RAW') {
       const value = marker.value ? `:${marker.value}` : '';
       lines.push(`#${marker.tagName}${value}`);
     }
   }
+  return type;
 }
 
 function buildParts(lines, parts) {
