@@ -5,7 +5,7 @@ const HLS = require("../../..");
 test("#EXT-X-CUE-IN_01", t => {
   const {MediaPlaylist, Segment} = HLS.types;
 
-  const segments = [...new Array(3)].map((_, i) => new Segment({uri: `https://example.com/${i}.ts`, duration: 10}));
+  const segments = [...Array.from({length: 3})].map((_, i) => new Segment({uri: `https://example.com/${i}.ts`, duration: 10}));
   segments[0].discontinuity = true;
   segments[0].markers.push({type: 'OUT', duration: 30});
 
@@ -34,7 +34,7 @@ test("#EXT-X-CUE-IN_01", t => {
 test("#EXT-X-CUE-IN_02", t => {
   const {MediaPlaylist, Segment} = HLS.types;
 
-  const segments = [...new Array(3)].map((_, i) => new Segment({uri: `https://example.com/${i}.ts`, duration: 10}));
+  const segments = [...Array.from({length: 3})].map((_, i) => new Segment({uri: `https://example.com/${i}.ts`, duration: 10}));
   segments[0].discontinuity = true;
   segments[0].markers.push({type: 'OUT', duration: 30});
 
@@ -67,7 +67,7 @@ test("#EXT-X-CUE-IN_02", t => {
 test("#EXT-X-CUE-IN_03", t => {
   const {MediaPlaylist, Segment} = HLS.types;
 
-  const segments = [...new Array(6)].map((_, i) => new Segment({uri: `https://example.com/${i}.ts`, duration: 10}));
+  const segments = [...Array.from({length: 6})].map((_, i) => new Segment({uri: `https://example.com/${i}.ts`, duration: 10}));
   segments[0].markers.push({type: 'OUT', duration: 20});
   segments[2].markers.push({type: 'IN'});
   segments[4].markers.push({type: 'OUT', duration: 20});
@@ -106,7 +106,7 @@ test("#EXT-X-CUE-IN_03", t => {
 test("#EXT-X-CUE-IN_04", t => {
   const {MediaPlaylist, Segment} = HLS.types;
 
-  const segments = [...new Array(6)].map((_, i) => new Segment({uri: `https://example.com/${i}.ts`, duration: 10}));
+  const segments = [...Array.from({length: 6})].map((_, i) => new Segment({uri: `https://example.com/${i}.ts`, duration: 10}));
   segments[0].markers.push({type: 'OUT', duration: 20});
   segments[2].markers.push({type: 'IN'});
   segments[4].markers.push({type: 'OUT', duration: 20});

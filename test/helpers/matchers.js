@@ -15,7 +15,7 @@ function removeSpaceFromLine(line) {
 function strip(playlist) {
   playlist = playlist.trim();
   const filtered = [];
-  playlist.split('\n').forEach(line => {
+  for (let line of playlist.split('\n')) {
     line = removeSpaceFromLine(line);
     if (line.startsWith('#')) {
       if (line.startsWith('#EXT')) {
@@ -24,7 +24,7 @@ function strip(playlist) {
     } else {
       filtered.push(line);
     }
-  });
+  }
   return filtered.join('\n');
 }
 
