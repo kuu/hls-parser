@@ -83,6 +83,24 @@ function parseResolution(str) {
   return {width: utils.toNumber(pair[0]), height: utils.toNumber(pair[1])};
 }
 
+function parseAllowedCpc(str) {
+  const message = 'ALLOWED-CPC: Each entry must consit of KEYFORMAT and Content Protection Configuration';
+  const list = str.split(',');
+  if (list.length === 0) {
+    utils.INVALIDPLAYLIST(message);
+  }
+  const allowedCpcList = [];
+  for (const item of list) {
+    const [format, cpcText] = utils.splitAt(item, ':');
+    if (!format || !cpcText) {
+      utils.INVALIDPLAYLIST(message);
+      continue;
+    }
+    allowedCpcList.push({format, cpcList: cpcText.split('/')});
+  }
+  return allowedCpcList;
+}
+
 function parseIV(str) {
   const iv = utils.hexToByteSequence(str);
   if (iv.length !== 16) {
@@ -132,6 +150,9 @@ function parseAttributeList(param) {
       case 'RESOLUTION':
         attributes[key] = parseResolution(val);
         break;
+      case 'ALLOWED-CPC':
+        attributes[key] = parseAllowedCpc(val);
+        break;
       case 'END-ON-NEXT':
       case 'DEFAULT':
       case 'AUTOSELECT':
@@ -157,6 +178,7 @@ function parseAttributeList(param) {
       case 'LAST-MSN':
       case 'LAST-PART':
       case 'SKIPPED-SEGMENTS':
+      case 'SCORE':
         attributes[key] = utils.toNumber(val);
         break;
       default:
@@ -165,6 +187,9 @@ function parseAttributeList(param) {
         } else if (key.startsWith('X-')) {
           attributes[key] = parseUserAttribute(value);
         } else {
+          if (key === 'VIDEO-RANGE' && val !== 'SDR' && val !== 'HLG' && val !== 'PQ') {
+            utils.INVALIDPLAYLIST(`VIDEO-RANGE: unknown value "${val}"`);
+          }
           attributes[key] = val;
         }
     }
@@ -291,10 +316,14 @@ function parseVariant(lines, variantAttrs, uri, iFrameOnly, params) {
     uri,
     bandwidth: variantAttrs['BANDWIDTH'],
     averageBandwidth: variantAttrs['AVERAGE-BANDWIDTH'],
+    score: variantAttrs['SCORE'],
     codecs: variantAttrs['CODECS'],
     resolution: variantAttrs['RESOLUTION'],
     frameRate: variantAttrs['FRAME-RATE'],
-    hdcpLevel: variantAttrs['HDCP-LEVEL']
+    hdcpLevel: variantAttrs['HDCP-LEVEL'],
+    allowedCpc: variantAttrs['ALLOWED-CPC'],
+    videoRange: variantAttrs['VIDEO-RANGE'],
+    stableVariantId: variantAttrs['STABLE-VARIANT-ID']
   });
   for (const line of lines) {
     if (line.name === 'EXT-X-MEDIA') {
@@ -354,6 +383,7 @@ function sameKey(key1, key2) {
 
 function parseMasterPlaylist(lines, params) {
   const playlist = new MasterPlaylist();
+  let variantIsScored = false;
   for (const [index, {name, value, attributes}] of lines.entries()) {
     if (name === 'EXT-X-VERSION') {
       playlist.version = value;
@@ -364,6 +394,12 @@ function parseMasterPlaylist(lines, params) {
       }
       const variant = parseVariant(lines, attributes, uri, false, params);
       if (variant) {
+        if (typeof variant.score === 'number') {
+          variantIsScored = true;
+          if (variant.score < 0) {
+            utils.INVALIDPLAYLIST('SCORE attribute on EXT-X-STREAM-INF must be positive decimal-floating-point number.');
+          }
+        }
         playlist.variants.push(variant);
       }
     } else if (name === 'EXT-X-I-FRAME-STREAM-INF') {
@@ -411,6 +447,13 @@ function parseMasterPlaylist(lines, params) {
         utils.INVALIDPLAYLIST('EXT-X-START: TIME-OFFSET attribute is REQUIRED');
       }
       playlist.start = {offset: attributes['TIME-OFFSET'], precise: attributes['PRECISE'] || false};
+    }
+  }
+  if (variantIsScored) {
+    for (const variant of playlist.variants) {
+      if (typeof variant.score !== 'number') {
+        utils.INVALIDPLAYLIST('If any Variant Stream contains the SCORE attribute, then all Variant Streams in the Master Playlist SHOULD have a SCORE attribute');
+      }
     }
   }
   if (params.isClosedCaptionsNone) {

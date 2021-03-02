@@ -135,10 +135,14 @@ This section describes the structure of the object returned by `parse()` method.
 | `isIFrameOnly`  | boolean   | No       | undefined | `true` if the variant is an I-frame media playlist. See [EXT-X-I-FRAME-STREAM-INF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.4.3) |
 | `bandwidth` | number  | Yes       | N/A        | See BANDWIDTH attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.4.2) |
 | `averageBandwidth`      | number    | No       | undefined | See AVERAGE-BANDWIDTH attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.4.2) |
+| `score`      | number    | No       | undefined | See SCORE attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-hls-rfc8216bis-08#section-4.4.6.2) |
 | `codecs`      | string    | No       | undefined | See CODECS attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.4.2) |
 | `resolution`      | object ({width: number, height: number})   | No       | undefined | See RESOLUTION attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.4.2) |
 | `frameRate`      | number    | No       | undefined | See FRAME-RATE attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.4.2) |
 | `hdcpLevel`      | string    | No       | undefined | See HDCP-LEVEL attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.4.2) |
+| `allowedCpc`   | [object ({format: string, cpcList: [string]})]  | No       | undefined | See ALLOWED-CPC attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-hls-rfc8216bis-08#section-4.4.6.2) |
+| `videoRange`      | string {"SDR","HLG","PQ"}    | No       | undefined | See VIDEO-RANGE attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-hls-rfc8216bis-08#section-4.4.6.2) |
+| `stableVariantId`      | string   | No       | undefined | See STABLE-VARIANT-ID attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-hls-rfc8216bis-08#section-4.4.6.2) |
 | `audio`      | [`Rendition`(type='AUDIO')]    | No       | [] | See AUDIO attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.4.2) |
 | `video`      | [`Rendition`(type='VIDEO')]    | No       | [] | See VIDEO attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.4.2)  |
 | `subtitles`      | [`Rendition`(type='SUBTITLES')]    | No       | [] | See SUBTITLES attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.4.2)  |
