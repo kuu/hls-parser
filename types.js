@@ -38,10 +38,14 @@ class Variant {
     isIFrameOnly = false,
     bandwidth, // required
     averageBandwidth,
+    score,
     codecs, // required?
     resolution,
     frameRate,
     hdcpLevel,
+    allowedCpc,
+    videoRange,
+    stableVariantId,
     audio = [],
     video = [],
     subtitles = [],
@@ -54,10 +58,14 @@ class Variant {
     this.isIFrameOnly = isIFrameOnly;
     this.bandwidth = bandwidth;
     this.averageBandwidth = averageBandwidth;
+    this.score = score;
     this.codecs = codecs;
     this.resolution = resolution;
     this.frameRate = frameRate;
     this.hdcpLevel = hdcpLevel;
+    this.allowedCpc = allowedCpc;
+    this.videoRange = videoRange;
+    this.stableVariantId = stableVariantId;
     this.audio = audio;
     this.video = video;
     this.subtitles = subtitles;

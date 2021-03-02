@@ -155,6 +155,22 @@ function buildVariant(lines, variant) {
       lines.push((buildRendition(rendition)));
     }
   }
+  if (variant.score) {
+    attrs.push(`SCORE=${variant.score}`);
+  }
+  if (variant.allowedCpc) {
+    const list = [];
+    for (const {format, cpcList} of variant.allowedCpc) {
+      list.push(`${format}:${cpcList.join('/')}`);
+    }
+    attrs.push(`ALLOWED-CPC="${list.join(',')}"`);
+  }
+  if (variant.videoRange) {
+    attrs.push(`VIDEO-RANGE=${variant.videoRange}`);
+  }
+  if (variant.stableVariantId) {
+    attrs.push(`STABLE-VARIANT-ID="${variant.stableVariantId}"`);
+  }
   lines.push(`${name}:${attrs.join(',')}`);
   if (!variant.isIFrameOnly) {
     lines.push(`${variant.uri}`);
