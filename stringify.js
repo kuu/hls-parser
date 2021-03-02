@@ -264,8 +264,7 @@ function buildMediaPlaylist(lines, playlist) {
   }
   for (const report of playlist.renditionReports) {
     const params = [];
-    params.push(`URI="${report.uri}"`);
-    params.push(`LAST-MSN=${report.lastMSN}`);
+    params.push(`URI="${report.uri}"`, `LAST-MSN=${report.lastMSN}`);
     if (report.lastPart !== undefined) {
       params.push(`LAST-PART=${report.lastPart}`);
     }
@@ -352,7 +351,7 @@ function buildDateRange(dateRange) {
   if (dateRange.endOnNext) {
     attrs.push(`END-ON-NEXT=YES`);
   }
-  Object.keys(dateRange.attributes).forEach(key => {
+  for (const key of Object.keys(dateRange.attributes)) {
     if (key.startsWith('X-')) {
       if (typeof dateRange.attributes[key] === 'number') {
         attrs.push(`${key}=${dateRange.attributes[key]}`);
@@ -362,7 +361,7 @@ function buildDateRange(dateRange) {
     } else if (key.startsWith('SCTE35-')) {
       attrs.push(`${key}=${utils.byteSequenceToHex(dateRange.attributes[key])}`);
     }
-  });
+  }
   return `#EXT-X-DATERANGE:${attrs.join(',')}`;
 }
 
@@ -388,8 +387,7 @@ function buildParts(lines, parts) {
   for (const part of parts) {
     if (part.hint) {
       const params = [];
-      params.push('TYPE=PART');
-      params.push(`URI="${part.uri}"`);
+      params.push('TYPE=PART', `URI="${part.uri}"`);
       if (part.byterange) {
         const {offset, length} = part.byterange;
         params.push(`BYTERANGE-START=${offset}`);
@@ -401,8 +399,7 @@ function buildParts(lines, parts) {
       hint = true;
     } else {
       const params = [];
-      params.push(`DURATION=${part.duration}`);
-      params.push(`URI="${part.uri}"`);
+      params.push(`DURATION=${part.duration}`, `URI="${part.uri}"`);
       if (part.byterange) {
         params.push(`BYTERANGE=${buildByteRange(part.byterange)}`);
       }

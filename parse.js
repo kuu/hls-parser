@@ -111,9 +111,8 @@ function setCompatibleVersionOfKey(params, attributes) {
 }
 
 function parseAttributeList(param) {
-  const list = utils.splitByCommaWithPreservingQuotes(param);
   const attributes = {};
-  list.forEach(item => {
+  for (const item of utils.splitByCommaWithPreservingQuotes(param)) {
     const [key, value] = utils.splitAt(item, '=');
     const val = unquote(value);
     switch (key) {
@@ -169,7 +168,7 @@ function parseAttributeList(param) {
           attributes[key] = val;
         }
     }
-  });
+  }
   return attributes;
 }
 
@@ -277,14 +276,14 @@ function addRendition(variant, line, type) {
 }
 
 function matchTypes(attrs, variant, params) {
-  ['AUDIO', 'VIDEO', 'SUBTITLES', 'CLOSED-CAPTIONS'].forEach(type => {
+  for (const type of ['AUDIO', 'VIDEO', 'SUBTITLES', 'CLOSED-CAPTIONS']) {
     if (type === 'CLOSED-CAPTIONS' && attrs[type] === 'NONE') {
       params.isClosedCaptionsNone = true;
       variant.closedCaptions = [];
     } else if (attrs[type] && !variant[utils.camelify(type)].some(item => item.groupId === attrs[type])) {
       utils.INVALIDPLAYLIST(`${type} attribute MUST match the value of the GROUP-ID attribute of an EXT-X-MEDIA tag whose TYPE attribute is ${type}.`);
     }
-  });
+  }
 }
 
 function parseVariant(lines, variantAttrs, uri, iFrameOnly, params) {
@@ -477,11 +476,11 @@ function parseSegment(lines, uri, start, end, mediaSequenceNumber, discontinuity
       segment.programDateTime = value;
     } else if (name === 'EXT-X-DATERANGE') {
       const attrs = {};
-      Object.keys(attributes).forEach(key => {
+      for (const key of Object.keys(attributes)) {
         if (key.startsWith('SCTE35-') || key.startsWith('X-')) {
           attrs[key] = attributes[key];
         }
-      });
+      }
       segment.dateRange = new DateRange({
         id: attributes['ID'],
         classId: attributes['CLASS'],
@@ -896,11 +895,11 @@ function parseTag(line, params) {
 
 function lexicalParse(text, params) {
   const lines = [];
-  text.split('\n').forEach(l => {
+  for (const l of text.split('\n')) {
     const line = l.trim();
     if (!line) {
       // empty line
-      return;
+      continue;
     }
     if (line.startsWith('#')) {
       if (line.startsWith('#EXT')) {
@@ -909,14 +908,13 @@ function lexicalParse(text, params) {
         if (tag) {
           lines.push(tag);
         }
-        return;
       }
       // comment
-      return;
+      continue;
     }
     // uri
     lines.push(line);
-  });
+  }
   if (lines.length === 0 || lines[0].name !== 'EXTM3U') {
     utils.INVALIDPLAYLIST('The EXTM3U tag MUST be the first line.');
   }
