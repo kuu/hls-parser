@@ -41,3 +41,4 @@ test
 .travis.yml
 .npmignore
 webpack.config.js
+LICENSE

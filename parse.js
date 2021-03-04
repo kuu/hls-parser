@@ -11,6 +11,7 @@ const {
   MediaPlaylist,
   Segment,
   PartialSegment,
+  PrefetchSegment,
   RenditionReport
 } = require('./types');
 
@@ -26,6 +27,7 @@ function getTagCategory(tagName) {
     case 'EXTINF':
     case 'EXT-X-BYTERANGE':
     case 'EXT-X-DISCONTINUITY':
+    case 'EXT-X-PREFETCH-DISCONTINUITY':
     case 'EXT-X-KEY':
     case 'EXT-X-MAP':
     case 'EXT-X-PROGRAM-DATE-TIME':
@@ -48,6 +50,7 @@ function getTagCategory(tagName) {
     case 'EXT-X-I-FRAMES-ONLY':
     case 'EXT-X-SERVER-CONTROL':
     case 'EXT-X-PART-INF':
+    case 'EXT-X-PREFETCH':
     case 'EXT-X-RENDITION-REPORT':
     case 'EXT-X-SKIP':
       return 'MediaPlaylist';
@@ -80,6 +83,24 @@ function parseResolution(str) {
   return {width: utils.toNumber(pair[0]), height: utils.toNumber(pair[1])};
 }
 
+function parseAllowedCpc(str) {
+  const message = 'ALLOWED-CPC: Each entry must consit of KEYFORMAT and Content Protection Configuration';
+  const list = str.split(',');
+  if (list.length === 0) {
+    utils.INVALIDPLAYLIST(message);
+  }
+  const allowedCpcList = [];
+  for (const item of list) {
+    const [format, cpcText] = utils.splitAt(item, ':');
+    if (!format || !cpcText) {
+      utils.INVALIDPLAYLIST(message);
+      continue;
+    }
+    allowedCpcList.push({format, cpcList: cpcText.split('/')});
+  }
+  return allowedCpcList;
+}
+
 function parseIV(str) {
   const iv = utils.hexToByteSequence(str);
   if (iv.length !== 16) {
@@ -108,9 +129,8 @@ function setCompatibleVersionOfKey(params, attributes) {
 }
 
 function parseAttributeList(param) {
-  const list = utils.splitByCommaWithPreservingQuotes(param);
   const attributes = {};
-  list.forEach(item => {
+  for (const item of utils.splitByCommaWithPreservingQuotes(param)) {
     const [key, value] = utils.splitAt(item, '=');
     const val = unquote(value);
     switch (key) {
@@ -129,6 +149,9 @@ function parseAttributeList(param) {
         break;
       case 'RESOLUTION':
         attributes[key] = parseResolution(val);
+        break;
+      case 'ALLOWED-CPC':
+        attributes[key] = parseAllowedCpc(val);
         break;
       case 'END-ON-NEXT':
       case 'DEFAULT':
@@ -155,6 +178,7 @@ function parseAttributeList(param) {
       case 'LAST-MSN':
       case 'LAST-PART':
       case 'SKIPPED-SEGMENTS':
+      case 'SCORE':
         attributes[key] = utils.toNumber(val);
         break;
       default:
@@ -163,10 +187,13 @@ function parseAttributeList(param) {
         } else if (key.startsWith('X-')) {
           attributes[key] = parseUserAttribute(value);
         } else {
+          if (key === 'VIDEO-RANGE' && val !== 'SDR' && val !== 'HLG' && val !== 'PQ') {
+            utils.INVALIDPLAYLIST(`VIDEO-RANGE: unknown value "${val}"`);
+          }
           attributes[key] = val;
         }
     }
-  });
+  }
   return attributes;
 }
 
@@ -274,14 +301,14 @@ function addRendition(variant, line, type) {
 }
 
 function matchTypes(attrs, variant, params) {
-  ['AUDIO', 'VIDEO', 'SUBTITLES', 'CLOSED-CAPTIONS'].forEach(type => {
+  for (const type of ['AUDIO', 'VIDEO', 'SUBTITLES', 'CLOSED-CAPTIONS']) {
     if (type === 'CLOSED-CAPTIONS' && attrs[type] === 'NONE') {
       params.isClosedCaptionsNone = true;
       variant.closedCaptions = [];
-    } else if (attrs[type] && !variant[utils.camelify(type)].find(item => item.groupId === attrs[type])) {
+    } else if (attrs[type] && !variant[utils.camelify(type)].some(item => item.groupId === attrs[type])) {
       utils.INVALIDPLAYLIST(`${type} attribute MUST match the value of the GROUP-ID attribute of an EXT-X-MEDIA tag whose TYPE attribute is ${type}.`);
     }
-  });
+  }
 }
 
 function parseVariant(lines, variantAttrs, uri, iFrameOnly, params) {
@@ -289,10 +316,14 @@ function parseVariant(lines, variantAttrs, uri, iFrameOnly, params) {
     uri,
     bandwidth: variantAttrs['BANDWIDTH'],
     averageBandwidth: variantAttrs['AVERAGE-BANDWIDTH'],
+    score: variantAttrs['SCORE'],
     codecs: variantAttrs['CODECS'],
     resolution: variantAttrs['RESOLUTION'],
     frameRate: variantAttrs['FRAME-RATE'],
-    hdcpLevel: variantAttrs['HDCP-LEVEL']
+    hdcpLevel: variantAttrs['HDCP-LEVEL'],
+    allowedCpc: variantAttrs['ALLOWED-CPC'],
+    videoRange: variantAttrs['VIDEO-RANGE'],
+    stableVariantId: variantAttrs['STABLE-VARIANT-ID']
   });
   for (const line of lines) {
     if (line.name === 'EXT-X-MEDIA') {
@@ -352,6 +383,7 @@ function sameKey(key1, key2) {
 
 function parseMasterPlaylist(lines, params) {
   const playlist = new MasterPlaylist();
+  let variantIsScored = false;
   for (const [index, {name, value, attributes}] of lines.entries()) {
     if (name === 'EXT-X-VERSION') {
       playlist.version = value;
@@ -362,6 +394,12 @@ function parseMasterPlaylist(lines, params) {
       }
       const variant = parseVariant(lines, attributes, uri, false, params);
       if (variant) {
+        if (typeof variant.score === 'number') {
+          variantIsScored = true;
+          if (variant.score < 0) {
+            utils.INVALIDPLAYLIST('SCORE attribute on EXT-X-STREAM-INF must be positive decimal-floating-point number.');
+          }
+        }
         playlist.variants.push(variant);
       }
     } else if (name === 'EXT-X-I-FRAME-STREAM-INF') {
@@ -376,7 +414,7 @@ function parseMasterPlaylist(lines, params) {
         uri: attributes['URI'],
         language: attributes['LANGUAGE']
       });
-      if (playlist.sessionDataList.find(item => item.id === sessionData.id && item.language === sessionData.language)) {
+      if (playlist.sessionDataList.some(item => item.id === sessionData.id && item.language === sessionData.language)) {
         utils.INVALIDPLAYLIST('A Playlist MUST NOT contain more than one EXT-X-SESSION-DATA tag with the same DATA-ID attribute and the same LANGUAGE attribute.');
       }
       playlist.sessionDataList.push(sessionData);
@@ -391,7 +429,7 @@ function parseMasterPlaylist(lines, params) {
         format: attributes['KEYFORMAT'],
         formatVersion: attributes['KEYFORMATVERSIONS']
       });
-      if (playlist.sessionKeyList.find(item => sameKey(item, sessionKey))) {
+      if (playlist.sessionKeyList.some(item => sameKey(item, sessionKey))) {
         utils.INVALIDPLAYLIST('A Master Playlist MUST NOT contain more than one EXT-X-SESSION-KEY tag with the same METHOD, URI, IV, KEYFORMAT, and KEYFORMATVERSIONS attribute values.');
       }
       setCompatibleVersionOfKey(params, attributes);
@@ -409,6 +447,13 @@ function parseMasterPlaylist(lines, params) {
         utils.INVALIDPLAYLIST('EXT-X-START: TIME-OFFSET attribute is REQUIRED');
       }
       playlist.start = {offset: attributes['TIME-OFFSET'], precise: attributes['PRECISE'] || false};
+    }
+  }
+  if (variantIsScored) {
+    for (const variant of playlist.variants) {
+      if (typeof variant.score !== 'number') {
+        utils.INVALIDPLAYLIST('If any Variant Stream contains the SCORE attribute, then all Variant Streams in the Master Playlist SHOULD have a SCORE attribute');
+      }
     }
   }
   if (params.isClosedCaptionsNone) {
@@ -474,11 +519,11 @@ function parseSegment(lines, uri, start, end, mediaSequenceNumber, discontinuity
       segment.programDateTime = value;
     } else if (name === 'EXT-X-DATERANGE') {
       const attrs = {};
-      Object.keys(attributes).forEach(key => {
+      for (const key of Object.keys(attributes)) {
         if (key.startsWith('SCTE35-') || key.startsWith('X-')) {
           attrs[key] = attributes[key];
         }
-      });
+      }
       segment.dateRange = new DateRange({
         id: attributes['ID'],
         classId: attributes['CLASS'],
@@ -548,11 +593,38 @@ function parseSegment(lines, uri, start, end, mediaSequenceNumber, discontinuity
   return segment;
 }
 
+function parsePrefetchSegment(lines, uri, start, end, mediaSequenceNumber, discontinuitySequence, params) {
+  const segment = new PrefetchSegment({uri, mediaSequenceNumber, discontinuitySequence});
+  for (let i = start; i <= end; i++) {
+    const {name, attributes} = lines[i];
+    if (name === 'EXTINF') {
+      utils.INVALIDPLAYLIST('A prefetch segment must not be advertised with an EXTINF tag.');
+    } else if (name === 'EXT-X-DISCONTINUITY') {
+      utils.INVALIDPLAYLIST('A prefetch segment must not be advertised with an EXT-X-DISCONTINUITY tag.');
+    } else if (name === 'EXT-X-PREFETCH-DISCONTINUITY') {
+      segment.discontinuity = true;
+    } else if (name === 'EXT-X-KEY') {
+      setCompatibleVersionOfKey(params, attributes);
+      segment.key = new Key({
+        method: attributes['METHOD'],
+        uri: attributes['URI'],
+        iv: attributes['IV'],
+        format: attributes['KEYFORMAT'],
+        formatVersion: attributes['KEYFORMATVERSIONS']
+      });
+    } else if (name === 'EXT-X-MAP') {
+      utils.INVALIDPLAYLIST('Prefetch segments must not be advertised with an EXT-X-MAP tag.');
+    }
+  }
+  return segment;
+}
+
 function parseMediaPlaylist(lines, params) {
   const playlist = new MediaPlaylist();
   let segmentStart = -1;
   let mediaSequence = 0;
   let discontinuityFound = false;
+  let prefetchFound = false;
   let discontinuitySequence = 0;
   let currentKey = null;
   let currentMap = null;
@@ -647,6 +719,22 @@ function parseMediaPlaylist(lines, params) {
       }
       playlist.skip = attributes['SKIPPED-SEGMENTS'];
       mediaSequence += playlist.skip;
+    } else if (name === 'EXT-X-PREFETCH') {
+      const segment = parsePrefetchSegment(lines, value, segmentStart === -1 ? index : segmentStart, index - 1, mediaSequence++, discontinuitySequence, params);
+      if (segment) {
+        if (segment.discontinuity) {
+          segment.discontinuitySequence++;
+          discontinuitySequence = segment.discontinuitySequence;
+        }
+        if (segment.key) {
+          currentKey = segment.key;
+        } else {
+          segment.key = currentKey;
+        }
+        playlist.prefetchSegments.push(segment);
+      }
+      prefetchFound = true;
+      segmentStart = -1;
     } else if (typeof line === 'string') {
       // uri
       if (segmentStart === -1) {
@@ -654,6 +742,9 @@ function parseMediaPlaylist(lines, params) {
       }
       if (!playlist.targetDuration) {
         utils.INVALIDPLAYLIST('The EXT-X-TARGETDURATION tag is REQUIRED');
+      }
+      if (prefetchFound) {
+        utils.INVALIDPLAYLIST('These segments must appear after all complete segments.');
       }
       const segment = parseSegment(lines, line, segmentStart, index - 1, mediaSequence++, discontinuitySequence, params);
       if (segment) {
@@ -835,7 +926,7 @@ function parseTag(line, params) {
   if (category === 'Unknown') {
     return null;
   }
-  if (category === 'MediaPlaylist' && name !== 'EXT-X-RENDITION-REPORT') {
+  if (category === 'MediaPlaylist' && name !== 'EXT-X-RENDITION-REPORT' && name !== 'EXT-X-PREFETCH') {
     if (params.hash[name]) {
       utils.INVALIDPLAYLIST('There MUST NOT be more than one Media Playlist tag of each type in any Media Playlist');
     }
@@ -847,11 +938,11 @@ function parseTag(line, params) {
 
 function lexicalParse(text, params) {
   const lines = [];
-  text.split('\n').forEach(l => {
+  for (const l of text.split('\n')) {
     const line = l.trim();
     if (!line) {
       // empty line
-      return;
+      continue;
     }
     if (line.startsWith('#')) {
       if (line.startsWith('#EXT')) {
@@ -860,14 +951,13 @@ function lexicalParse(text, params) {
         if (tag) {
           lines.push(tag);
         }
-        return;
       }
       // comment
-      return;
+      continue;
     }
     // uri
     lines.push(line);
-  });
+  }
   if (lines.length === 0 || lines[0].name !== 'EXTM3U') {
     utils.INVALIDPLAYLIST('The EXTM3U tag MUST be the first line.');
   }

@@ -22,13 +22,11 @@ module.exports = (_, argv) => {
         }
       ]
     },
-    devtool: argv.mode === 'production' ? 'source-map' : 'none',
+    devtool: argv.mode === 'production' ? 'source-map' : false,
     optimization: {
       minimize: argv.mode === 'production',
       minimizer: [
-        new TerserPlugin({
-          sourceMap: true
-        })
+        new TerserPlugin()
       ]
     }
   };

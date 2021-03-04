@@ -5,7 +5,7 @@ const fixtures = [];
 const baseDir = path.join(__dirname, '../fixtures/m3u8');
 const filenames = fs.readdirSync(baseDir);
 
-filenames.forEach(filename => {
+for (const filename of filenames) {
   if (filename.endsWith('.m3u8')) {
     const name = path.basename(filename, '.m3u8');
     const filepath = path.join(baseDir, filename);
@@ -13,6 +13,6 @@ filenames.forEach(filename => {
     const object = require(`../fixtures/objects/${name}.js`);
     fixtures.push({name, m3u8, object});
   }
-});
+}
 
 module.exports = fixtures;

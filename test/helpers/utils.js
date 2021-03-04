@@ -52,11 +52,7 @@ function stripSpaces(text) {
   let insideDoubleQuotes = false;
   for (const ch of text) {
     if (ch === '"') {
-      if (insideDoubleQuotes) {
-        insideDoubleQuotes = false;
-      } else {
-        insideDoubleQuotes = true;
-      }
+      insideDoubleQuotes = !insideDoubleQuotes;
     } else if (ch === ' ') {
       if (!insideDoubleQuotes) {
         continue;
@@ -69,23 +65,23 @@ function stripSpaces(text) {
 
 function stripCommentsAndEmptyLines(text) {
   const lines = [];
-  text.split('\n').forEach(l => {
+  for (const l of text.split('\n')) {
     const line = l.trim();
     if (!line) {
       // empty line
-      return;
+      continue;
     }
     if (line.startsWith('#')) {
       if (line.startsWith('#EXT')) {
         // tag
-        return lines.push(stripSpaces(line));
+        lines.push(stripSpaces(line));
       }
       // comment
-      return;
+      continue;
     }
     // uri
     lines.push(line);
-  });
+  }
   return lines.join('\n');
 }
 

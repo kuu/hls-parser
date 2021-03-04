@@ -9,7 +9,7 @@
 
 # hls-parser
 
-Provides synchronous functions to read/write HLS playlists (conforms to [the HLS spec rev.23](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23) and [the Apple Low-Latency Spec rev. 2020/02/05](https://developer.apple.com/documentation/http_live_streaming/protocol_extension_for_low-latency_hls_preliminary_specification))
+Provides synchronous functions to read/write HLS playlists (conforms to [the HLS spec rev.23](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23), [the Apple Low-Latency Spec rev. 2020/02/05](https://developer.apple.com/documentation/http_live_streaming/protocol_extension_for_low-latency_hls_preliminary_specification), and [HLS.js's Low-Latency spec](https://github.com/video-dev/hlsjs-rfcs/blob/lhls-spec/proposals/0001-lhls.md))
 
 ## Install
 [![NPM](https://nodei.co/npm/hls-parser.png?mini=true)](https://nodei.co/npm/hls-parser/)
@@ -88,6 +88,7 @@ Updates the option values
 | ---------- | ------- | ------- | ------------- |
 | `strictMode` | boolean | false   | If true, the function throws an error when `parse`/`stringify` failed. If false, the function just logs the error and continues to run.|
 | `allowClosedCaptionsNone` | boolean | false | If true, `CLOSED-CAPTIONS` attribute on the `EXT-X-STREAM-INF` tag will be set to the enumerated-string value NONE when there are no closed-captions. See [CLOSED-CAPTIONS](https://tools.ietf.org/html/rfc8216#section-4.3.4.2) |
+| `silent` | boolean | false   | If true, `console.error` will be suppressed.|
 
 ### `HLS.getOptions()`
 Retrieves the current option values
@@ -134,10 +135,14 @@ This section describes the structure of the object returned by `parse()` method.
 | `isIFrameOnly`  | boolean   | No       | undefined | `true` if the variant is an I-frame media playlist. See [EXT-X-I-FRAME-STREAM-INF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.4.3) |
 | `bandwidth` | number  | Yes       | N/A        | See BANDWIDTH attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.4.2) |
 | `averageBandwidth`      | number    | No       | undefined | See AVERAGE-BANDWIDTH attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.4.2) |
+| `score`      | number    | No       | undefined | See SCORE attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-hls-rfc8216bis-08#section-4.4.6.2) |
 | `codecs`      | string    | No       | undefined | See CODECS attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.4.2) |
 | `resolution`      | object ({width: number, height: number})   | No       | undefined | See RESOLUTION attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.4.2) |
 | `frameRate`      | number    | No       | undefined | See FRAME-RATE attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.4.2) |
 | `hdcpLevel`      | string    | No       | undefined | See HDCP-LEVEL attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.4.2) |
+| `allowedCpc`   | [object ({format: string, cpcList: [string]})]  | No       | undefined | See ALLOWED-CPC attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-hls-rfc8216bis-08#section-4.4.6.2) |
+| `videoRange`      | string {"SDR","HLG","PQ"}    | No       | undefined | See VIDEO-RANGE attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-hls-rfc8216bis-08#section-4.4.6.2) |
+| `stableVariantId`      | string   | No       | undefined | See STABLE-VARIANT-ID attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-hls-rfc8216bis-08#section-4.4.6.2) |
 | `audio`      | [`Rendition`(type='AUDIO')]    | No       | [] | See AUDIO attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.4.2) |
 | `video`      | [`Rendition`(type='VIDEO')]    | No       | [] | See VIDEO attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.4.2)  |
 | `subtitles`      | [`Rendition`(type='SUBTITLES')]    | No       | [] | See SUBTITLES attribute in [EXT-X-STREAM-INF](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.4.2)  |
@@ -178,6 +183,7 @@ This section describes the structure of the object returned by `parse()` method.
 | `playlistType`              | string | No       | undefined        | See [EXT-X-PLAYLIST-TYPE](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.3.5) |
 | `isIFrame`                  | boolean | No       | undefined        | See [EXT-X-I-FRAMES-ONLY](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.3.6) |
 | `segments`                  | [`Segment`] | No       | []        | A list of available segments |
+| `prefetchSegments`          | [`PrefetchSegment`] | No       | []        | A list of available prefetch segments |
 | `lowLatencyCompatibility`  | object ({canBlockReload: boolean, canSkipUntil: number, holdBack: number, partHoldBack: number})   | No       | undefined | See `CAN-BLOCK-RELOAD`, `CAN-SKIP-UNTIL`, `HOLD-BACK`, and `PART-HOLD-BACK` attributes in [EXT-X-SERVER-CONTROL](https://developer.apple.com/documentation/http_live_streaming/protocol_extension_for_low-latency_hls_preliminary_specification#3281374) |
 | `partTargetDuration`            | number | No*      | undefined        | *Required if the playlist contains one or more `EXT-X-PART` tags. See [EXT-X-PART-INF](https://developer.apple.com/documentation/http_live_streaming/protocol_extension_for_low-latency_hls_preliminary_specification#3282434) |
 | `renditionReports`  | [`RenditionReport`]   | No       | [] | Update status of the associated renditions |
@@ -210,6 +216,13 @@ This section describes the structure of the object returned by `parse()` method.
 | `byterange`  | object ({length: number, offset: number})   | No       | undefined | See `BYTERANGE` attribute in [EXT-X-PART](https://developer.apple.com/documentation/http_live_streaming/protocol_extension_for_low-latency_hls_preliminary_specification#3282436) |
 | `gap`  | boolean   | No       | undefined | See `GAP` attribute in [EXT-X-PART](https://developer.apple.com/documentation/http_live_streaming/protocol_extension_for_low-latency_hls_preliminary_specification#3282436) |
 
+### `PrefetchSegment` (extends `Data`)
+| Property          | Type     | Required | Default   | Description   |
+| ----------------- | -------- | -------- | --------- | ------------- |
+| `uri`        | string  | Yes       | N/A        | See value of [EXT-X-PREFETCH](https://github.com/video-dev/hlsjs-rfcs/blob/lhls-spec/proposals/0001-lhls.md) |
+| `discontinuity`  | boolean   | No       | undefined | See [EXT-X-PREFETCH-DISCONTINUITY](https://github.com/video-dev/hlsjs-rfcs/blob/lhls-spec/proposals/0001-lhls.md) |
+| `mediaSequenceNumber`  | number   | No       | 0 | See the description about 'Media Sequence Number' in [3. Media Segments](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#page-5) |
+| `discontinuitySequence`  | number   | No       | 0 | See the description about 'Discontinuity Sequence Number' in [6.2.1. General Server Responsibilities](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-6.2.1) |
 
 ### `Key`
 | Property          | Type     | Required | Default   | Description   |

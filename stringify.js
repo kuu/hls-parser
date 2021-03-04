@@ -6,12 +6,12 @@ const ALLOW_REDUNDANCY = [
   '#EXT-X-DISCONTINUITY',
   '#EXT-X-STREAM-INF',
   '#EXT-X-CUE-OUT',
-  '#EXT-X-CUE-IN'
+  '#EXT-X-CUE-IN',
+  '#EXT-X-KEY',
+  '#EXT-X-MAP'
 ];
 
 const SKIP_IF_REDUNDANT = [
-  '#EXT-X-KEY',
-  '#EXT-X-MAP',
   '#EXT-X-MEDIA'
 ];
 
@@ -64,17 +64,17 @@ function getNumberOfDecimalPlaces(num) {
 
 function buildMasterPlaylist(lines, playlist) {
   for (const sessionData of playlist.sessionDataList) {
-    buildSessionData(lines, sessionData);
+    lines.push(buildSessionData(sessionData));
   }
   for (const sessionKey of playlist.sessionKeyList) {
-    buildKey(lines, sessionKey, true);
+    lines.push(buildKey(sessionKey, true));
   }
   for (const variant of playlist.variants) {
     buildVariant(lines, variant);
   }
 }
 
-function buildSessionData(lines, sessionData) {
+function buildSessionData(sessionData) {
   const attrs = [`DATA-ID="${sessionData.id}"`];
   if (sessionData.language) {
     attrs.push(`LANGUAGE="${sessionData.language}"`);
@@ -84,10 +84,10 @@ function buildSessionData(lines, sessionData) {
   } else if (sessionData.uri) {
     attrs.push(`URI="${sessionData.uri}"`);
   }
-  lines.push(`#EXT-X-SESSION-DATA:${attrs.join(',')}`);
+  return `#EXT-X-SESSION-DATA:${attrs.join(',')}`;
 }
 
-function buildKey(lines, key, isSessionKey) {
+function buildKey(key, isSessionKey) {
   const name = isSessionKey ? '#EXT-X-SESSION-KEY' : '#EXT-X-KEY';
   const attrs = [`METHOD=${key.method}`];
   if (key.uri) {
@@ -105,7 +105,7 @@ function buildKey(lines, key, isSessionKey) {
   if (key.formatVersion) {
     attrs.push(`KEYFORMATVERSIONS="${key.formatVersion}"`);
   }
-  lines.push(`${name}:${attrs.join(',')}`);
+  return `${name}:${attrs.join(',')}`;
 }
 
 function buildVariant(lines, variant) {
@@ -132,19 +132,19 @@ function buildVariant(lines, variant) {
   if (variant.audio.length > 0) {
     attrs.push(`AUDIO="${variant.audio[0].groupId}"`);
     for (const rendition of variant.audio) {
-      buildRendition(lines, rendition);
+      lines.push(buildRendition(rendition));
     }
   }
   if (variant.video.length > 0) {
     attrs.push(`VIDEO="${variant.video[0].groupId}"`);
     for (const rendition of variant.video) {
-      buildRendition(lines, rendition);
+      lines.push(buildRendition(rendition));
     }
   }
   if (variant.subtitles.length > 0) {
     attrs.push(`SUBTITLES="${variant.subtitles[0].groupId}"`);
     for (const rendition of variant.subtitles) {
-      buildRendition(lines, rendition);
+      lines.push(buildRendition(rendition));
     }
   }
   if (utils.getOptions().allowClosedCaptionsNone && variant.closedCaptions.length === 0) {
@@ -152,8 +152,24 @@ function buildVariant(lines, variant) {
   } else if (variant.closedCaptions.length > 0) {
     attrs.push(`CLOSED-CAPTIONS="${variant.closedCaptions[0].groupId}"`);
     for (const rendition of variant.closedCaptions) {
-      buildRendition(lines, rendition);
+      lines.push((buildRendition(rendition)));
     }
+  }
+  if (variant.score) {
+    attrs.push(`SCORE=${variant.score}`);
+  }
+  if (variant.allowedCpc) {
+    const list = [];
+    for (const {format, cpcList} of variant.allowedCpc) {
+      list.push(`${format}:${cpcList.join('/')}`);
+    }
+    attrs.push(`ALLOWED-CPC="${list.join(',')}"`);
+  }
+  if (variant.videoRange) {
+    attrs.push(`VIDEO-RANGE=${variant.videoRange}`);
+  }
+  if (variant.stableVariantId) {
+    attrs.push(`STABLE-VARIANT-ID="${variant.stableVariantId}"`);
   }
   lines.push(`${name}:${attrs.join(',')}`);
   if (!variant.isIFrameOnly) {
@@ -161,7 +177,7 @@ function buildVariant(lines, variant) {
   }
 }
 
-function buildRendition(lines, rendition) {
+function buildRendition(rendition) {
   const attrs = [
     `TYPE=${rendition.type}`,
     `GROUP-ID="${rendition.groupId}"`,
@@ -194,10 +210,14 @@ function buildRendition(lines, rendition) {
   if (rendition.uri) {
     attrs.push(`URI="${rendition.uri}"`);
   }
-  lines.push(`#EXT-X-MEDIA:${attrs.join(',')}`);
+  return `#EXT-X-MEDIA:${attrs.join(',')}`;
 }
 
 function buildMediaPlaylist(lines, playlist) {
+  let lastKey = '';
+  let lastMap = '';
+  let unclosedCueIn = false;
+
   if (playlist.targetDuration) {
     lines.push(`#EXT-X-TARGETDURATION:${playlist.targetDuration}`);
   }
@@ -235,15 +255,32 @@ function buildMediaPlaylist(lines, playlist) {
     lines.push(`#EXT-X-SKIP:SKIPPED-SEGMENTS=${playlist.skip}`);
   }
   for (const segment of playlist.segments) {
-    buildSegment(lines, segment, playlist.version);
+    let markerType = '';
+    [lastKey, lastMap, markerType] = buildSegment(lines, segment, lastKey, lastMap, playlist.version);
+    if (markerType === 'OUT') {
+      unclosedCueIn = true;
+    } else if (markerType === 'IN' && unclosedCueIn) {
+      unclosedCueIn = false;
+    }
+  }
+  if (playlist.playlistType === 'VOD' && unclosedCueIn) {
+    lines.push('#EXT-X-CUE-IN');
+  }
+  if (playlist.prefetchSegments.length > 2) {
+    utils.INVALIDPLAYLIST('The server must deliver no more than two prefetch segments');
+  }
+  for (const segment of playlist.prefetchSegments) {
+    if (segment.discontinuity) {
+      lines.push(`#EXT-X-PREFETCH-DISCONTINUITY`);
+    }
+    lines.push(`#EXT-X-PREFETCH:${segment.uri}`);
   }
   if (playlist.endlist) {
     lines.push(`#EXT-X-ENDLIST`);
   }
   for (const report of playlist.renditionReports) {
     const params = [];
-    params.push(`URI="${report.uri}"`);
-    params.push(`LAST-MSN=${report.lastMSN}`);
+    params.push(`URI="${report.uri}"`, `LAST-MSN=${report.lastMSN}`);
     if (report.lastPart !== undefined) {
       params.push(`LAST-PART=${report.lastPart}`);
     }
@@ -251,8 +288,10 @@ function buildMediaPlaylist(lines, playlist) {
   }
 }
 
-function buildSegment(lines, segment, version = 1) {
+function buildSegment(lines, segment, lastKey, lastMap, version = 1) {
   let hint = false;
+  let markerType = '';
+
   if (segment.byterange) {
     lines.push(`#EXT-X-BYTERANGE:${buildByteRange(segment.byterange)}`);
   }
@@ -260,44 +299,53 @@ function buildSegment(lines, segment, version = 1) {
     lines.push(`#EXT-X-DISCONTINUITY`);
   }
   if (segment.key) {
-    buildKey(lines, segment.key);
+    const line = buildKey(segment.key);
+    if (line !== lastKey) {
+      lines.push(line);
+      lastKey = line;
+    }
   }
   if (segment.map) {
-    buildMap(lines, segment.map);
+    const line = buildMap(segment.map);
+    if (line !== lastMap) {
+      lines.push(line);
+      lastMap = line;
+    }
   }
   if (segment.programDateTime) {
     lines.push(`#EXT-X-PROGRAM-DATE-TIME:${utils.formatDate(segment.programDateTime)}`);
   }
   if (segment.dateRange) {
-    buildDateRange(lines, segment.dateRange);
+    lines.push(buildDateRange(segment.dateRange));
   }
   if (segment.markers.length > 0) {
-    buildMarkers(lines, segment.markers);
+    markerType = buildMarkers(lines, segment.markers);
   }
   if (segment.parts.length > 0) {
     hint = buildParts(lines, segment.parts);
   }
   if (hint) {
-    return;
+    return [lastKey, lastMap];
   }
   const duration = version < 3 ? Math.round(segment.duration) : buildDecimalFloatingNumber(segment.duration, getNumberOfDecimalPlaces(segment.duration));
   lines.push(`#EXTINF:${duration},${unescape(encodeURIComponent(segment.title || ''))}`);
   Array.prototype.push.call(lines, `${segment.uri}`); // URIs could be redundant when EXT-X-BYTERANGE is used
+  return [lastKey, lastMap, markerType];
 }
 
-function buildMap(lines, map) {
+function buildMap(map) {
   const attrs = [`URI="${map.uri}"`];
   if (map.byterange) {
     attrs.push(`BYTERANGE="${buildByteRange(map.byterange)}"`);
   }
-  lines.push(`#EXT-X-MAP:${attrs.join(',')}`);
+  return `#EXT-X-MAP:${attrs.join(',')}`;
 }
 
 function buildByteRange({offset, length}) {
   return `${length}@${offset}`;
 }
 
-function buildDateRange(lines, dateRange) {
+function buildDateRange(dateRange) {
   const attrs = [
     `ID="${dateRange.id}"`
   ];
@@ -319,7 +367,7 @@ function buildDateRange(lines, dateRange) {
   if (dateRange.endOnNext) {
     attrs.push(`END-ON-NEXT=YES`);
   }
-  Object.keys(dateRange.attributes).forEach(key => {
+  for (const key of Object.keys(dateRange.attributes)) {
     if (key.startsWith('X-')) {
       if (typeof dateRange.attributes[key] === 'number') {
         attrs.push(`${key}=${dateRange.attributes[key]}`);
@@ -329,21 +377,25 @@ function buildDateRange(lines, dateRange) {
     } else if (key.startsWith('SCTE35-')) {
       attrs.push(`${key}=${utils.byteSequenceToHex(dateRange.attributes[key])}`);
     }
-  });
-  lines.push(`#EXT-X-DATERANGE:${attrs.join(',')}`);
+  }
+  return `#EXT-X-DATERANGE:${attrs.join(',')}`;
 }
 
 function buildMarkers(lines, markers) {
+  let type = '';
   for (const marker of markers) {
     if (marker.type === 'OUT') {
+      type = 'OUT';
       lines.push(`#EXT-X-CUE-OUT:${marker.duration}`);
     } else if (marker.type === 'IN') {
+      type = 'IN';
       lines.push('#EXT-X-CUE-IN');
     } else if (marker.type === 'RAW') {
       const value = marker.value ? `:${marker.value}` : '';
       lines.push(`#${marker.tagName}${value}`);
     }
   }
+  return type;
 }
 
 function buildParts(lines, parts) {
@@ -351,8 +403,7 @@ function buildParts(lines, parts) {
   for (const part of parts) {
     if (part.hint) {
       const params = [];
-      params.push('TYPE=PART');
-      params.push(`URI="${part.uri}"`);
+      params.push('TYPE=PART', `URI="${part.uri}"`);
       if (part.byterange) {
         const {offset, length} = part.byterange;
         params.push(`BYTERANGE-START=${offset}`);
@@ -364,8 +415,7 @@ function buildParts(lines, parts) {
       hint = true;
     } else {
       const params = [];
-      params.push(`DURATION=${part.duration}`);
-      params.push(`URI="${part.uri}"`);
+      params.push(`DURATION=${part.duration}`, `URI="${part.uri}"`);
       if (part.byterange) {
         params.push(`BYTERANGE=${buildByteRange(part.byterange)}`);
       }

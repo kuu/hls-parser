@@ -2,10 +2,10 @@ let options = {};
 
 function THROW(err) {
   if (!options.strictMode) {
-      if (options.silent !== true) {
-        console.error(err.message);
-      }
-      return;
+    if (!options.silent) {
+      console.error(err.message);
+    }
+    return;
   }
   throw err;
 }
@@ -56,12 +56,7 @@ function toNumber(str, radix = 10) {
   if (typeof str === 'number') {
     return str;
   }
-  let num;
-  if (radix === 10) {
-    num = Number.parseFloat(str, radix);
-  } else {
-    num = Number.parseInt(str, radix);
-  }
+  const num = radix === 10 ? Number.parseFloat(str, radix) : Number.parseInt(str, radix);
   if (Number.isNaN(num)) {
     return 0;
   }

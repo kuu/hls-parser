@@ -38,10 +38,14 @@ class Variant {
     isIFrameOnly = false,
     bandwidth, // required
     averageBandwidth,
+    score,
     codecs, // required?
     resolution,
     frameRate,
     hdcpLevel,
+    allowedCpc,
+    videoRange,
+    stableVariantId,
     audio = [],
     video = [],
     subtitles = [],
@@ -54,10 +58,14 @@ class Variant {
     this.isIFrameOnly = isIFrameOnly;
     this.bandwidth = bandwidth;
     this.averageBandwidth = averageBandwidth;
+    this.score = score;
     this.codecs = codecs;
     this.resolution = resolution;
     this.frameRate = frameRate;
     this.hdcpLevel = hdcpLevel;
+    this.allowedCpc = allowedCpc;
+    this.videoRange = videoRange;
+    this.stableVariantId = stableVariantId;
     this.audio = audio;
     this.video = video;
     this.subtitles = subtitles;
@@ -214,6 +222,7 @@ class MediaPlaylist extends Playlist {
       playlistType,
       isIFrame,
       segments = [],
+      prefetchSegments = [],
       lowLatencyCompatibility,
       partTargetDuration,
       renditionReports = [],
@@ -227,6 +236,7 @@ class MediaPlaylist extends Playlist {
     this.playlistType = playlistType;
     this.isIFrame = isIFrame;
     this.segments = segments;
+    this.prefetchSegments = prefetchSegments;
     this.lowLatencyCompatibility = lowLatencyCompatibility;
     this.partTargetDuration = partTargetDuration;
     this.renditionReports = renditionReports;
@@ -294,6 +304,24 @@ class PartialSegment extends Data {
   }
 }
 
+class PrefetchSegment extends Data {
+  constructor({
+    uri, // required
+    discontinuity,
+    mediaSequenceNumber = 0,
+    discontinuitySequence = 0,
+    key
+  }) {
+    super('prefetch');
+    utils.PARAMCHECK(uri);
+    this.uri = uri;
+    this.discontinuity = discontinuity;
+    this.mediaSequenceNumber = mediaSequenceNumber;
+    this.discontinuitySequence = discontinuitySequence;
+    this.key = key;
+  }
+}
+
 class RenditionReport {
   constructor({
     uri, // required
@@ -320,5 +348,6 @@ module.exports = {
   MediaPlaylist,
   Segment,
   PartialSegment,
+  PrefetchSegment,
   RenditionReport
 };

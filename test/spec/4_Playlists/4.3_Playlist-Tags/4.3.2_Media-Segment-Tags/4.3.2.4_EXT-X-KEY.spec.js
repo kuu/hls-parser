@@ -133,3 +133,27 @@ test('#EXT-X-KEY_06', t => {
   const text = HLS.stringify(obj);
   t.is(text, utils.stripCommentsAndEmptyLines(sourceText));
 });
+
+// The same tag can appear multiple times
+test('#EXT-X-KEY_07', t => {
+  const sourceText = `
+    #EXTM3U
+    #EXT-X-VERSION:5
+    #EXT-X-TARGETDURATION:10
+    #EXT-X-KEY:METHOD=AES-128,URI="http://example.com/key-1",KEYFORMAT="identity"
+    #EXTINF:10,
+    http://example.com/1
+    #EXT-X-KEY:METHOD=AES-128,URI="http://example.com/key-2",KEYFORMAT="identity"
+    #EXTINF:10,
+    http://example.com/2
+    #EXT-X-KEY:METHOD=AES-128,URI="http://example.com/key-1",KEYFORMAT="identity"
+    #EXTINF:10,
+    http://example.com/3
+    #EXT-X-KEY:METHOD=AES-128,URI="http://example.com/key-2",KEYFORMAT="identity"
+    #EXTINF:10,
+    http://example.com/4
+  `;
+  const obj = HLS.parse(sourceText);
+  const text = HLS.stringify(obj);
+  t.is(text, utils.stripCommentsAndEmptyLines(sourceText));
+});

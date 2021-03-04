@@ -110,7 +110,8 @@ test('#EXT-X-STREAM-INF_07', t => {
     #EXTM3U
     #EXT-X-STREAM-INF:BANDWIDTH=1280000,CLOSED-CAPTIONS="test"
     /video/main.m3u8
-    #EXT-X-MEDIA:TYPE=CLOSED-CAPTIONS,GROUP-ID="test",NAME="en",DEFAULT=YES,INSTREAM-ID="CC1"  `);
+    #EXT-X-MEDIA:TYPE=CLOSED-CAPTIONS,GROUP-ID="test",NAME="en",DEFAULT=YES,INSTREAM-ID="CC1"
+  `);
 });
 
 // CLOSED-CAPTIONS: The value can be either a quoted-string or an enumerated-string with the value NONE.
@@ -143,6 +144,7 @@ test('#EXT-X-STREAM-INF_07-02', t => {
   `);
 });
 
+/*
 test('#EXT-X-STREAM-INF_07-03', t => {
   const sourceText = `
   #EXTM3U
@@ -156,6 +158,7 @@ test('#EXT-X-STREAM-INF_07-03', t => {
   const text = HLS.stringify(obj);
   t.is(text, utils.stripCommentsAndEmptyLines(sourceText));
 });
+*/
 
 // The URI attribute of the EXT-X-MEDIA tag is REQUIRED if the media
 // type is SUBTITLES
@@ -172,4 +175,95 @@ test('#EXT-X-STREAM-INF_08', t => {
     /video/main.m3u8
     #EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID="test",NAME="en",DEFAULT=YES,URI="/audio/en.m3u8"
   `);
+});
+
+// SCORE: The value is a positive decimal-floating-point number.
+test('#EXT-X-STREAM-INF_09', t => {
+  utils.parseFail(t, `
+    #EXTM3U
+    #EXT-X-STREAM-INF:BANDWIDTH=1280000,SCORE=-0.5
+    /video/main.m3u8
+  `);
+  const expected = `
+    #EXTM3U
+    #EXT-X-STREAM-INF:BANDWIDTH=1280000,SCORE=0.5
+    /video/main.m3u8
+  `;
+  const actual = utils.bothPass(t, expected);
+  t.is(actual, utils.stripCommentsAndEmptyLines(expected));
+});
+
+// The SCORE attribute is OPTIONAL, but if any Variant Stream
+// contains the SCORE attribute, then all Variant Streams in the
+// Master Playlist SHOULD have a SCORE attribute.
+test('#EXT-X-STREAM-INF_10', t => {
+  utils.parseFail(t, `
+    #EXTM3U
+    #EXT-X-STREAM-INF:BANDWIDTH=1280000,CODECS="avc1.640029,mp4a.40.2",SCORE=0.5
+    low/main/audio-video.m3u8
+    #EXT-X-STREAM-INF:BANDWIDTH=2560000,CODECS="avc1.640029,mp4a.40.2"
+    mid/main/audio-video.m3u8
+    #EXT-X-STREAM-INF:BANDWIDTH=7680000,CODECS="avc1.640029,mp4a.40.2"
+    hi/main/audio-video.m3u8
+  `);
+  const expected = `
+    #EXTM3U
+    #EXT-X-STREAM-INF:BANDWIDTH=1280000,CODECS="avc1.640029,mp4a.40.2",SCORE=0.5
+    low/main/audio-video.m3u8
+    #EXT-X-STREAM-INF:BANDWIDTH=2560000,CODECS="avc1.640029,mp4a.40.2",SCORE=0.3
+    mid/main/audio-video.m3u8
+    #EXT-X-STREAM-INF:BANDWIDTH=7680000,CODECS="avc1.640029,mp4a.40.2",SCORE=0.1
+    hi/main/audio-video.m3u8
+  `;
+  const actual = utils.bothPass(t, expected);
+  t.is(actual, utils.stripCommentsAndEmptyLines(expected));
+});
+
+// ALLOWED-CPC: Its value is a quoted-string containing
+// a comma-separated list of entries.  Each entry consists
+// of a KEYFORMAT attribute value followed by a colon character (:)
+// followed by a sequence of Content Protection Configuration (CPC)
+// Labels separated by slash (/) characters.  Each CPC Label is a
+// string containing characters from the set [A..Z], [0..9], and '-'.
+test('#EXT-X-STREAM-INF_11', t => {
+  utils.parseFail(t, `
+    #EXTM3U
+    #EXT-X-STREAM-INF:BANDWIDTH=1280000,ALLOWED-CPC="abc"
+    /video/main.m3u8
+  `);
+  const expected = `
+    #EXTM3U
+    #EXT-X-STREAM-INF:BANDWIDTH=1280000,ALLOWED-CPC="com.example.drm1:SMART-TV/PC,com.example.drm2:HW"
+    /video/main.m3u8
+  `;
+  const actual = utils.bothPass(t, expected);
+  t.is(actual, utils.stripCommentsAndEmptyLines(expected));
+});
+
+// VIDEO-RANGE: The value is an enumerated-string; valid strings are SDR, HLG and PQ.
+test('#EXT-X-STREAM-INF_12', t => {
+  utils.parseFail(t, `
+    #EXTM3U
+    #EXT-X-STREAM-INF:BANDWIDTH=1280000,VIDEO-RANGE=abc
+    /video/main.m3u8
+  `);
+  const expected = `
+    #EXTM3U
+    #EXT-X-STREAM-INF:BANDWIDTH=1280000,VIDEO-RANGE=HLG
+    /video/main.m3u8
+  `;
+  const actual = utils.bothPass(t, expected);
+  t.is(actual, utils.stripCommentsAndEmptyLines(expected));
+});
+
+// STABLE-VARIANT-ID: The value is a quoted-string which is
+// a stable identifier for the URI within the Master Playlist.
+test('#EXT-X-STREAM-INF_13', t => {
+  const expected = `
+    #EXTM3U
+    #EXT-X-STREAM-INF:BANDWIDTH=1280000,STABLE-VARIANT-ID="abc"
+    /video/main.m3u8
+  `;
+  const actual = utils.bothPass(t, expected);
+  t.is(actual, utils.stripCommentsAndEmptyLines(expected));
 });

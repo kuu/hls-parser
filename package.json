@@ -1,8 +1,9 @@
 {
   "name": "hls-parser",
-  "version": "0.6.1",
+  "version": "0.9.0",
   "description": "A simple library to read/write HLS playlists",
   "main": "index.js",
+  "browser": "dist/hls-parser.min.js",
   "scripts": {
     "lint": "xo",
     "audit": "npm audit --audit-level high",
@@ -27,18 +28,18 @@
     "url": "https://github.com/kuu/hls-parser/issues"
   },
   "homepage": "https://github.com/kuu/hls-parser#readme",
-  "dependencies": {},
   "devDependencies": {
-    "@babel/core": "^7.9.6",
-    "@babel/preset-env": "^7.9.6",
-    "ava": "^3.8.1",
-    "babel-loader": "^8.1.0",
+    "@babel/core": "^7.13.8",
+    "@babel/preset-env": "^7.13.9",
+    "ava": "^3.15.0",
+    "babel-loader": "^8.2.2",
     "coveralls": "^3.1.0",
-    "nyc": "^15.0.1",
-    "terser-webpack-plugin": "^3.0.0",
-    "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.11",
-    "xo": "^0.30.0"
+    "nyc": "^15.1.0",
+    "rewire": "^5.0.0",
+    "terser-webpack-plugin": "^5.1.1",
+    "webpack": "^5.24.2",
+    "webpack-cli": "^4.5.0",
+    "xo": "0.38.2"
   },
   "xo": {
     "esnext": true,
@@ -57,9 +58,18 @@
       "quotes": 0,
       "unicorn/catch-error-name": 0,
       "unicorn/filename-case": 0,
+      "unicorn/no-lonely-if": 0,
       "unicorn/no-zero-fractions": 0,
       "unicorn/prevent-abbreviations": 0
     },
+    "overrides": [
+      {
+        "files": "test/**/*.js",
+        "rules": {
+          "unicorn/no-array-push-push": 0
+        }
+      }
+    ],
     "settings": {
       "import/resolver": {
         "node": {}

@@ -5,9 +5,9 @@ const HLS = require('../..');
 
 HLS.setOptions({strictMode: true});
 
-fixtures.forEach(({name, m3u8, object}) => {
+for (const {name, m3u8, object} of fixtures) {
   test(name, t => {
     const result = HLS.stringify(object);
     t.is(result, utils.stripCommentsAndEmptyLines(m3u8));
   });
-});
+}
