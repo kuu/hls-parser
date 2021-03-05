@@ -212,11 +212,13 @@ function parseTagParam(name, param) {
     case 'EXT-X-DISCONTINUITY-SEQUENCE':
       return [utils.toNumber(param), null];
     case 'EXT-X-CUE-OUT':
-        // For backwards compatibility: attributes list is optional,
-        // if only a number is found, use it as the duration
-        if (!isNaN(+param)) return [utils.toNumber(param), null];
-        // If attributes are found, parse them out (i.e. DURATION)
-        return [null, parseAttributeList(param)];
+      // For backwards compatibility: attributes list is optional,
+      // if only a number is found, use it as the duration
+      if (!Number.isNaN(Number(param))) {
+        return [utils.toNumber(param), null];
+      }
+      // If attributes are found, parse them out (i.e. DURATION)
+      return [null, parseAttributeList(param)];
     case 'EXT-X-KEY':
     case 'EXT-X-MAP':
     case 'EXT-X-DATERANGE':

@@ -32,7 +32,7 @@ function createSegments() {
     duration: 3.003,
     title: '',
     mediaSequenceNumber: 2,
-    discontinuitySequence: 0,
+    discontinuitySequence: 0
   }));
   return segments;
 }
