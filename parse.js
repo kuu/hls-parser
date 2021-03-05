@@ -210,8 +210,13 @@ function parseTagParam(name, param) {
     case 'EXT-X-TARGETDURATION':
     case 'EXT-X-MEDIA-SEQUENCE':
     case 'EXT-X-DISCONTINUITY-SEQUENCE':
-    case 'EXT-X-CUE-OUT':
       return [utils.toNumber(param), null];
+    case 'EXT-X-CUE-OUT':
+        // For backwards compatibility: attributes list is optional,
+        // if only a number is found, use it as the duration
+        if (!isNaN(+param)) return [utils.toNumber(param), null];
+        // If attributes are found, parse them out (i.e. DURATION)
+        return [null, parseAttributeList(param)];
     case 'EXT-X-KEY':
     case 'EXT-X-MAP':
     case 'EXT-X-DATERANGE':
