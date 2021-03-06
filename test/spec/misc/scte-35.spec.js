@@ -19,7 +19,7 @@ test("#EXT-X-CUE-IN_01", t => {
       #EXTM3U
       #EXT-X-TARGETDURATION:10
       #EXT-X-DISCONTINUITY
-      #EXT-X-CUE-OUT:30
+      #EXT-X-CUE-OUT:DURATION=30
       #EXTINF:10,
       https://example.com/0.ts
       #EXTINF:10,
@@ -51,7 +51,7 @@ test("#EXT-X-CUE-IN_02", t => {
     #EXT-X-TARGETDURATION:10
     #EXT-X-PLAYLIST-TYPE:VOD
     #EXT-X-DISCONTINUITY
-    #EXT-X-CUE-OUT:30
+    #EXT-X-CUE-OUT:DURATION=30
     #EXTINF:10,
     https://example.com/0.ts
     #EXTINF:10,
@@ -83,7 +83,7 @@ test("#EXT-X-CUE-IN_03", t => {
     #EXTM3U
     #EXT-X-TARGETDURATION:10
     #EXT-X-PLAYLIST-TYPE:EVENT
-    #EXT-X-CUE-OUT:20
+    #EXT-X-CUE-OUT:DURATION=20
     #EXTINF:10,
     https://example.com/0.ts
     #EXTINF:10,
@@ -93,7 +93,7 @@ test("#EXT-X-CUE-IN_03", t => {
     https://example.com/2.ts
     #EXTINF:10,
     https://example.com/3.ts
-    #EXT-X-CUE-OUT:20
+    #EXT-X-CUE-OUT:DURATION=20
     #EXTINF:10,
     https://example.com/4.ts
     #EXTINF:10,
@@ -123,7 +123,7 @@ test("#EXT-X-CUE-IN_04", t => {
     #EXTM3U
     #EXT-X-TARGETDURATION:10
     #EXT-X-PLAYLIST-TYPE:VOD
-    #EXT-X-CUE-OUT:20
+    #EXT-X-CUE-OUT:DURATION=20
     #EXTINF:10,
     https://example.com/0.ts
     #EXTINF:10,
@@ -133,7 +133,7 @@ test("#EXT-X-CUE-IN_04", t => {
     https://example.com/2.ts
     #EXTINF:10,
     https://example.com/3.ts
-    #EXT-X-CUE-OUT:20
+    #EXT-X-CUE-OUT:DURATION=20
     #EXTINF:10,
     https://example.com/4.ts
     #EXTINF:10,
