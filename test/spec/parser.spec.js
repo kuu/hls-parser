@@ -6,14 +6,14 @@ HLS.setOptions({strictMode: true});
 
 const {Playlist} = HLS.types;
 
-fixtures.forEach(({name, m3u8, object}) => {
+for (const {name, m3u8, object} of fixtures) {
   test(name, t => {
     const result = HLS.parse(m3u8);
     if (result.source === m3u8 && deepEqual(t, result, object)) {
       t.pass();
     }
   });
-});
+}
 
 function buildMessage(propName, actual, expected) {
   if (actual && typeof actual === 'object') {
@@ -205,11 +205,11 @@ function deepEqualVariant(t, actual, expected) {
   if (expected.currentRenditions) {
     const expectedCurrentRenditions = expected.currentRenditions;
     const actualCurrentRenditions = actual.currentRenditions;
-    Object.keys(expectedCurrentRenditions).forEach(key => {
+    for (const key of Object.keys(expectedCurrentRenditions)) {
       if (actualCurrentRenditions[key] !== expectedCurrentRenditions[key]) {
         return t.fail(buildMessage('Variant.currentRenditions', actualCurrentRenditions[key], expectedCurrentRenditions[key]));
       }
-    });
+    }
   }
 }
 

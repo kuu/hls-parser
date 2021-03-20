@@ -155,6 +155,22 @@ function buildVariant(lines, variant) {
       lines.push((buildRendition(rendition)));
     }
   }
+  if (variant.score) {
+    attrs.push(`SCORE=${variant.score}`);
+  }
+  if (variant.allowedCpc) {
+    const list = [];
+    for (const {format, cpcList} of variant.allowedCpc) {
+      list.push(`${format}:${cpcList.join('/')}`);
+    }
+    attrs.push(`ALLOWED-CPC="${list.join(',')}"`);
+  }
+  if (variant.videoRange) {
+    attrs.push(`VIDEO-RANGE=${variant.videoRange}`);
+  }
+  if (variant.stableVariantId) {
+    attrs.push(`STABLE-VARIANT-ID="${variant.stableVariantId}"`);
+  }
   lines.push(`${name}:${attrs.join(',')}`);
   if (!variant.isIFrameOnly) {
     lines.push(`${variant.uri}`);
@@ -200,6 +216,7 @@ function buildRendition(rendition) {
 function buildMediaPlaylist(lines, playlist) {
   let lastKey = '';
   let lastMap = '';
+  let unclosedCueIn = false;
 
   if (playlist.targetDuration) {
     lines.push(`#EXT-X-TARGETDURATION:${playlist.targetDuration}`);
@@ -238,15 +255,32 @@ function buildMediaPlaylist(lines, playlist) {
     lines.push(`#EXT-X-SKIP:SKIPPED-SEGMENTS=${playlist.skip}`);
   }
   for (const segment of playlist.segments) {
-    [lastKey, lastMap] = buildSegment(lines, segment, lastKey, lastMap, playlist.version);
+    let markerType = '';
+    [lastKey, lastMap, markerType] = buildSegment(lines, segment, lastKey, lastMap, playlist.version);
+    if (markerType === 'OUT') {
+      unclosedCueIn = true;
+    } else if (markerType === 'IN' && unclosedCueIn) {
+      unclosedCueIn = false;
+    }
+  }
+  if (playlist.playlistType === 'VOD' && unclosedCueIn) {
+    lines.push('#EXT-X-CUE-IN');
+  }
+  if (playlist.prefetchSegments.length > 2) {
+    utils.INVALIDPLAYLIST('The server must deliver no more than two prefetch segments');
+  }
+  for (const segment of playlist.prefetchSegments) {
+    if (segment.discontinuity) {
+      lines.push(`#EXT-X-PREFETCH-DISCONTINUITY`);
+    }
+    lines.push(`#EXT-X-PREFETCH:${segment.uri}`);
   }
   if (playlist.endlist) {
     lines.push(`#EXT-X-ENDLIST`);
   }
   for (const report of playlist.renditionReports) {
     const params = [];
-    params.push(`URI="${report.uri}"`);
-    params.push(`LAST-MSN=${report.lastMSN}`);
+    params.push(`URI="${report.uri}"`, `LAST-MSN=${report.lastMSN}`);
     if (report.lastPart !== undefined) {
       params.push(`LAST-PART=${report.lastPart}`);
     }
@@ -256,6 +290,8 @@ function buildMediaPlaylist(lines, playlist) {
 
 function buildSegment(lines, segment, lastKey, lastMap, version = 1) {
   let hint = false;
+  let markerType = '';
+
   if (segment.discontinuity) {
     lines.push(`#EXT-X-DISCONTINUITY`);
   }
@@ -280,7 +316,7 @@ function buildSegment(lines, segment, lastKey, lastMap, version = 1) {
     lines.push(buildDateRange(segment.dateRange));
   }
   if (segment.markers.length > 0) {
-    buildMarkers(lines, segment.markers);
+    markerType = buildMarkers(lines, segment.markers);
   }
   if (segment.parts.length > 0) {
     hint = buildParts(lines, segment.parts);
@@ -294,7 +330,7 @@ function buildSegment(lines, segment, lastKey, lastMap, version = 1) {
     lines.push(`#EXT-X-BYTERANGE:${buildByteRange(segment.byterange)}`);
   }
   Array.prototype.push.call(lines, `${segment.uri}`); // URIs could be redundant when EXT-X-BYTERANGE is used
-  return [lastKey, lastMap];
+  return [lastKey, lastMap, markerType];
 }
 
 function buildMap(map) {
@@ -331,7 +367,7 @@ function buildDateRange(dateRange) {
   if (dateRange.endOnNext) {
     attrs.push(`END-ON-NEXT=YES`);
   }
-  Object.keys(dateRange.attributes).forEach(key => {
+  for (const key of Object.keys(dateRange.attributes)) {
     if (key.startsWith('X-')) {
       if (typeof dateRange.attributes[key] === 'number') {
         attrs.push(`${key}=${dateRange.attributes[key]}`);
@@ -341,21 +377,25 @@ function buildDateRange(dateRange) {
     } else if (key.startsWith('SCTE35-')) {
       attrs.push(`${key}=${utils.byteSequenceToHex(dateRange.attributes[key])}`);
     }
-  });
+  }
   return `#EXT-X-DATERANGE:${attrs.join(',')}`;
 }
 
 function buildMarkers(lines, markers) {
+  let type = '';
   for (const marker of markers) {
     if (marker.type === 'OUT') {
-      lines.push(`#EXT-X-CUE-OUT:${marker.duration}`);
+      type = 'OUT';
+      lines.push(`#EXT-X-CUE-OUT:DURATION=${marker.duration}`);
     } else if (marker.type === 'IN') {
+      type = 'IN';
       lines.push('#EXT-X-CUE-IN');
     } else if (marker.type === 'RAW') {
       const value = marker.value ? `:${marker.value}` : '';
       lines.push(`#${marker.tagName}${value}`);
     }
   }
+  return type;
 }
 
 function buildParts(lines, parts) {
@@ -363,8 +403,7 @@ function buildParts(lines, parts) {
   for (const part of parts) {
     if (part.hint) {
       const params = [];
-      params.push('TYPE=PART');
-      params.push(`URI="${part.uri}"`);
+      params.push('TYPE=PART', `URI="${part.uri}"`);
       if (part.byterange) {
         const {offset, length} = part.byterange;
         params.push(`BYTERANGE-START=${offset}`);
@@ -376,8 +415,7 @@ function buildParts(lines, parts) {
       hint = true;
     } else {
       const params = [];
-      params.push(`DURATION=${part.duration}`);
-      params.push(`URI="${part.uri}"`);
+      params.push(`DURATION=${part.duration}`, `URI="${part.uri}"`);
       if (part.byterange) {
         params.push(`BYTERANGE=${buildByteRange(part.byterange)}`);
       }
