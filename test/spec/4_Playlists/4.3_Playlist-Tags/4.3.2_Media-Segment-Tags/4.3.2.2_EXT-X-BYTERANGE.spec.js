@@ -103,3 +103,33 @@ test('#EXT-X-BYTERANGE_04', t => {
     http://example.com/1
   `);
 });
+
+// EXT-X-BYTERANGE should come at end of segment.
+test('#EXT-X-BYTERANGE_05', t => {
+  t.is(
+    utils.bothPass(t, `
+        #EXTM3U
+        #EXT-X-VERSION:4
+        #EXT-X-TARGETDURATION:10
+        #EXTINF:9.9,comment
+        #EXT-X-BYTERANGE:100@200
+        http://example.com/1
+        #EXT-X-DISCONTINUITY
+        #EXTINF:9.9,comment
+        #EXT-X-BYTERANGE:100@200
+        http://example.com/2
+    `),
+    utils.stripCommentsAndEmptyLines(`
+        #EXTM3U
+        #EXT-X-VERSION:4
+        #EXT-X-TARGETDURATION:10
+        #EXTINF:9.9,comment
+        #EXT-X-BYTERANGE:100@200
+        http://example.com/1
+        #EXT-X-DISCONTINUITY
+        #EXTINF:9.9,comment
+        #EXT-X-BYTERANGE:100@200
+        http://example.com/2
+    `)
+  );
+});
