@@ -544,7 +544,7 @@ function parseSegment(lines, uri, start, end, mediaSequenceNumber, discontinuity
     } else if (name === 'EXT-X-CUE-OUT') {
       segment.markers.push(new SpliceInfo({
         type: 'OUT',
-        duration: attributes?.DURATION || value
+        duration: (attributes && attributes.DURATION) || value
       }));
     } else if (name === 'EXT-X-CUE-IN') {
       segment.markers.push(new SpliceInfo({
