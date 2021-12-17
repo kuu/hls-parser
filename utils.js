@@ -173,6 +173,9 @@ function camelify(str) {
 }
 
 function formatDate(date) {
+  if (typeof date === "string") {
+    date = new Date(date);
+  }  
   const YYYY = date.getUTCFullYear();
   const MM = ('0' + (date.getUTCMonth() + 1)).slice(-2);
   const DD = ('0' + date.getUTCDate()).slice(-2);
