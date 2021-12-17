@@ -75,6 +75,9 @@ function hexToByteSequence(str) {
 }
 
 function byteSequenceToHex(sequence, start = 0, end = sequence.length) {
+  if (typeof sequence === "string") {
+    sequence = Buffer.from(sequence);
+  }  
   if (end <= start) {
     THROW(new Error(`end must be larger than start : start=${start}, end=${end}`));
   }
