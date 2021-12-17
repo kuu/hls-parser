@@ -1,23 +1,10 @@
-[![Build Status](https://travis-ci.org/kuu/hls-parser.svg?branch=master)](https://travis-ci.org/kuu/hls-parser)
-[![Coverage Status](https://coveralls.io/repos/github/kuu/hls-parser/badge.svg?branch=master)](https://coveralls.io/github/kuu/hls-parser?branch=master)
-[![Dependency Status](https://david-dm.org/kuu/hls-parser.svg)](https://david-dm.org/kuu/hls-parser)
-[![Development Dependency Status](https://david-dm.org/kuu/hls-parser/dev-status.svg)](https://david-dm.org/kuu/hls-parser#info=devDependencies)
-[![Known Vulnerabilities](https://snyk.io/test/github/kuu/hls-parser/badge.svg)](https://snyk.io/test/github/kuu/hls-parser)
-[![npm Downloads](https://img.shields.io/npm/dw/hls-parser.svg?style=flat-square)](https://npmjs.com/hls-parser)
-[![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo)
-
-
 # hls-parser
 
 Provides synchronous functions to read/write HLS playlists (conforms to [the HLS spec rev.23](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23), [the Apple Low-Latency Spec rev. 2020/02/05](https://developer.apple.com/documentation/http_live_streaming/protocol_extension_for_low-latency_hls_preliminary_specification), and [HLS.js's Low-Latency spec](https://github.com/video-dev/hlsjs-rfcs/blob/lhls-spec/proposals/0001-lhls.md))
 
-## Install
-[![NPM](https://nodei.co/npm/hls-parser.png?mini=true)](https://nodei.co/npm/hls-parser/)
-[![](https://data.jsdelivr.com/v1/package/npm/hls-parser/badge)](https://www.jsdelivr.com/package/npm/hls-parser?path=dist)
-
 ## Usage
-```js
-const HLS = require('hls-parser'); // For node
+```typescript
+import * as HLS from 'hls-parser' // For node
 // For browsers, just use dist/hls-parser.min.js defined as a UMD module.
 
 // Parse the playlist
@@ -29,7 +16,7 @@ if (playlist.isMasterPlaylist) {
   // Media playlist
 }
 // Create a new playlist
-const {MediaPlaylist, Segment} = HLS.types;
+const { MediaPlaylist, Segment } = HLS.types;
 const obj = new MediaPlaylist({
   targetDuration: 9,
   playlistType: 'VOD',

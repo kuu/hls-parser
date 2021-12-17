@@ -1,79 +1,45 @@
 {
   "name": "hls-parser",
-  "version": "0.10.4",
+  "version": "1.0.0",
   "description": "A simple library to read/write HLS playlists",
-  "main": "index.js",
+  "main": "dist/index.js",
   "browser": "dist/hls-parser.min.js",
   "scripts": {
-    "lint": "xo",
     "audit": "npm audit --audit-level high",
     "coverage": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
-    "build": "rm -fR ./dist; webpack --mode development ; webpack --mode production",
+    "build": "rm -rf ./dist && tsc",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "npm run lint && npm run build && npm run audit && ava --verbose"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kuu/hls-parser.git"
+    "url": "git+https://github.com/flocasts/hls-parser"
   },
   "keywords": [
     "HLS",
     "media",
     "video",
     "audio",
-    "streaming"
+    "streaming",
+    "typescript"
   ],
-  "author": "Kuu Miyazaki",
+  "author": "Kuu Miyazaki & Harold Waters",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/kuu/hls-parser/issues"
+    "url": "https://github.com/flocasts/hls-parser/issues"
   },
-  "homepage": "https://github.com/kuu/hls-parser#readme",
+  "homepage": "https://github.com/flocasts/hls-parser#readme",
   "devDependencies": {
-    "@babel/core": "^7.13.15",
-    "@babel/preset-env": "^7.13.15",
+    "@typescript-eslint/eslint-plugin": "^5.7.0",
+    "@typescript-eslint/parser": "^5.7.0",
     "ava": "^3.15.0",
-    "babel-loader": "^8.2.2",
     "coveralls": "^3.1.0",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
     "nyc": "^15.1.0",
+    "prettier": "2.5.1",
     "rewire": "^5.0.0",
-    "terser-webpack-plugin": "^5.1.1",
-    "webpack": "^5.33.2",
-    "webpack-cli": "^4.6.0",
-    "xo": "0.38.2"
-  },
-  "xo": {
-    "esnext": true,
-    "space": true,
-    "rules": {
-      "ava/no-ignored-test-files": 0,
-      "camelcase": 0,
-      "capitalized-comments": 0,
-      "dot-notation": 0,
-      "import/no-dynamic-require": 0,
-      "new-cap": 0,
-      "no-cond-assign": 0,
-      "no-mixed-operators": 0,
-      "no-multi-assign": 0,
-      "padding-line-between-statements": 0,
-      "quotes": 0,
-      "unicorn/catch-error-name": 0,
-      "unicorn/filename-case": 0,
-      "unicorn/no-lonely-if": 0,
-      "unicorn/no-zero-fractions": 0,
-      "unicorn/prevent-abbreviations": 0
-    },
-    "overrides": [
-      {
-        "files": "test/**/*.js",
-        "rules": {
-          "unicorn/no-array-push-push": 0
-        }
-      }
-    ],
-    "settings": {
-      "import/resolver": {
-        "node": {}
-      }
-    }
+    "typescript": "^4.5.4"
   }
 }
