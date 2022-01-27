@@ -15,6 +15,7 @@ import {
     RenditionReport,
     ByteRange,
     Resolution,
+    CustomTags,
 } from './types';
 
 export interface ParseParams {
@@ -25,6 +26,7 @@ export interface ParseParams {
     compatibleVersion: number;
     isClosedCaptionsNone: boolean;
     hash: Record<string, any>;
+    customTags: CustomTags;
 }
 
 export interface Tag {
@@ -36,6 +38,7 @@ export interface Tag {
 export type TagName =
     // Basic
     | 'EXTM3U'
+    | 'EXT-X-CUSTOM-TAGS'
     | 'EXT-X-VERSION'
     // Segment
     | 'EXTINF'
@@ -102,7 +105,8 @@ export type TagParams =
     | [ExtInf, null]
     | [ByteRange, null]
     | ['EVENT' | 'VOID', null]
-    | [unknown, null];
+    | [unknown, null]
+    | [CustomTags, null];
 
 function unquote(str) {
     return utils.trim(str, '"');
@@ -112,6 +116,7 @@ function getTagCategory(tagName: TagName | string): TagCategory {
     switch (tagName) {
         case 'EXTM3U':
         case 'EXT-X-VERSION':
+        case 'EXT-X-CUSTOM-TAGS':
             return 'Basic';
         case 'EXTINF':
         case 'EXT-X-BYTERANGE':
@@ -300,6 +305,8 @@ function parseTagParam(name: TagName, param: string): TagParams {
         case 'EXT-X-INDEPENDENT-SEGMENTS':
         case 'EXT-X-CUE-IN':
             return [null, null];
+        case 'EXT-X-CUSTOM-TAGS':
+            return [parseCustomTag(param), null];
         case 'EXT-X-VERSION':
         case 'EXT-X-TARGETDURATION':
         case 'EXT-X-MEDIA-SEQUENCE':
@@ -490,6 +497,8 @@ function parseMasterPlaylist(lines, params) {
     for (const [index, { name, value, attributes }] of lines.entries()) {
         if (name === 'EXT-X-VERSION') {
             playlist.version = value;
+        } else if (name === 'EXT-X-CUSTOM-TAGS') {
+            playlist.customTags = params.value;
         } else if (name === 'EXT-X-STREAM-INF') {
             const uri = lines[index + 1];
             if (typeof uri !== 'string' || uri.startsWith('#EXT')) {
@@ -780,6 +789,8 @@ function parseMediaPlaylist(lines, params) {
             } else {
                 utils.INVALIDPLAYLIST('A Playlist file MUST NOT contain more than one EXT-X-VERSION tag.');
             }
+        } else if (name === 'EXT-X-CUSTOM-TAGS') {
+            playlist.customTags = params.value;
         } else if (name === 'EXT-X-TARGETDURATION') {
             playlist.targetDuration = params.targetDuration = value;
         } else if (name === 'EXT-X-MEDIA-SEQUENCE') {
@@ -1118,6 +1129,17 @@ function CHECKTAGCATEGORY(category, params) {
     // category === 'Basic' or 'MediaorMasterPlaylist' or 'Unknown'
 }
 
+function parseCustomTag(params: string): CustomTags {
+    const customTags = {};
+    if (params) {
+        for (const pair of params.split(';')) {
+            const [k, v] = pair.split('=');
+            customTags[k] = JSON.parse(v);
+        }
+    }
+    return customTags;
+}
+
 function parseTag(line: string, params: ParseParams): Tag {
     const [name, param] = splitTag(line);
     const category = getTagCategory(name);
@@ -1195,6 +1217,7 @@ export function parse(text) {
         compatibleVersion: 1,
         isClosedCaptionsNone: false,
         hash: {},
+        customTags: {},
     };
 
     const lines = lexicalParse(text, params);

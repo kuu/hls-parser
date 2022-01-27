@@ -1,4 +1,4 @@
-import { Key } from './types';
+import { CustomTags, Key, MasterPlaylist, MediaPlaylist } from './types';
 import * as utils from './utils';
 
 const ALLOW_REDUNDANCY = [
@@ -428,7 +428,12 @@ function buildParts(lines, parts) {
     return hint;
 }
 
-export function stringify(playlist) {
+function buildCustomTags(lines: string[], customTags: CustomTags) {
+    const pairs = Object.entries(customTags).map(([k, v]) => `${k}=${v}`);
+    lines.push(`#EXT-X-CUSTOM-TAGS:${pairs.join(';')}`);
+}
+
+export function stringify(playlist: MasterPlaylist | MediaPlaylist) {
     utils.PARAMCHECK(playlist);
     utils.ASSERT('Not a playlist', playlist.type === 'playlist');
     const lines = new LineArray(playlist.uri);
@@ -445,6 +450,9 @@ export function stringify(playlist) {
                 playlist.start.precise ? ',PRECISE=YES' : ''
             }`,
         );
+    }
+    if (playlist.customTags) {
+        buildCustomTags(lines, playlist.customTags);
     }
     if (playlist.isMasterPlaylist) {
         buildMasterPlaylist(lines, playlist);
