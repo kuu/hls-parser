@@ -74,3 +74,28 @@ test('#EXT-X-RENDITION-REPORT_03', t => {
     t.is(report.lastPart, 2);
   }
 });
+
+// Handle 0-indexed segment parts in rendition reports
+test('#EXT-X-RENDITION-REPORT_04', t => {
+  const {renditionReports} = HLS.parse(`
+  #EXTM3U
+  #EXT-X-VERSION:6
+  #EXT-X-TARGETDURATION:3
+  #EXT-X-SERVER-CONTROL:PART-HOLD-BACK=3.150000,CAN-BLOCK-RELOAD=YES
+  #EXT-X-PART-INF:PART-TARGET=1
+  #EXT-X-PROGRAM-DATE-TIME:2022-08-12T15:53:22Z
+  media_b128000_cmaf_a_6.mp4
+  #EXT-X-PROGRAM-DATE-TIME:2022-08-12T15:53:31Z
+  #EXT-X-PART:DURATION=1,INDEPENDENT=YES,URI="media_b128000_cmaf_a_7_p0.mp4"
+  #EXT-X-PRELOAD-HINT:TYPE=PART,URI="media_b128000_cmaf_a_7_p1.mp4"
+  #EXT-X-RENDITION-REPORT:URI="chunklist_b56000_cmaf_a.m3u8?max_segments=10",LAST-MSN=7,LAST-PART=0
+  #EXT-X-RENDITION-REPORT:URI="chunklist_b256000_cmaf_a.m3u8?max_segments=10",LAST-MSN=7,LAST-PART=0
+  `);
+
+  t.is(renditionReports.length, 2);
+  for (const [index, report] of renditionReports.entries()) {
+    console.log(index, report);
+    t.is(report.lastMSN, 7);
+    t.is(report.lastPart, 0);
+  }
+});
