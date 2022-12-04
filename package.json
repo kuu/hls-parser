@@ -29,10 +29,10 @@
   },
   "homepage": "https://github.com/kuu/hls-parser#readme",
   "devDependencies": {
-    "@babel/core": "^7.20.2",
+    "@babel/core": "^7.20.5",
     "@babel/eslint-parser": "^7.19.1",
     "@babel/preset-env": "^7.20.2",
-    "ava": "^4.3.3",
+    "ava": "^5.1.0",
     "babel-loader": "^9.1.0",
     "coveralls": "^3.1.1",
     "eslint-plugin-unicorn": "^45.0.1",
