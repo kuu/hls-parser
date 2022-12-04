@@ -30,16 +30,18 @@
   "homepage": "https://github.com/kuu/hls-parser#readme",
   "devDependencies": {
     "@babel/core": "^7.20.2",
+    "@babel/eslint-parser": "^7.19.1",
     "@babel/preset-env": "^7.20.2",
     "ava": "^4.3.3",
     "babel-loader": "^9.1.0",
     "coveralls": "^3.1.1",
+    "eslint-plugin-unicorn": "^45.0.1",
     "nyc": "^15.1.0",
     "rewire": "^6.0.0",
     "terser-webpack-plugin": "^5.3.6",
     "webpack": "^5.75.0",
     "webpack-cli": "^5.0.0",
-    "xo": "^0.45.0"
+    "xo": "^0.53.1"
   },
   "xo": {
     "esnext": true,
@@ -60,6 +62,7 @@
       "no-mixed-operators": 0,
       "no-multi-assign": 0,
       "operator-linebreak": 0,
+      "n/prefer-global/buffer": 0,
       "padding-line-between-statements": 0,
       "quotes": 0,
       "unicorn/catch-error-name": 0,
@@ -67,9 +70,11 @@
       "unicorn/no-lonely-if": 0,
       "unicorn/no-zero-fractions": 0,
       "unicorn/numeric-separators-style": 0,
+      "unicorn/prefer-code-point": 0,
       "unicorn/prefer-module": 0,
       "unicorn/prefer-switch": 0,
-      "unicorn/prevent-abbreviations": 0
+      "unicorn/prevent-abbreviations": 0,
+      "unicorn/switch-case-braces": 0
     },
     "overrides": [
       {

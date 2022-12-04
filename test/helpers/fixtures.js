@@ -1,5 +1,5 @@
-const path = require('path');
-const fs = require('fs');
+const path = require('node:path');
+const fs = require('node:fs');
 
 const fixtures = [];
 const baseDir = path.join(__dirname, '../fixtures/m3u8');
