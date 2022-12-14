@@ -1,7 +1,5 @@
-[![Build Status](https://travis-ci.org/kuu/hls-parser.svg?branch=master)](https://travis-ci.org/kuu/hls-parser)
+[![Build Status](https://img.shields.io/github/workflow/status/kuu/hls-parser/HLS%20parser%20tests)](https://github.com/kuu/hls-parser/actions/workflows/tests.yml)
 [![Coverage Status](https://coveralls.io/repos/github/kuu/hls-parser/badge.svg?branch=master)](https://coveralls.io/github/kuu/hls-parser?branch=master)
-[![Dependency Status](https://david-dm.org/kuu/hls-parser.svg)](https://david-dm.org/kuu/hls-parser)
-[![Development Dependency Status](https://david-dm.org/kuu/hls-parser/dev-status.svg)](https://david-dm.org/kuu/hls-parser#info=devDependencies)
 [![Known Vulnerabilities](https://snyk.io/test/github/kuu/hls-parser/badge.svg)](https://snyk.io/test/github/kuu/hls-parser)
 [![npm Downloads](https://img.shields.io/npm/dw/hls-parser.svg?style=flat-square)](https://npmjs.com/hls-parser)
 [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo)
@@ -17,8 +15,7 @@ Provides synchronous functions to read/write HLS playlists (conforms to [the HLS
 
 ## Usage
 ```js
-const HLS = require('hls-parser'); // For node
-// For browsers, just use dist/hls-parser.min.js defined as a UMD module.
+import HLS from 'hls-parser';
 
 // Parse the playlist
 const playlist = HLS.parse(textData);
