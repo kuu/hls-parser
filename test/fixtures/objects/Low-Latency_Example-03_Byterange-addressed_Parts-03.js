@@ -14,21 +14,21 @@ function createSegments() {
   const segments = [];
   segments.push(new Segment({
     uri: 'fileSequence269.mp4',
-    duration: 4.00008,
+    duration: 4.000_08,
     title: '',
     mediaSequenceNumber: 269,
     discontinuitySequence: 0,
   }));
   segments.push(new Segment({
     uri: 'fileSequence270.mp4',
-    duration: 4.00008,
+    duration: 4.000_08,
     title: '',
     mediaSequenceNumber: 270,
     discontinuitySequence: 0,
   }));
   segments.push(new Segment({
     uri: 'fileSequence271.mp4',
-    duration: 4.00008,
+    duration: 4.000_08,
     title: '',
     mediaSequenceNumber: 271,
     discontinuitySequence: 0,
@@ -40,11 +40,11 @@ function createSegments() {
       new PartialSegment({
         uri: 'fileSequence272.mp4',
         duration: 1.02,
-        byterange: {offset: 0, length: 21000},
+        byterange: {offset: 0, length: 21_000},
       }),
       new PartialSegment({
         uri: 'fileSequence272.mp4',
-        byterange: {offset: 21000},
+        byterange: {offset: 21_000},
         hint: true,
       }),
     ],
@@ -57,22 +57,22 @@ function createParts() {
   parts.push(new PartialSegment({
     uri: 'fileSequence271.mp4',
     duration: 1.02,
-    byterange: {offset: 0, length: 20000},
+    byterange: {offset: 0, length: 20_000},
   }));
   parts.push(new PartialSegment({
     uri: 'fileSequence271.mp4',
     duration: 1.02,
-    byterange: {offset: 20000, length: 23000},
+    byterange: {offset: 20_000, length: 23_000},
   }));
   parts.push(new PartialSegment({
     uri: 'fileSequence271.mp4',
     duration: 1.02,
-    byterange: {offset: 43000, length: 18000},
+    byterange: {offset: 43_000, length: 18_000},
   }));
   parts.push(new PartialSegment({
     uri: 'fileSequence271.mp4',
     duration: 1.02,
-    byterange: {offset: 61000, length: 19000},
+    byterange: {offset: 61_000, length: 19_000},
   }));
   return parts;
 }

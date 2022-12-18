@@ -5,7 +5,7 @@ const playlist = new MediaPlaylist({
   targetDuration: 4,
   mediaSequenceBase: 266,
   lowLatencyCompatibility: {canBlockReload: true, canSkipUntil: 24.0, partHoldBack: 1.0},
-  partTargetDuration: 0.33334,
+  partTargetDuration: 0.333_34,
   skip: 3,
   segments: createSegments(),
   renditionReports: createRenditionReports(),
@@ -15,21 +15,21 @@ function createSegments() {
   const segments = [];
   segments.push(new Segment({
     uri: 'fileSequence269.mp4',
-    duration: 4.00008,
+    duration: 4.000_08,
     title: '',
     mediaSequenceNumber: 269,
     discontinuitySequence: 0,
   }));
   segments.push(new Segment({
     uri: 'fileSequence270.mp4',
-    duration: 4.00008,
+    duration: 4.000_08,
     title: '',
     mediaSequenceNumber: 270,
     discontinuitySequence: 0,
   }));
   segments.push(new Segment({
     uri: 'fileSequence271.mp4',
-    duration: 4.00008,
+    duration: 4.000_08,
     title: '',
     mediaSequenceNumber: 271,
     discontinuitySequence: 0,
@@ -37,7 +37,7 @@ function createSegments() {
   }));
   segments.push(new Segment({
     uri: 'fileSequence272.mp4',
-    duration: 4.00008,
+    duration: 4.000_08,
     title: '',
     mediaSequenceNumber: 272,
     discontinuitySequence: 0,
@@ -71,7 +71,7 @@ function createParts1() {
   for (let i = 0; i < 12; i++) {
     parts.push(new PartialSegment({
       uri: `filePart271.${i}.mp4`,
-      duration: 0.33334,
+      duration: 0.333_34,
       independent: (i === 4 || i === 8),
     }));
   }
@@ -84,7 +84,7 @@ function createParts2() {
   for (let i = 0; i < 12; i++) {
     parts.push(new PartialSegment({
       uri: `filePart272.${String.fromCharCode(aCode + i)}.mp4`,
-      duration: 0.33334,
+      duration: 0.333_34,
       independent: (i === 5),
     }));
   }
@@ -96,7 +96,7 @@ function createParts3() {
   for (let i = 0; i < 5; i++) {
     parts.push(new PartialSegment({
       uri: `filePart273.${i}.mp4`,
-      duration: 0.33334,
+      duration: 0.333_34,
       independent: (i === 0),
       hint: (i === 4),
     }));

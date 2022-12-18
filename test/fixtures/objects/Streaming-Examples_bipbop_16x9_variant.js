@@ -116,7 +116,7 @@ function createVariants() {
   const variants = [];
   variants.push(new Variant({
     uri: 'gear1/prog_index.m3u8',
-    bandwidth: 263851,
+    bandwidth: 263_851,
     codecs: 'mp4a.40.2, avc1.4d400d',
     resolution: {width: 416, height: 234},
     audio: renditions.bipbop_audio,
@@ -125,12 +125,12 @@ function createVariants() {
   variants.push(new Variant({
     uri: 'gear1/iframe_index.m3u8',
     isIFrameOnly: true,
-    bandwidth: 28451,
+    bandwidth: 28_451,
     codecs: 'avc1.4d400d',
   }));
   variants.push(new Variant({
     uri: 'gear2/prog_index.m3u8',
-    bandwidth: 577610,
+    bandwidth: 577_610,
     codecs: 'mp4a.40.2, avc1.4d401e',
     resolution: {width: 640, height: 360},
     audio: renditions.bipbop_audio,
@@ -139,12 +139,12 @@ function createVariants() {
   variants.push(new Variant({
     uri: 'gear2/iframe_index.m3u8',
     isIFrameOnly: true,
-    bandwidth: 181534,
+    bandwidth: 181_534,
     codecs: 'avc1.4d401e',
   }));
   variants.push(new Variant({
     uri: 'gear3/prog_index.m3u8',
-    bandwidth: 915905,
+    bandwidth: 915_905,
     codecs: 'mp4a.40.2, avc1.4d401f',
     resolution: {width: 960, height: 540},
     audio: renditions.bipbop_audio,
@@ -153,12 +153,12 @@ function createVariants() {
   variants.push(new Variant({
     uri: 'gear3/iframe_index.m3u8',
     isIFrameOnly: true,
-    bandwidth: 297056,
+    bandwidth: 297_056,
     codecs: 'avc1.4d401f',
   }));
   variants.push(new Variant({
     uri: 'gear4/prog_index.m3u8',
-    bandwidth: 1030138,
+    bandwidth: 1_030_138,
     codecs: 'mp4a.40.2, avc1.4d401f',
     resolution: {width: 1280, height: 720},
     audio: renditions.bipbop_audio,
@@ -167,12 +167,12 @@ function createVariants() {
   variants.push(new Variant({
     uri: 'gear4/iframe_index.m3u8',
     isIFrameOnly: true,
-    bandwidth: 339492,
+    bandwidth: 339_492,
     codecs: 'avc1.4d401f',
   }));
   variants.push(new Variant({
     uri: 'gear5/prog_index.m3u8',
-    bandwidth: 1924009,
+    bandwidth: 1_924_009,
     codecs: 'mp4a.40.2, avc1.4d401f',
     resolution: {width: 1920, height: 1080},
     audio: renditions.bipbop_audio,
@@ -181,12 +181,12 @@ function createVariants() {
   variants.push(new Variant({
     uri: 'gear5/iframe_index.m3u8',
     isIFrameOnly: true,
-    bandwidth: 669554,
+    bandwidth: 669_554,
     codecs: 'avc1.4d401f',
   }));
   variants.push(new Variant({
     uri: 'gear0/prog_index.m3u8',
-    bandwidth: 41457,
+    bandwidth: 41_457,
     codecs: 'mp4a.40.2',
     audio: renditions.bipbop_audio,
     subtitles: renditions.subs,
