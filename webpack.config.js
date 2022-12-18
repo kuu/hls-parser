@@ -7,7 +7,7 @@ module.exports = (_, argv) => ({
     path: path.resolve(__dirname, 'dist'),
     filename: `hls-parser${argv.mode === 'production' ? '.min' : ''}.js`,
     library: 'HLS',
-    libraryTarget: 'umd'
+    libraryTarget: 'umd',
   },
   module: {
     rules: [
@@ -16,16 +16,16 @@ module.exports = (_, argv) => ({
         exclude: /node_modules/,
         loader: 'babel-loader',
         options: {
-          presets: ['@babel/preset-env']
-        }
-      }
-    ]
+          presets: ['@babel/preset-env'],
+        },
+      },
+    ],
   },
   devtool: argv.mode === 'production' ? 'source-map' : false,
   optimization: {
     minimize: argv.mode === 'production',
     minimizer: [
-      new TerserPlugin()
-    ]
-  }
+      new TerserPlugin(),
+    ],
+  },
 });

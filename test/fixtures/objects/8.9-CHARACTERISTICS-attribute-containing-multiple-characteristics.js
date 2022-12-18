@@ -12,7 +12,7 @@ function createRendition() {
     name: 'English',
     isDefault: true,
     autoselect: true,
-    characteristics: 'public.accessibility.transcribes-spoken-dialog,public.easy-to-read'
+    characteristics: 'public.accessibility.transcribes-spoken-dialog,public.easy-to-read',
   }));
   renditions.push(new Rendition({
     type: 'AUDIO',
@@ -22,7 +22,7 @@ function createRendition() {
     name: 'Deutsch',
     isDefault: false,
     autoselect: true,
-    characteristics: 'public.accessibility.transcribes-spoken-dialog,public.easy-to-read'
+    characteristics: 'public.accessibility.transcribes-spoken-dialog,public.easy-to-read',
   }));
   renditions.push(new Rendition({
     type: 'AUDIO',
@@ -32,13 +32,13 @@ function createRendition() {
     name: 'Commentary',
     isDefault: false,
     autoselect: false,
-    characteristics: 'public.accessibility.transcribes-spoken-dialog,public.easy-to-read'
+    characteristics: 'public.accessibility.transcribes-spoken-dialog,public.easy-to-read',
   }));
   return renditions;
 }
 
 const playlist = new MasterPlaylist({
-  variants: createVariants()
+  variants: createVariants(),
 });
 
 function createVariants() {
@@ -48,28 +48,28 @@ function createVariants() {
     bandwidth: 1280000,
     codecs: 'mp4a.40.2',
     audio: renditions,
-    currentRenditions: {audio: 0}
+    currentRenditions: {audio: 0},
   }));
   variants.push(new Variant({
     uri: 'mid/video-only.m3u8',
     bandwidth: 2560000,
     codecs: 'mp4a.40.2',
     audio: renditions,
-    currentRenditions: {audio: 0}
+    currentRenditions: {audio: 0},
   }));
   variants.push(new Variant({
     uri: 'hi/video-only.m3u8',
     bandwidth: 7680000,
     codecs: 'mp4a.40.2',
     audio: renditions,
-    currentRenditions: {audio: 0}
+    currentRenditions: {audio: 0},
   }));
   variants.push(new Variant({
     uri: 'main/english-audio.m3u8',
     bandwidth: 65000,
     codecs: 'mp4a.40.5',
     audio: renditions,
-    currentRenditions: {audio: 0}
+    currentRenditions: {audio: 0},
   }));
   return variants;
 }

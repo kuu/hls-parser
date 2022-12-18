@@ -11,7 +11,7 @@ test("#EXT-X-CUE-IN_01", t => {
 
   const playlist = new MediaPlaylist({
     targetDuration: 10,
-    segments
+    segments,
   });
 
   // For live media playlist, unclosed CUE-OUT is allowed.
@@ -41,7 +41,7 @@ test("#EXT-X-CUE-IN_02", t => {
   const playlist = new MediaPlaylist({
     playlistType: 'VOD',
     targetDuration: 10,
-    segments
+    segments,
   });
 
   // For VOD media playlist, unclosed CUE-OUT is not allowed.
@@ -75,7 +75,7 @@ test("#EXT-X-CUE-IN_03", t => {
   const playlist = new MediaPlaylist({
     playlistType: 'EVENT',
     targetDuration: 10,
-    segments
+    segments,
   });
 
   // For live media playlist, unclosed CUE-OUT is allowed.
@@ -114,7 +114,7 @@ test("#EXT-X-CUE-IN_04", t => {
   const playlist = new MediaPlaylist({
     playlistType: 'VOD',
     targetDuration: 10,
-    segments
+    segments,
   });
 
   // For VOD media playlist, unclosed CUE-OUT is not allowed.

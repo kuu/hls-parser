@@ -8,7 +8,7 @@ const playlist = new MediaPlaylist({
   partTargetDuration: 0.33334,
   skip: 3,
   segments: createSegments(),
-  renditionReports: createRenditionReports()
+  renditionReports: createRenditionReports(),
 });
 
 function createSegments() {
@@ -18,14 +18,14 @@ function createSegments() {
     duration: 4.00008,
     title: '',
     mediaSequenceNumber: 269,
-    discontinuitySequence: 0
+    discontinuitySequence: 0,
   }));
   segments.push(new Segment({
     uri: 'fileSequence270.mp4',
     duration: 4.00008,
     title: '',
     mediaSequenceNumber: 270,
-    discontinuitySequence: 0
+    discontinuitySequence: 0,
   }));
   segments.push(new Segment({
     uri: 'fileSequence271.mp4',
@@ -33,7 +33,7 @@ function createSegments() {
     title: '',
     mediaSequenceNumber: 271,
     discontinuitySequence: 0,
-    parts: createParts1()
+    parts: createParts1(),
   }));
   segments.push(new Segment({
     uri: 'fileSequence272.mp4',
@@ -42,11 +42,11 @@ function createSegments() {
     mediaSequenceNumber: 272,
     discontinuitySequence: 0,
     programDateTime: new Date('2019-02-14T02:14:00.106Z'),
-    parts: createParts2()
+    parts: createParts2(),
   }));
   segments.push(new Segment({
     mediaSequenceNumber: 273,
-    parts: createParts3()
+    parts: createParts3(),
   }));
   return segments;
 }
@@ -56,12 +56,12 @@ function createRenditionReports() {
   reports.push(new RenditionReport({
     uri: '../1M/waitForMSN.php',
     lastMSN: 273,
-    lastPart: 3
+    lastPart: 3,
   }));
   reports.push(new RenditionReport({
     uri: '../4M/waitForMSN.php',
     lastMSN: 273,
-    lastPart: 3
+    lastPart: 3,
   }));
   return reports;
 }
@@ -72,7 +72,7 @@ function createParts1() {
     parts.push(new PartialSegment({
       uri: `filePart271.${i}.mp4`,
       duration: 0.33334,
-      independent: (i === 4 || i === 8)
+      independent: (i === 4 || i === 8),
     }));
   }
   return parts;
@@ -85,7 +85,7 @@ function createParts2() {
     parts.push(new PartialSegment({
       uri: `filePart272.${String.fromCharCode(aCode + i)}.mp4`,
       duration: 0.33334,
-      independent: (i === 5)
+      independent: (i === 5),
     }));
   }
   return parts;
@@ -98,7 +98,7 @@ function createParts3() {
       uri: `filePart273.${i}.mp4`,
       duration: 0.33334,
       independent: (i === 0),
-      hint: (i === 4)
+      hint: (i === 4),
     }));
   }
   return parts;

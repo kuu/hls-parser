@@ -10,8 +10,8 @@ const renditions = {
       name: 'English',
       autoselect: true,
       isDefault: true,
-      channels: '2'
-    })
+      channels: '2',
+    }),
   ],
   aud2: [
     new Rendition({
@@ -22,8 +22,8 @@ const renditions = {
       name: 'English',
       autoselect: true,
       isDefault: true,
-      channels: '6'
-    })
+      channels: '6',
+    }),
   ],
   aud3: [
     new Rendition({
@@ -34,8 +34,8 @@ const renditions = {
       name: 'English',
       autoselect: true,
       isDefault: true,
-      channels: '6'
-    })
+      channels: '6',
+    }),
   ],
   cc1: [
     new Rendition({
@@ -45,8 +45,8 @@ const renditions = {
       name: 'English',
       autoselect: true,
       isDefault: true,
-      instreamId: 'CC1'
-    })
+      instreamId: 'CC1',
+    }),
   ],
   sub1: [
     new Rendition({
@@ -57,15 +57,15 @@ const renditions = {
       name: 'English',
       autoselect: true,
       isDefault: true,
-      forced: false
-    })
-  ]
+      forced: false,
+    }),
+  ],
 };
 
 const playlist = new MasterPlaylist({
   version: 6,
   independentSegments: true,
-  variants: createVariants()
+  variants: createVariants(),
 });
 
 function createVariants() {
@@ -79,7 +79,7 @@ function createVariants() {
     frameRate: 60.0,
     audio: renditions.aud1,
     subtitles: renditions.sub1,
-    closedCaptions: renditions.cc1
+    closedCaptions: renditions.cc1,
   }));
   variants.push(new Variant({
     uri: 'v9/prog_index.m3u8',
@@ -90,7 +90,7 @@ function createVariants() {
     frameRate: 60.0,
     audio: renditions.aud1,
     subtitles: renditions.sub1,
-    closedCaptions: renditions.cc1
+    closedCaptions: renditions.cc1,
   }));
   variants.push(new Variant({
     uri: 'v8/prog_index.m3u8',
@@ -101,7 +101,7 @@ function createVariants() {
     frameRate: 60.0,
     audio: renditions.aud1,
     subtitles: renditions.sub1,
-    closedCaptions: renditions.cc1
+    closedCaptions: renditions.cc1,
   }));
   variants.push(new Variant({
     uri: 'v7/prog_index.m3u8',
@@ -112,7 +112,7 @@ function createVariants() {
     frameRate: 60.0,
     audio: renditions.aud1,
     subtitles: renditions.sub1,
-    closedCaptions: renditions.cc1
+    closedCaptions: renditions.cc1,
   }));
   variants.push(new Variant({
     uri: 'v6/prog_index.m3u8',
@@ -123,7 +123,7 @@ function createVariants() {
     frameRate: 60.0,
     audio: renditions.aud1,
     subtitles: renditions.sub1,
-    closedCaptions: renditions.cc1
+    closedCaptions: renditions.cc1,
   }));
   variants.push(new Variant({
     uri: 'v4/prog_index.m3u8',
@@ -134,7 +134,7 @@ function createVariants() {
     frameRate: 30.0,
     audio: renditions.aud1,
     subtitles: renditions.sub1,
-    closedCaptions: renditions.cc1
+    closedCaptions: renditions.cc1,
   }));
   variants.push(new Variant({
     uri: 'v3/prog_index.m3u8',
@@ -145,7 +145,7 @@ function createVariants() {
     frameRate: 30.0,
     audio: renditions.aud1,
     subtitles: renditions.sub1,
-    closedCaptions: renditions.cc1
+    closedCaptions: renditions.cc1,
   }));
   variants.push(new Variant({
     uri: 'v2/prog_index.m3u8',
@@ -156,7 +156,7 @@ function createVariants() {
     frameRate: 30.0,
     audio: renditions.aud1,
     subtitles: renditions.sub1,
-    closedCaptions: renditions.cc1
+    closedCaptions: renditions.cc1,
   }));
   variants.push(new Variant({
     uri: 'v5/prog_index.m3u8',
@@ -167,7 +167,7 @@ function createVariants() {
     frameRate: 60.0,
     audio: renditions.aud2,
     subtitles: renditions.sub1,
-    closedCaptions: renditions.cc1
+    closedCaptions: renditions.cc1,
   }));
   variants.push(new Variant({
     uri: 'v9/prog_index.m3u8',
@@ -178,7 +178,7 @@ function createVariants() {
     frameRate: 60.0,
     audio: renditions.aud2,
     subtitles: renditions.sub1,
-    closedCaptions: renditions.cc1
+    closedCaptions: renditions.cc1,
   }));
   variants.push(new Variant({
     uri: 'v8/prog_index.m3u8',
@@ -189,7 +189,7 @@ function createVariants() {
     frameRate: 60.0,
     audio: renditions.aud2,
     subtitles: renditions.sub1,
-    closedCaptions: renditions.cc1
+    closedCaptions: renditions.cc1,
   }));
   variants.push(new Variant({
     uri: 'v7/prog_index.m3u8',
@@ -200,7 +200,7 @@ function createVariants() {
     frameRate: 60.0,
     audio: renditions.aud2,
     subtitles: renditions.sub1,
-    closedCaptions: renditions.cc1
+    closedCaptions: renditions.cc1,
   }));
   variants.push(new Variant({
     uri: 'v6/prog_index.m3u8',
@@ -211,7 +211,7 @@ function createVariants() {
     frameRate: 60.0,
     audio: renditions.aud2,
     subtitles: renditions.sub1,
-    closedCaptions: renditions.cc1
+    closedCaptions: renditions.cc1,
   }));
   variants.push(new Variant({
     uri: 'v4/prog_index.m3u8',
@@ -222,7 +222,7 @@ function createVariants() {
     frameRate: 30.0,
     audio: renditions.aud2,
     subtitles: renditions.sub1,
-    closedCaptions: renditions.cc1
+    closedCaptions: renditions.cc1,
   }));
   variants.push(new Variant({
     uri: 'v3/prog_index.m3u8',
@@ -233,7 +233,7 @@ function createVariants() {
     frameRate: 30.0,
     audio: renditions.aud2,
     subtitles: renditions.sub1,
-    closedCaptions: renditions.cc1
+    closedCaptions: renditions.cc1,
   }));
   variants.push(new Variant({
     uri: 'v2/prog_index.m3u8',
@@ -244,7 +244,7 @@ function createVariants() {
     frameRate: 30.0,
     audio: renditions.aud2,
     subtitles: renditions.sub1,
-    closedCaptions: renditions.cc1
+    closedCaptions: renditions.cc1,
   }));
   variants.push(new Variant({
     uri: 'v5/prog_index.m3u8',
@@ -255,7 +255,7 @@ function createVariants() {
     frameRate: 60.0,
     audio: renditions.aud3,
     subtitles: renditions.sub1,
-    closedCaptions: renditions.cc1
+    closedCaptions: renditions.cc1,
   }));
   variants.push(new Variant({
     uri: 'v9/prog_index.m3u8',
@@ -266,7 +266,7 @@ function createVariants() {
     frameRate: 60.0,
     audio: renditions.aud3,
     subtitles: renditions.sub1,
-    closedCaptions: renditions.cc1
+    closedCaptions: renditions.cc1,
   }));
   variants.push(new Variant({
     uri: 'v8/prog_index.m3u8',
@@ -277,7 +277,7 @@ function createVariants() {
     frameRate: 60.0,
     audio: renditions.aud3,
     subtitles: renditions.sub1,
-    closedCaptions: renditions.cc1
+    closedCaptions: renditions.cc1,
   }));
   variants.push(new Variant({
     uri: 'v7/prog_index.m3u8',
@@ -288,7 +288,7 @@ function createVariants() {
     frameRate: 60.0,
     audio: renditions.aud3,
     subtitles: renditions.sub1,
-    closedCaptions: renditions.cc1
+    closedCaptions: renditions.cc1,
   }));
   variants.push(new Variant({
     uri: 'v6/prog_index.m3u8',
@@ -299,7 +299,7 @@ function createVariants() {
     frameRate: 60.0,
     audio: renditions.aud3,
     subtitles: renditions.sub1,
-    closedCaptions: renditions.cc1
+    closedCaptions: renditions.cc1,
   }));
   variants.push(new Variant({
     uri: 'v4/prog_index.m3u8',
@@ -310,7 +310,7 @@ function createVariants() {
     frameRate: 30.0,
     audio: renditions.aud3,
     subtitles: renditions.sub1,
-    closedCaptions: renditions.cc1
+    closedCaptions: renditions.cc1,
   }));
   variants.push(new Variant({
     uri: 'v3/prog_index.m3u8',
@@ -321,7 +321,7 @@ function createVariants() {
     frameRate: 30.0,
     audio: renditions.aud3,
     subtitles: renditions.sub1,
-    closedCaptions: renditions.cc1
+    closedCaptions: renditions.cc1,
   }));
   variants.push(new Variant({
     uri: 'v2/prog_index.m3u8',
@@ -332,7 +332,7 @@ function createVariants() {
     frameRate: 30.0,
     audio: renditions.aud3,
     subtitles: renditions.sub1,
-    closedCaptions: renditions.cc1
+    closedCaptions: renditions.cc1,
   }));
   variants.push(new Variant({
     uri: 'v7/iframe_index.m3u8',
@@ -340,7 +340,7 @@ function createVariants() {
     bandwidth: 186522,
     averageBandwidth: 182077,
     codecs: 'avc1.64002a',
-    resolution: {width: 1920, height: 1080}
+    resolution: {width: 1920, height: 1080},
   }));
   variants.push(new Variant({
     uri: 'v6/iframe_index.m3u8',
@@ -348,7 +348,7 @@ function createVariants() {
     bandwidth: 133856,
     averageBandwidth: 129936,
     codecs: 'avc1.640020',
-    resolution: {width: 1280, height: 720}
+    resolution: {width: 1280, height: 720},
   }));
   variants.push(new Variant({
     uri: 'v5/iframe_index.m3u8',
@@ -356,7 +356,7 @@ function createVariants() {
     bandwidth: 98136,
     averageBandwidth: 94286,
     codecs: 'avc1.640020',
-    resolution: {width: 960, height: 540}
+    resolution: {width: 960, height: 540},
   }));
   variants.push(new Variant({
     uri: 'v4/iframe_index.m3u8',
@@ -364,7 +364,7 @@ function createVariants() {
     bandwidth: 76704,
     averageBandwidth: 74767,
     codecs: 'avc1.64001e',
-    resolution: {width: 768, height: 432}
+    resolution: {width: 768, height: 432},
   }));
   variants.push(new Variant({
     uri: 'v3/iframe_index.m3u8',
@@ -372,7 +372,7 @@ function createVariants() {
     bandwidth: 64078,
     averageBandwidth: 62251,
     codecs: 'avc1.64001e',
-    resolution: {width: 640, height: 360}
+    resolution: {width: 640, height: 360},
   }));
   variants.push(new Variant({
     uri: 'v2/iframe_index.m3u8',
@@ -380,7 +380,7 @@ function createVariants() {
     bandwidth: 38728,
     averageBandwidth: 37866,
     codecs: 'avc1.640015',
-    resolution: {width: 480, height: 270}
+    resolution: {width: 480, height: 270},
   }));
   return variants;
 }

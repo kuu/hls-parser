@@ -9,5 +9,5 @@ module.exports = {
   stringify,
   types,
   getOptions,
-  setOptions
+  setOptions,
 };

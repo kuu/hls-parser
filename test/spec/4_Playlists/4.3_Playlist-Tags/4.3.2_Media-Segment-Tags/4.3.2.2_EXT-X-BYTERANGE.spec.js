@@ -130,6 +130,6 @@ test('#EXT-X-BYTERANGE_05', t => {
         #EXTINF:9.9,comment
         #EXT-X-BYTERANGE:100@200
         http://example.com/2
-    `)
+    `),
   );
 });

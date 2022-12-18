@@ -8,7 +8,7 @@ const renditions = {
       language: 'eng',
       name: 'BipBop Audio 1',
       autoselect: true,
-      isDefault: true
+      isDefault: true,
     }),
     new Rendition({
       type: 'AUDIO',
@@ -17,8 +17,8 @@ const renditions = {
       language: 'eng',
       name: 'BipBop Audio 2',
       autoselect: false,
-      isDefault: false
-    })
+      isDefault: false,
+    }),
   ],
   subs: [
     new Rendition({
@@ -30,7 +30,7 @@ const renditions = {
       autoselect: true,
       isDefault: true,
       forced: false,
-      characteristics: 'public.accessibility.transcribes-spoken-dialog, public.accessibility.describes-music-and-sound'
+      characteristics: 'public.accessibility.transcribes-spoken-dialog, public.accessibility.describes-music-and-sound',
     }),
     new Rendition({
       type: 'SUBTITLES',
@@ -40,7 +40,7 @@ const renditions = {
       name: 'English (Forced)',
       autoselect: false,
       isDefault: false,
-      forced: true
+      forced: true,
     }),
     new Rendition({
       type: 'SUBTITLES',
@@ -51,7 +51,7 @@ const renditions = {
       autoselect: true,
       isDefault: false,
       forced: false,
-      characteristics: 'public.accessibility.transcribes-spoken-dialog, public.accessibility.describes-music-and-sound'
+      characteristics: 'public.accessibility.transcribes-spoken-dialog, public.accessibility.describes-music-and-sound',
     }),
     new Rendition({
       type: 'SUBTITLES',
@@ -61,7 +61,7 @@ const renditions = {
       name: 'Français (Forced)',
       autoselect: false,
       isDefault: false,
-      forced: true
+      forced: true,
     }),
     new Rendition({
       type: 'SUBTITLES',
@@ -72,7 +72,7 @@ const renditions = {
       autoselect: true,
       isDefault: false,
       forced: false,
-      characteristics: 'public.accessibility.transcribes-spoken-dialog, public.accessibility.describes-music-and-sound'
+      characteristics: 'public.accessibility.transcribes-spoken-dialog, public.accessibility.describes-music-and-sound',
     }),
     new Rendition({
       type: 'SUBTITLES',
@@ -82,7 +82,7 @@ const renditions = {
       name: 'Español (Forced)',
       autoselect: false,
       isDefault: false,
-      forced: true
+      forced: true,
     }),
     new Rendition({
       type: 'SUBTITLES',
@@ -93,7 +93,7 @@ const renditions = {
       autoselect: true,
       isDefault: false,
       forced: false,
-      characteristics: 'public.accessibility.transcribes-spoken-dialog, public.accessibility.describes-music-and-sound'
+      characteristics: 'public.accessibility.transcribes-spoken-dialog, public.accessibility.describes-music-and-sound',
     }),
     new Rendition({
       type: 'SUBTITLES',
@@ -103,13 +103,13 @@ const renditions = {
       name: '日本語 (Forced)',
       autoselect: false,
       isDefault: false,
-      forced: true
-    })
-  ]
+      forced: true,
+    }),
+  ],
 };
 
 const playlist = new MasterPlaylist({
-  variants: createVariants()
+  variants: createVariants(),
 });
 
 function createVariants() {
@@ -120,13 +120,13 @@ function createVariants() {
     codecs: 'mp4a.40.2, avc1.4d400d',
     resolution: {width: 416, height: 234},
     audio: renditions.bipbop_audio,
-    subtitles: renditions.subs
+    subtitles: renditions.subs,
   }));
   variants.push(new Variant({
     uri: 'gear1/iframe_index.m3u8',
     isIFrameOnly: true,
     bandwidth: 28451,
-    codecs: 'avc1.4d400d'
+    codecs: 'avc1.4d400d',
   }));
   variants.push(new Variant({
     uri: 'gear2/prog_index.m3u8',
@@ -134,13 +134,13 @@ function createVariants() {
     codecs: 'mp4a.40.2, avc1.4d401e',
     resolution: {width: 640, height: 360},
     audio: renditions.bipbop_audio,
-    subtitles: renditions.subs
+    subtitles: renditions.subs,
   }));
   variants.push(new Variant({
     uri: 'gear2/iframe_index.m3u8',
     isIFrameOnly: true,
     bandwidth: 181534,
-    codecs: 'avc1.4d401e'
+    codecs: 'avc1.4d401e',
   }));
   variants.push(new Variant({
     uri: 'gear3/prog_index.m3u8',
@@ -148,13 +148,13 @@ function createVariants() {
     codecs: 'mp4a.40.2, avc1.4d401f',
     resolution: {width: 960, height: 540},
     audio: renditions.bipbop_audio,
-    subtitles: renditions.subs
+    subtitles: renditions.subs,
   }));
   variants.push(new Variant({
     uri: 'gear3/iframe_index.m3u8',
     isIFrameOnly: true,
     bandwidth: 297056,
-    codecs: 'avc1.4d401f'
+    codecs: 'avc1.4d401f',
   }));
   variants.push(new Variant({
     uri: 'gear4/prog_index.m3u8',
@@ -162,13 +162,13 @@ function createVariants() {
     codecs: 'mp4a.40.2, avc1.4d401f',
     resolution: {width: 1280, height: 720},
     audio: renditions.bipbop_audio,
-    subtitles: renditions.subs
+    subtitles: renditions.subs,
   }));
   variants.push(new Variant({
     uri: 'gear4/iframe_index.m3u8',
     isIFrameOnly: true,
     bandwidth: 339492,
-    codecs: 'avc1.4d401f'
+    codecs: 'avc1.4d401f',
   }));
   variants.push(new Variant({
     uri: 'gear5/prog_index.m3u8',
@@ -176,20 +176,20 @@ function createVariants() {
     codecs: 'mp4a.40.2, avc1.4d401f',
     resolution: {width: 1920, height: 1080},
     audio: renditions.bipbop_audio,
-    subtitles: renditions.subs
+    subtitles: renditions.subs,
   }));
   variants.push(new Variant({
     uri: 'gear5/iframe_index.m3u8',
     isIFrameOnly: true,
     bandwidth: 669554,
-    codecs: 'avc1.4d401f'
+    codecs: 'avc1.4d401f',
   }));
   variants.push(new Variant({
     uri: 'gear0/prog_index.m3u8',
     bandwidth: 41457,
     codecs: 'mp4a.40.2',
     audio: renditions.bipbop_audio,
-    subtitles: renditions.subs
+    subtitles: renditions.subs,
   }));
   return variants;
 }

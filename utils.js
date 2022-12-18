@@ -213,5 +213,5 @@ module.exports = {
   formatDate,
   hasOwnProp,
   setOptions,
-  getOptions
+  getOptions,
 };

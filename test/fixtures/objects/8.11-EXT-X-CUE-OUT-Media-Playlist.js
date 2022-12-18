@@ -4,7 +4,7 @@ const playlist = new MediaPlaylist({
   version: 3,
   targetDuration: 10,
   segments: createSegments(),
-  endlist: true
+  endlist: true,
 });
 
 function createSegments() {
@@ -14,7 +14,7 @@ function createSegments() {
     duration: 9.009,
     title: '',
     mediaSequenceNumber: 0,
-    discontinuitySequence: 0
+    discontinuitySequence: 0,
   }));
   segments.push(new Segment({
     uri: 'http://media.example.com/second.ts',
@@ -24,15 +24,15 @@ function createSegments() {
     discontinuitySequence: 0,
     markers: [{
       type: 'OUT',
-      duration: 15
-    }]
+      duration: 15,
+    }],
   }));
   segments.push(new Segment({
     uri: 'http://media.example.com/third.ts',
     duration: 3.003,
     title: '',
     mediaSequenceNumber: 2,
-    discontinuitySequence: 0
+    discontinuitySequence: 0,
   }));
   return segments;
 }

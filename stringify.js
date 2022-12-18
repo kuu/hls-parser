@@ -8,11 +8,11 @@ const ALLOW_REDUNDANCY = [
   '#EXT-X-CUE-OUT',
   '#EXT-X-CUE-IN',
   '#EXT-X-KEY',
-  '#EXT-X-MAP'
+  '#EXT-X-MAP',
 ];
 
 const SKIP_IF_REDUNDANT = [
-  '#EXT-X-MEDIA'
+  '#EXT-X-MEDIA',
 ];
 
 class LineArray extends Array {
@@ -181,7 +181,7 @@ function buildRendition(rendition) {
   const attrs = [
     `TYPE=${rendition.type}`,
     `GROUP-ID="${rendition.groupId}"`,
-    `NAME="${rendition.name}"`
+    `NAME="${rendition.name}"`,
   ];
   if (rendition.isDefault !== undefined) {
     attrs.push(`DEFAULT=${rendition.isDefault ? 'YES' : 'NO'}`);
@@ -347,7 +347,7 @@ function buildByteRange({offset, length}) {
 
 function buildDateRange(dateRange) {
   const attrs = [
-    `ID="${dateRange.id}"`
+    `ID="${dateRange.id}"`,
   ];
   if (dateRange.start) {
     attrs.push(`START-DATE="${utils.formatDate(dateRange.start)}"`);

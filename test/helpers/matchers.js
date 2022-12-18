@@ -57,5 +57,5 @@ function notEqualPlaylist(t, expected, actual) {
 
 module.exports = {
   equalPlaylist,
-  notEqualPlaylist
+  notEqualPlaylist,
 };

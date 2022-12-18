@@ -12,7 +12,7 @@ const {
   Segment,
   PartialSegment,
   PrefetchSegment,
-  RenditionReport
+  RenditionReport,
 } = require('./types');
 
 function unquote(str) {
@@ -273,7 +273,7 @@ function parseRendition({attributes}) {
     forced: attributes['FORCED'],
     instreamId: attributes['INSTREAM-ID'],
     characteristics: attributes['CHARACTERISTICS'],
-    channels: attributes['CHANNELS']
+    channels: attributes['CHANNELS'],
   });
   return rendition;
 }
@@ -330,7 +330,7 @@ function parseVariant(lines, variantAttrs, uri, iFrameOnly, params) {
     hdcpLevel: variantAttrs['HDCP-LEVEL'],
     allowedCpc: variantAttrs['ALLOWED-CPC'],
     videoRange: variantAttrs['VIDEO-RANGE'],
-    stableVariantId: variantAttrs['STABLE-VARIANT-ID']
+    stableVariantId: variantAttrs['STABLE-VARIANT-ID'],
   });
   for (const line of lines) {
     if (line.name === 'EXT-X-MEDIA') {
@@ -419,7 +419,7 @@ function parseMasterPlaylist(lines, params) {
         id: attributes['DATA-ID'],
         value: attributes['VALUE'],
         uri: attributes['URI'],
-        language: attributes['LANGUAGE']
+        language: attributes['LANGUAGE'],
       });
       if (playlist.sessionDataList.some(item => item.id === sessionData.id && item.language === sessionData.language)) {
         utils.INVALIDPLAYLIST('A Playlist MUST NOT contain more than one EXT-X-SESSION-DATA tag with the same DATA-ID attribute and the same LANGUAGE attribute.');
@@ -434,7 +434,7 @@ function parseMasterPlaylist(lines, params) {
         uri: attributes['URI'],
         iv: attributes['IV'],
         format: attributes['KEYFORMAT'],
-        formatVersion: attributes['KEYFORMATVERSIONS']
+        formatVersion: attributes['KEYFORMATVERSIONS'],
       });
       if (playlist.sessionKeyList.some(item => sameKey(item, sessionKey))) {
         utils.INVALIDPLAYLIST('A Master Playlist MUST NOT contain more than one EXT-X-SESSION-KEY tag with the same METHOD, URI, IV, KEYFORMAT, and KEYFORMATVERSIONS attribute values.');
@@ -508,7 +508,7 @@ function parseSegment(lines, uri, start, end, mediaSequenceNumber, discontinuity
         uri: attributes['URI'],
         iv: attributes['IV'],
         format: attributes['KEYFORMAT'],
-        formatVersion: attributes['KEYFORMATVERSIONS']
+        formatVersion: attributes['KEYFORMATVERSIONS'],
       });
     } else if (name === 'EXT-X-MAP') {
       if (segment.parts.length > 0) {
@@ -520,7 +520,7 @@ function parseSegment(lines, uri, start, end, mediaSequenceNumber, discontinuity
       params.hasMap = true;
       segment.map = new MediaInitializationSection({
         uri: attributes['URI'],
-        byterange: attributes['BYTERANGE']
+        byterange: attributes['BYTERANGE'],
       });
     } else if (name === 'EXT-X-PROGRAM-DATE-TIME') {
       segment.programDateTime = value;
@@ -539,16 +539,16 @@ function parseSegment(lines, uri, start, end, mediaSequenceNumber, discontinuity
         duration: attributes['DURATION'],
         plannedDuration: attributes['PLANNED-DURATION'],
         endOnNext: attributes['END-ON-NEXT'],
-        attributes: attrs
+        attributes: attrs,
       });
     } else if (name === 'EXT-X-CUE-OUT') {
       segment.markers.push(new SpliceInfo({
         type: 'OUT',
-        duration: (attributes && attributes.DURATION) || value
+        duration: (attributes && attributes.DURATION) || value,
       }));
     } else if (name === 'EXT-X-CUE-IN') {
       segment.markers.push(new SpliceInfo({
-        type: 'IN'
+        type: 'IN',
       }));
     } else if (
       name === 'EXT-X-CUE-OUT-CONT' ||
@@ -560,7 +560,7 @@ function parseSegment(lines, uri, start, end, mediaSequenceNumber, discontinuity
       segment.markers.push(new SpliceInfo({
         type: 'RAW',
         tagName: name,
-        value
+        value,
       }));
     } else if (name === 'EXT-X-PRELOAD-HINT' && !attributes['TYPE']) {
       utils.INVALIDPLAYLIST('EXT-X-PRELOAD-HINT: TYPE attribute is mandatory');
@@ -577,7 +577,7 @@ function parseSegment(lines, uri, start, end, mediaSequenceNumber, discontinuity
       segment.map = new MediaInitializationSection({
         hint: true,
         uri: attributes['URI'],
-        byterange: {length: attributes['BYTERANGE-LENGTH'], offset: attributes['BYTERANGE-START'] || 0}
+        byterange: {length: attributes['BYTERANGE-LENGTH'], offset: attributes['BYTERANGE-START'] || 0},
       });
     } else if (name === 'EXT-X-PART' || (name === 'EXT-X-PRELOAD-HINT' && attributes['TYPE'] === 'PART')) {
       if (name === 'EXT-X-PART' && !attributes['DURATION']) {
@@ -592,7 +592,7 @@ function parseSegment(lines, uri, start, end, mediaSequenceNumber, discontinuity
         byterange: (name === 'EXT-X-PART' ? attributes['BYTERANGE'] : {length: attributes['BYTERANGE-LENGTH'], offset: attributes['BYTERANGE-START'] || 0}),
         duration: attributes['DURATION'],
         independent: attributes['INDEPENDENT'],
-        gap: attributes['GAP']
+        gap: attributes['GAP'],
       });
       segment.parts.push(partialSegment);
     }
@@ -617,7 +617,7 @@ function parsePrefetchSegment(lines, uri, start, end, mediaSequenceNumber, disco
         uri: attributes['URI'],
         iv: attributes['IV'],
         format: attributes['KEYFORMAT'],
-        formatVersion: attributes['KEYFORMATVERSIONS']
+        formatVersion: attributes['KEYFORMATVERSIONS'],
       });
     } else if (name === 'EXT-X-MAP') {
       utils.INVALIDPLAYLIST('Prefetch segments must not be advertised with an EXT-X-MAP tag.');
@@ -698,7 +698,7 @@ function parseMediaPlaylist(lines, params) {
         canBlockReload: attributes['CAN-BLOCK-RELOAD'],
         canSkipUntil: attributes['CAN-SKIP-UNTIL'],
         holdBack: attributes['HOLD-BACK'],
-        partHoldBack: attributes['PART-HOLD-BACK']
+        partHoldBack: attributes['PART-HOLD-BACK'],
       };
     } else if (name === 'EXT-X-PART-INF') {
       if (!attributes['PART-TARGET']) {
@@ -715,7 +715,7 @@ function parseMediaPlaylist(lines, params) {
       playlist.renditionReports.push(new RenditionReport({
         uri: attributes['URI'],
         lastMSN: attributes['LAST-MSN'],
-        lastPart: attributes['LAST-PART']
+        lastPart: attributes['LAST-PART'],
       }));
     } else if (name === 'EXT-X-SKIP') {
       if (!attributes['SKIPPED-SEGMENTS']) {
@@ -1000,7 +1000,7 @@ function parse(text) {
     targetDuration: 0,
     compatibleVersion: 1,
     isClosedCaptionsNone: false,
-    hash: {}
+    hash: {},
   };
 
   const lines = lexicalParse(text, params);

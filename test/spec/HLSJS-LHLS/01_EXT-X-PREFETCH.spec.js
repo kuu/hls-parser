@@ -20,7 +20,7 @@ test("#EXT-X-PREFETCH_01", t => {
 
     #EXT-X-PREFETCH:https://foo.com/bar/2.ts
     #EXT-X-PREFETCH:https://foo.com/bar/3.ts
-  `
+  `,
   );
 });
 

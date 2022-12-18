@@ -91,5 +91,5 @@ module.exports = {
   bothPass,
   parseFail,
   stringifyFail,
-  stripCommentsAndEmptyLines
+  stripCommentsAndEmptyLines,
 };
