@@ -57,7 +57,6 @@
       "no-cond-assign": 0,
       "no-mixed-operators": 0,
       "no-multi-assign": 0,
-      "operator-linebreak": 0,
       "n/prefer-global/buffer": 0,
       "padding-line-between-statements": 0,
       "quotes": 0,

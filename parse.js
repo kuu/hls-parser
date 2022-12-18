@@ -551,11 +551,11 @@ function parseSegment(lines, uri, start, end, mediaSequenceNumber, discontinuity
         type: 'IN',
       }));
     } else if (
-      name === 'EXT-X-CUE-OUT-CONT' ||
-      name === 'EXT-X-CUE' ||
-      name === 'EXT-OATCLS-SCTE35' ||
-      name === 'EXT-X-ASSET' ||
-      name === 'EXT-X-SCTE35'
+      name === 'EXT-X-CUE-OUT-CONT'
+      || name === 'EXT-X-CUE'
+      || name === 'EXT-OATCLS-SCTE35'
+      || name === 'EXT-X-ASSET'
+      || name === 'EXT-X-SCTE35'
     ) {
       segment.markers.push(new SpliceInfo({
         type: 'RAW',
