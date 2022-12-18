@@ -1,3 +1,4 @@
+const {Buffer} = require('node:buffer');
 const test = require('ava');
 const rewire = require('rewire');
 const utils = require('../../utils');
