@@ -53,7 +53,6 @@
       "import/extensions": 0,
       "import/no-dynamic-require": 0,
       "new-cap": 0,
-      "node/prefer-global/buffer": 0,
       "no-bitwise": 0,
       "no-cond-assign": 0,
       "no-mixed-operators": 0,
