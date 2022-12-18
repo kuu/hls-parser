@@ -47,7 +47,6 @@
     "esnext": true,
     "space": true,
     "rules": {
-      "arrow-body-style": 0,
       "ava/no-ignored-test-files": 0,
       "camelcase": 0,
       "comma-dangle": 0,

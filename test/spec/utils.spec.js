@@ -76,31 +76,19 @@ test('utils.byteSequenceToHex', t => {
 
 test('utils.tryCatch', t => {
   let result = utils.tryCatch(
-    () => {
-      return 1;
-    },
-    () => {
-      return 0;
-    }
+    () => 1,
+    () => 0
   );
   t.is(result, 1);
   result = utils.tryCatch(
-    () => {
-      return JSON.parse('{{');
-    },
-    () => {
-      return 0;
-    }
+    () => JSON.parse('{{'),
+    () => 0
   );
   t.is(result, 0);
   t.throws(() => {
     utils.tryCatch(
-      () => {
-        return JSON.parse('{{');
-      },
-      () => {
-        return JSON.parse('}}');
-      }
+      () => JSON.parse('{{'),
+      () => JSON.parse('}}')
     );
   });
 });
