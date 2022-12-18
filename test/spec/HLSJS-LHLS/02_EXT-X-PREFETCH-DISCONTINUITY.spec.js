@@ -1,8 +1,8 @@
-const test = require("ava");
-const utils = require("../../helpers/utils");
-const HLS = require("../../..");
+const test = require('ava');
+const utils = require('../../helpers/utils');
+const HLS = require('../../..');
 
-test("#EXT-X-PREFETCH-DISCONTINUITY_01", t => {
+test('#EXT-X-PREFETCH-DISCONTINUITY_01', t => {
   const text = `
     #EXTM3U
     #EXT-X-VERSION:3
@@ -27,7 +27,7 @@ test("#EXT-X-PREFETCH-DISCONTINUITY_01", t => {
   t.falsy(prefetchSegments[1].discontinuity);
 });
 
-test("#EXT-X-PREFETCH-DISCONTINUITY_02", t => {
+test('#EXT-X-PREFETCH-DISCONTINUITY_02', t => {
   const text = `
     #EXTM3U
     #EXT-X-VERSION:3

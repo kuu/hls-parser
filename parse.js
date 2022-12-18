@@ -249,7 +249,7 @@ function parseTagParam(name, param) {
 }
 
 function MIXEDTAGS() {
-  utils.INVALIDPLAYLIST(`The file contains both media and master playlist tags.`);
+  utils.INVALIDPLAYLIST('The file contains both media and master playlist tags.');
 }
 
 function splitTag(line) {

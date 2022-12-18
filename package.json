@@ -59,7 +59,6 @@
       "no-multi-assign": 0,
       "n/prefer-global/buffer": 1,
       "padding-line-between-statements": 0,
-      "quotes": 0,
       "unicorn/catch-error-name": 0,
       "unicorn/filename-case": 0,
       "unicorn/no-lonely-if": 0,

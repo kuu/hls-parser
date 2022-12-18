@@ -148,7 +148,7 @@ function buildVariant(lines, variant) {
     }
   }
   if (utils.getOptions().allowClosedCaptionsNone && variant.closedCaptions.length === 0) {
-    attrs.push(`CLOSED-CAPTIONS=NONE`);
+    attrs.push('CLOSED-CAPTIONS=NONE');
   } else if (variant.closedCaptions.length > 0) {
     attrs.push(`CLOSED-CAPTIONS="${variant.closedCaptions[0].groupId}"`);
     for (const rendition of variant.closedCaptions) {
@@ -249,7 +249,7 @@ function buildMediaPlaylist(lines, playlist) {
     lines.push(`#EXT-X-PLAYLIST-TYPE:${playlist.playlistType}`);
   }
   if (playlist.isIFrame) {
-    lines.push(`#EXT-X-I-FRAMES-ONLY`);
+    lines.push('#EXT-X-I-FRAMES-ONLY');
   }
   if (playlist.skip > 0) {
     lines.push(`#EXT-X-SKIP:SKIPPED-SEGMENTS=${playlist.skip}`);
@@ -271,12 +271,12 @@ function buildMediaPlaylist(lines, playlist) {
   }
   for (const segment of playlist.prefetchSegments) {
     if (segment.discontinuity) {
-      lines.push(`#EXT-X-PREFETCH-DISCONTINUITY`);
+      lines.push('#EXT-X-PREFETCH-DISCONTINUITY');
     }
     lines.push(`#EXT-X-PREFETCH:${segment.uri}`);
   }
   if (playlist.endlist) {
-    lines.push(`#EXT-X-ENDLIST`);
+    lines.push('#EXT-X-ENDLIST');
   }
   for (const report of playlist.renditionReports) {
     const params = [];
@@ -293,7 +293,7 @@ function buildSegment(lines, segment, lastKey, lastMap, version = 1) {
   let markerType = '';
 
   if (segment.discontinuity) {
-    lines.push(`#EXT-X-DISCONTINUITY`);
+    lines.push('#EXT-X-DISCONTINUITY');
   }
   if (segment.key) {
     const line = buildKey(segment.key);
@@ -365,7 +365,7 @@ function buildDateRange(dateRange) {
     attrs.push(`CLASS="${dateRange.classId}"`);
   }
   if (dateRange.endOnNext) {
-    attrs.push(`END-ON-NEXT=YES`);
+    attrs.push('END-ON-NEXT=YES');
   }
   for (const key of Object.keys(dateRange.attributes)) {
     if (key.startsWith('X-')) {
