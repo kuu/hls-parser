@@ -894,10 +894,10 @@ function checkLowLatencyCompatibility({lowLatencyCompatibility, targetDuration, 
   }
   for (const report of renditionReports) {
     const lastSegment = segments[segments.length - 1];
-    if (!report.lastMSN) {
+    if (report.lastMSN === null || report.lastMSN === undefined) {
       report.lastMSN = lastSegment.mediaSequenceNumber;
     }
-    if (!report.lastPart && lastSegment.parts.length > 0) {
+    if ((report.lastPart === null || report.lastPart === undefined) && lastSegment.parts.length > 0) {
       report.lastPart = lastSegment.parts.length - 1;
     }
   }
