@@ -1,4 +1,4 @@
-[![Build Status](https://img.shields.io/github/workflow/status/kuu/hls-parser/HLS%20parser%20tests)](https://github.com/kuu/hls-parser/actions/workflows/tests.yml)
+[![HLS parser tests](https://github.com/kuu/hls-parser/actions/workflows/tests.yml/badge.svg)](https://github.com/kuu/hls-parser/actions/workflows/tests.yml)
 [![Coverage Status](https://coveralls.io/repos/github/kuu/hls-parser/badge.svg?branch=master)](https://coveralls.io/github/kuu/hls-parser?branch=master)
 [![Known Vulnerabilities](https://snyk.io/test/github/kuu/hls-parser/badge.svg)](https://snyk.io/test/github/kuu/hls-parser)
 [![npm Downloads](https://img.shields.io/npm/dw/hls-parser.svg?style=flat-square)](https://npmjs.com/hls-parser)
