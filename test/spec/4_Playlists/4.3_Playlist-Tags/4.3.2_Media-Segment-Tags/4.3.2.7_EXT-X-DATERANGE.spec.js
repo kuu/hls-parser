@@ -1,3 +1,4 @@
+const {Buffer} = require('node:buffer');
 const test = require('ava');
 const HLS = require('../../../../..');
 const utils = require('../../../../helpers/utils');

@@ -5,7 +5,7 @@ const playlist = new MediaPlaylist({
   version: 3,
   targetDuration: 8,
   segments: createSegments(),
-  endlist: true
+  endlist: true,
 });
 
 function createSegments() {
@@ -15,7 +15,7 @@ function createSegments() {
     duration: 8.008,
     title: '',
     mediaSequenceNumber: 0,
-    discontinuitySequence: 0
+    discontinuitySequence: 0,
   }));
   segments.push(new Segment({
     uri: '2.ts',
@@ -25,8 +25,8 @@ function createSegments() {
     discontinuitySequence: 0,
     markers: [{
       type: 'OUT',
-      duration: 23.0
-    }]
+      duration: 23.0,
+    }],
   }));
   segments.push(new Segment({
     uri: '3.ts',
@@ -37,8 +37,8 @@ function createSegments() {
     markers: [{
       type: 'RAW',
       tagName: 'EXT-X-CUE-OUT-CONT',
-      value: 'ElapsedTime=8,Duration=23'
-    }]
+      value: 'ElapsedTime=8,Duration=23',
+    }],
   }));
   segments.push(new Segment({
     uri: '4.ts',
@@ -49,8 +49,8 @@ function createSegments() {
     markers: [{
       type: 'RAW',
       tagName: 'EXT-X-CUE-OUT-CONT',
-      value: 'ElapsedTime=16,Duration=23'
-    }]
+      value: 'ElapsedTime=16,Duration=23',
+    }],
   }));
   segments.push(new Segment({
     uri: '5.ts',
@@ -59,8 +59,8 @@ function createSegments() {
     mediaSequenceNumber: 4,
     discontinuitySequence: 0,
     markers: [{
-      type: 'IN'
-    }]
+      type: 'IN',
+    }],
   }));
   return segments;
 }

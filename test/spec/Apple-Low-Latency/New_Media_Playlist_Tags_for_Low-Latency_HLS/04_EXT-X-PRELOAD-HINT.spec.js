@@ -42,7 +42,7 @@ test('#EXT-X-PRELOAD-HINT_02', t => {
   const {parts} = segments[1];
   t.is(parts.length, 3);
   let offset = 0;
-  const length = 20000;
+  const length = 20_000;
   for (const [index, part] of parts.entries()) {
     t.is(part.uri, 'fs241.mp4');
     t.deepEqual(part.byterange, {offset, length});

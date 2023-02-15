@@ -7,50 +7,50 @@ function createRendition(groupId) {
     uri: `${groupId}/main/audio-video.m3u8`,
     groupId,
     name: 'Main',
-    isDefault: !(groupId === 'mid')
+    isDefault: !(groupId === 'mid'),
   }));
   renditions.push(new Rendition({
     type: 'VIDEO',
     uri: `${groupId}/centerfield/audio-video.m3u8`,
     groupId,
     name: 'Centerfield',
-    isDefault: groupId === 'mid'
+    isDefault: groupId === 'mid',
   }));
   renditions.push(new Rendition({
     type: 'VIDEO',
     uri: `${groupId}/dugout/audio-video.m3u8`,
     groupId,
     name: 'Dugout',
-    isDefault: false
+    isDefault: false,
   }));
   return renditions;
 }
 
 const playlist = new MasterPlaylist({
-  variants: createVariants()
+  variants: createVariants(),
 });
 
 function createVariants() {
   const variants = [];
   variants.push(new Variant({
     uri: 'low/main/audio-video.m3u8',
-    bandwidth: 1280000,
+    bandwidth: 1_280_000,
     codecs: 'avc1.640029,mp4a.40.2',
     video: createRendition('low'),
-    currentRenditions: {video: 0}
+    currentRenditions: {video: 0},
   }));
   variants.push(new Variant({
     uri: 'mid/main/audio-video.m3u8',
-    bandwidth: 2560000,
+    bandwidth: 2_560_000,
     codecs: 'avc1.640029,mp4a.40.2',
     video: createRendition('mid'),
-    currentRenditions: {video: 1}
+    currentRenditions: {video: 1},
   }));
   variants.push(new Variant({
     uri: 'hi/main/audio-video.m3u8',
-    bandwidth: 7680000,
+    bandwidth: 7_680_000,
     codecs: 'avc1.640029,mp4a.40.2',
-    video: createRendition('hi')
+    video: createRendition('hi'),
   }));
   return variants;
 }

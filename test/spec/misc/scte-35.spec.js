@@ -1,8 +1,8 @@
-const test = require("ava");
-const utils = require("../../helpers/utils");
-const HLS = require("../../..");
+const test = require('ava');
+const utils = require('../../helpers/utils');
+const HLS = require('../../..');
 
-test("#EXT-X-CUE-IN_01", t => {
+test('#EXT-X-CUE-IN_01', t => {
   const {MediaPlaylist, Segment} = HLS.types;
 
   const segments = [...Array.from({length: 3})].map((_, i) => new Segment({uri: `https://example.com/${i}.ts`, duration: 10}));
@@ -11,7 +11,7 @@ test("#EXT-X-CUE-IN_01", t => {
 
   const playlist = new MediaPlaylist({
     targetDuration: 10,
-    segments
+    segments,
   });
 
   // For live media playlist, unclosed CUE-OUT is allowed.
@@ -31,7 +31,7 @@ test("#EXT-X-CUE-IN_01", t => {
   t.is(HLS.stringify(playlist), utils.stripCommentsAndEmptyLines(expected));
 });
 
-test("#EXT-X-CUE-IN_02", t => {
+test('#EXT-X-CUE-IN_02', t => {
   const {MediaPlaylist, Segment} = HLS.types;
 
   const segments = [...Array.from({length: 3})].map((_, i) => new Segment({uri: `https://example.com/${i}.ts`, duration: 10}));
@@ -41,7 +41,7 @@ test("#EXT-X-CUE-IN_02", t => {
   const playlist = new MediaPlaylist({
     playlistType: 'VOD',
     targetDuration: 10,
-    segments
+    segments,
   });
 
   // For VOD media playlist, unclosed CUE-OUT is not allowed.
@@ -64,7 +64,7 @@ test("#EXT-X-CUE-IN_02", t => {
   t.is(HLS.stringify(playlist), utils.stripCommentsAndEmptyLines(expected));
 });
 
-test("#EXT-X-CUE-IN_03", t => {
+test('#EXT-X-CUE-IN_03', t => {
   const {MediaPlaylist, Segment} = HLS.types;
 
   const segments = [...Array.from({length: 6})].map((_, i) => new Segment({uri: `https://example.com/${i}.ts`, duration: 10}));
@@ -75,7 +75,7 @@ test("#EXT-X-CUE-IN_03", t => {
   const playlist = new MediaPlaylist({
     playlistType: 'EVENT',
     targetDuration: 10,
-    segments
+    segments,
   });
 
   // For live media playlist, unclosed CUE-OUT is allowed.
@@ -103,7 +103,7 @@ test("#EXT-X-CUE-IN_03", t => {
   t.is(HLS.stringify(playlist), utils.stripCommentsAndEmptyLines(expected));
 });
 
-test("#EXT-X-CUE-IN_04", t => {
+test('#EXT-X-CUE-IN_04', t => {
   const {MediaPlaylist, Segment} = HLS.types;
 
   const segments = [...Array.from({length: 6})].map((_, i) => new Segment({uri: `https://example.com/${i}.ts`, duration: 10}));
@@ -114,7 +114,7 @@ test("#EXT-X-CUE-IN_04", t => {
   const playlist = new MediaPlaylist({
     playlistType: 'VOD',
     targetDuration: 10,
-    segments
+    segments,
   });
 
   // For VOD media playlist, unclosed CUE-OUT is not allowed.
