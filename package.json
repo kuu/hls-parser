@@ -6,6 +6,7 @@
   "browser": "dist/hls-parser.min.js",
   "scripts": {
     "lint": "xo",
+    "type-check": "tsc --noEmit",
     "audit": "npm audit --audit-level high",
     "coverage": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
     "build": "rm -fR ./dist; webpack --mode development ; webpack --mode production",
@@ -32,6 +33,7 @@
     "@babel/core": "^7.20.12",
     "@babel/eslint-parser": "^7.19.1",
     "@babel/preset-env": "^7.20.2",
+    "@tsconfig/node16": "^1.0.4",
     "ava": "^5.1.1",
     "babel-loader": "^9.1.2",
     "coveralls": "^3.1.1",
@@ -39,6 +41,8 @@
     "nyc": "^15.1.0",
     "rewire": "^6.0.0",
     "terser-webpack-plugin": "^5.3.6",
+    "ts-loader": "^9.4.2",
+    "typescript": "^4.9.5",
     "webpack": "^5.75.0",
     "webpack-cli": "^5.0.1",
     "xo": "^0.53.1"

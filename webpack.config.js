@@ -19,8 +19,16 @@ module.exports = (_, argv) => {
           options: {
             presets: ['@babel/preset-env']
           }
-        }
+        },
+        {
+          test: /\.ts$/,
+          exclude: /node_modules/,
+          use: 'ts-loader'
+        },
       ]
+    },
+    resolve: {
+      extensions: ['.js', '.ts'],
     },
     devtool: argv.mode === 'production' ? 'source-map' : false,
     optimization: {
