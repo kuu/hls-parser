@@ -75,6 +75,10 @@ function hexToByteSequence(str) {
 }
 
 function byteSequenceToHex(sequence, start = 0, end = sequence.length) {
+  if (sequence instanceof Buffer === false) {
+    sequence = Buffer.from(sequence);
+    end = sequence.length;
+  }  
   if (end <= start) {
     THROW(new Error(`end must be larger than start : start=${start}, end=${end}`));
   }
@@ -173,6 +177,9 @@ function camelify(str) {
 }
 
 function formatDate(date) {
+  if (typeof date === "string") {
+    date = new Date(date);
+  }  
   const YYYY = date.getUTCFullYear();
   const MM = ('0' + (date.getUTCMonth() + 1)).slice(-2);
   const DD = ('0' + date.getUTCDate()).slice(-2);
