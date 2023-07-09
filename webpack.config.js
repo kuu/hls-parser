@@ -3,7 +3,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = (_, argv) => {
   return {
-    entry: './index.js',
+    entry: './index.ts',
     output: {
       path: path.resolve(__dirname, 'dist'),
       filename: `hls-parser${argv.mode === 'production' ? '.min' : ''}.js`,

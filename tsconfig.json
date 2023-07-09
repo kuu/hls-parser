@@ -1,5 +1,6 @@
 {
   "extends": "@tsconfig/node16/tsconfig.json",
+  "module": "node",
   "compilerOptions": {
     "allowJs": true,
     "checkJs": true,

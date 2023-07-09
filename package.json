@@ -29,6 +29,7 @@
   },
   "homepage": "https://github.com/kuu/hls-parser#readme",
   "devDependencies": {
+    "@ava/typescript": "^4.1.0",
     "@babel/core": "^7.21.8",
     "@babel/eslint-parser": "^7.21.8",
     "@babel/preset-env": "^7.21.5",
@@ -43,6 +44,13 @@
     "webpack": "^5.83.1",
     "webpack-cli": "^5.1.1",
     "xo": "^0.54.2"
+  },
+  "ava": {
+    "typescript": {
+      "compile": "tsc",
+      "extensions": ["ts", "js"],
+      "rewritePaths": {}
+    }
   },
   "xo": {
     "esnext": true,
@@ -83,6 +91,30 @@
         "files": "test/**/*.js",
         "rules": {
           "unicorn/no-array-push-push": 0
+        }
+      },
+      {
+        "files": "*.ts",
+        "rules": {
+          "n/file-extension-in-import": 0,
+          "@typescript-eslint/array-type": 1,
+          "@typescript-eslint/ban-types": 1,
+          "@typescript-eslint/comma-dangle": 0,
+          "@typescript-eslint/dot-notation": 0,
+          "@typescript-eslint/member-delimiter-style": 0,
+          "@typescript-eslint/naming-convention": 0,
+          "@typescript-eslint/no-unsafe-call": 0,
+          "@typescript-eslint/no-unsafe-argument": 0,
+          "@typescript-eslint/no-unsafe-assignment": 0,
+          "@typescript-eslint/no-unsafe-return": 0,
+          "@typescript-eslint/object-curly-spacing": 0,
+          "@typescript-eslint/padding-line-between-statements": 0,
+          "@typescript-eslint/prefer-optional-chain": 1,
+          "@typescript-eslint/prefer-nullish-coalescing": 0,
+          "@typescript-eslint/quotes": 0,
+          "@typescript-eslint/restrict-template-expressions": 0,
+          "@typescript-eslint/restrict-plus-operands": 0,
+          "unicorn/prefer-export-from": 0
         }
       }
     ],
