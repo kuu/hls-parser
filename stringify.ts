@@ -1,4 +1,4 @@
-const utils = require('./utils');
+import * as utils from './utils';
 
 const ALLOW_REDUNDANCY = [
   '#EXTINF',
@@ -16,13 +16,14 @@ const SKIP_IF_REDUNDANT = [
 ];
 
 class LineArray extends Array {
+  baseUri: string;
+
   constructor(baseUri) {
     super();
     this.baseUri = baseUri;
   }
 
-  // @override
-  push(...elems) {
+  override push(...elems) {
     // redundancy check
     for (const elem of elems) {
       if (!elem.startsWith('#')) {
@@ -41,10 +42,11 @@ class LineArray extends Array {
       }
       super.push(elem);
     }
+    return this.length;
   }
 }
 
-function buildDecimalFloatingNumber(num, fixed) {
+function buildDecimalFloatingNumber(num: number, fixed?: number) {
   let roundFactor = 1000;
   if (fixed) {
     roundFactor = 10 ** fixed;
@@ -87,7 +89,7 @@ function buildSessionData(sessionData) {
   return `#EXT-X-SESSION-DATA:${attrs.join(',')}`;
 }
 
-function buildKey(key, isSessionKey) {
+function buildKey(key, isSessionKey?: any) {
   const name = isSessionKey ? '#EXT-X-SESSION-KEY' : '#EXT-X-KEY';
   const attrs = [`METHOD=${key.method}`];
   if (key.uri) {
@@ -159,7 +161,7 @@ function buildVariant(lines, variant) {
     attrs.push(`SCORE=${variant.score}`);
   }
   if (variant.allowedCpc) {
-    const list = [];
+    const list: string[] = [];
     for (const {format, cpcList} of variant.allowedCpc) {
       list.push(`${format}:${cpcList.join('/')}`);
     }
@@ -223,7 +225,7 @@ function buildMediaPlaylist(lines, playlist) {
   }
   if (playlist.lowLatencyCompatibility) {
     const {canBlockReload, canSkipUntil, holdBack, partHoldBack} = playlist.lowLatencyCompatibility;
-    const params = [];
+    const params: string[] = [];
     params.push(`CAN-BLOCK-RELOAD=${canBlockReload ? 'YES' : 'NO'}`);
     if (canSkipUntil !== undefined) {
       params.push(`CAN-SKIP-UNTIL=${canSkipUntil}`);
@@ -279,7 +281,7 @@ function buildMediaPlaylist(lines, playlist) {
     lines.push(`#EXT-X-ENDLIST`);
   }
   for (const report of playlist.renditionReports) {
-    const params = [];
+    const params: string[] = [];
     params.push(`URI="${report.uri}"`, `LAST-MSN=${report.lastMSN}`);
     if (report.lastPart !== undefined) {
       params.push(`LAST-PART=${report.lastPart}`);
@@ -402,7 +404,7 @@ function buildParts(lines, parts) {
   let hint = false;
   for (const part of parts) {
     if (part.hint) {
-      const params = [];
+      const params: string[] = [];
       params.push('TYPE=PART', `URI="${part.uri}"`);
       if (part.byterange) {
         const {offset, length} = part.byterange;
@@ -414,7 +416,7 @@ function buildParts(lines, parts) {
       lines.push(`#EXT-X-PRELOAD-HINT:${params.join(',')}`);
       hint = true;
     } else {
-      const params = [];
+      const params: string[] = [];
       params.push(`DURATION=${part.duration}`, `URI="${part.uri}"`);
       if (part.byterange) {
         params.push(`BYTERANGE=${buildByteRange(part.byterange)}`);
@@ -456,4 +458,4 @@ function stringify(playlist) {
   return lines.join('\n');
 }
 
-module.exports = stringify;
+export default stringify;

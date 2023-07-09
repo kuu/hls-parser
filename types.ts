@@ -1,6 +1,19 @@
-const utils = require('./utils');
+import * as utils from './utils';
 
 class Rendition {
+  type: string;
+  uri?: string;
+  groupId: string;
+  language?: string;
+  assocLanguage?: string;
+  name: string;
+  isDefault: boolean;
+  autoselect: boolean;
+  forced: boolean;
+  instreamId?: string;
+  characteristics?: string;
+  channels?: string;
+
   constructor({
     type, // required
     uri, // required if type='SUBTITLES'
@@ -14,7 +27,7 @@ class Rendition {
     instreamId, // required if type=CLOSED-CAPTIONS
     characteristics,
     channels
-  }) {
+  }: Rendition) {
     utils.PARAMCHECK(type, groupId, name);
     utils.CONDITIONALASSERT([type === 'SUBTITLES', uri], [type === 'CLOSED-CAPTIONS', instreamId], [type === 'CLOSED-CAPTIONS', !uri], [forced, type === 'SUBTITLES']);
     this.type = type;
@@ -33,6 +46,24 @@ class Rendition {
 }
 
 class Variant {
+  uri: string;
+  isIFrameOnly?: boolean;
+  bandwidth: number;
+  averageBandwidth?: number;
+  score: any;
+  codecs?: string;
+  resolution?: { width: number; height: number };
+  frameRate?: number;
+  hdcpLevel?: string;
+  allowedCpc: any;
+  videoRange: any;
+  stableVariantId: any;
+  audio: Rendition[];
+  video: Rendition[];
+  subtitles: Rendition[];
+  closedCaptions: Rendition[];
+  currentRenditions: { audio: number; video: number; subtitles: number; closedCaptions: number; };
+
   constructor({
     uri, // required
     isIFrameOnly = false,
@@ -51,7 +82,7 @@ class Variant {
     subtitles = [],
     closedCaptions = [],
     currentRenditions = {audio: 0, video: 0, subtitles: 0, closedCaptions: 0}
-  }) {
+  }: any) {
     // utils.PARAMCHECK(uri, bandwidth, codecs);
     utils.PARAMCHECK(uri, bandwidth); // the spec states that CODECS is required but not true in the real world
     this.uri = uri;
@@ -75,12 +106,17 @@ class Variant {
 }
 
 class SessionData {
+  id: string;
+  value?: string;
+  uri?: string;
+  language?: string;
+
   constructor({
     id, // required
     value,
     uri,
     language
-  }) {
+  }: SessionData) {
     utils.PARAMCHECK(id, value || uri);
     utils.ASSERT('SessionData cannot have both value and uri, shoud be either.', !(value && uri));
     this.id = id;
@@ -91,13 +127,19 @@ class SessionData {
 }
 
 class Key {
+  method: string;
+  uri?: string;
+  iv?: Buffer;
+  format?: string;
+  formatVersion?: string;
+
   constructor({
     method, // required
     uri, // required unless method=NONE
     iv,
     format,
     formatVersion
-  }) {
+  }: Key) {
     utils.PARAMCHECK(method);
     utils.CONDITIONALPARAMCHECK([method !== 'NONE', uri]);
     utils.CONDITIONALASSERT([method === 'NONE', !(uri || iv || format || formatVersion)]);
@@ -109,13 +151,23 @@ class Key {
   }
 }
 
+type Byterange = {
+  length: number;
+  offset: number;
+};
+
 class MediaInitializationSection {
+  hint: boolean;
+  uri: string;
+  mimeType?: string;
+  byterange?: Byterange;
+
   constructor({
     hint = false,
     uri, // required
     mimeType,
     byterange
-  }) {
+  }: Partial<MediaInitializationSection> & {uri: string}) {
     utils.PARAMCHECK(uri);
     this.hint = hint;
     this.uri = uri;
@@ -125,6 +177,15 @@ class MediaInitializationSection {
 }
 
 class DateRange {
+  id: string;
+  classId?: string;
+  start?: Date;
+  end?: Date;
+  duration?: number;
+  plannedDuration?: number;
+  endOnNext?: boolean;
+  attributes: Record<string, any>;
+
   constructor({
     id, // required
     classId, // required if endOnNext is true
@@ -134,7 +195,7 @@ class DateRange {
     plannedDuration,
     endOnNext,
     attributes = {}
-  }) {
+  }: any) {
     utils.PARAMCHECK(id);
     utils.CONDITIONALPARAMCHECK([endOnNext === true, classId]);
     utils.CONDITIONALASSERT([end, start], [end, start <= end], [duration, duration >= 0], [plannedDuration, plannedDuration >= 0]);
@@ -150,12 +211,17 @@ class DateRange {
 }
 
 class SpliceInfo {
+  type: string;
+  duration?: number;
+  tagName?: string;
+  value?: any;
+
   constructor({
     type, // required
     duration, // required if the type is 'OUT'
     tagName, // required if the type is 'RAW'
     value
-  }) {
+  }: SpliceInfo) {
     utils.PARAMCHECK(type);
     utils.CONDITIONALPARAMCHECK([type === 'OUT', duration]);
     utils.CONDITIONALPARAMCHECK([type === 'RAW', tagName]);
@@ -166,14 +232,25 @@ class SpliceInfo {
   }
 }
 
+type DataType = 'part' | 'playlist' | 'prefetch' | 'segment';
+
 class Data {
-  constructor(type) {
+  type: DataType;
+
+  constructor(type: DataType) {
     utils.PARAMCHECK(type);
     this.type = type;
   }
 }
 
 class Playlist extends Data {
+  isMasterPlaylist: boolean;
+  uri?: string;
+  version?: number;
+  independentSegments: boolean;
+  start?: { offset: number; precise: boolean };
+  source?: string;
+
   constructor({
     isMasterPlaylist, // required
     uri,
@@ -181,7 +258,7 @@ class Playlist extends Data {
     independentSegments = false,
     start,
     source
-  }) {
+  }: Partial<Playlist> & { isMasterPlaylist: boolean }) {
     super('playlist');
     utils.PARAMCHECK(isMasterPlaylist);
     this.isMasterPlaylist = isMasterPlaylist;
@@ -194,9 +271,13 @@ class Playlist extends Data {
 }
 
 class MasterPlaylist extends Playlist {
-  constructor(params = {}) {
-    params.isMasterPlaylist = true;
-    super(params);
+  variants: Variant[];
+  currentVariant?: number;
+  sessionDataList: SessionData[];
+  sessionKeyList: Key[];
+
+  constructor(params: Partial<MasterPlaylist> = {}) {
+    super({...params, isMasterPlaylist: true});
     const {
       variants = [],
       currentVariant,
@@ -211,9 +292,22 @@ class MasterPlaylist extends Playlist {
 }
 
 class MediaPlaylist extends Playlist {
-  constructor(params = {}) {
-    params.isMasterPlaylist = false;
-    super(params);
+  targetDuration?: number;
+  mediaSequenceBase?: number;
+  discontinuitySequenceBase?: number;
+  endlist: boolean;
+  playlistType?: 'EVENT' | 'VOD';
+  isIFrame?: boolean;
+  segments: Segment[];
+  prefetchSegments: PrefetchSegment[];
+  lowLatencyCompatibility?: Record<string, any>;
+  partTargetDuration?: number;
+  renditionReports: RenditionReport[];
+  skip: number;
+  hash?: Record<string, any>;
+
+  constructor(params: Partial<MediaPlaylist> = {}) {
+    super({...params, isMasterPlaylist: false});
     const {
       targetDuration,
       mediaSequenceBase = 0,
@@ -246,6 +340,22 @@ class MediaPlaylist extends Playlist {
 }
 
 class Segment extends Data {
+  uri: string;
+  mimeType: string;
+  data: any;
+  duration: number;
+  title?: string;
+  byterange: Byterange;
+  discontinuity?: boolean;
+  mediaSequenceNumber: number;
+  discontinuitySequence: number;
+  key?: Key;
+  map: MediaInitializationSection;
+  programDateTime?: Date;
+  dateRange: DateRange;
+  markers: SpliceInfo[];
+  parts: PartialSegment[];
+
   constructor({
     uri,
     mimeType,
@@ -262,7 +372,7 @@ class Segment extends Data {
     dateRange,
     markers = [],
     parts = []
-  }) {
+  }: any) {
     super('segment');
     // utils.PARAMCHECK(uri, mediaSequenceNumber, discontinuitySequence);
     this.uri = uri;
@@ -284,6 +394,13 @@ class Segment extends Data {
 }
 
 class PartialSegment extends Data {
+  hint: boolean;
+  uri: string;
+  duration?: number;
+  independent?: boolean;
+  byterange?: Byterange;
+  gap?: boolean;
+
   constructor({
     hint = false,
     uri, // required
@@ -291,7 +408,7 @@ class PartialSegment extends Data {
     independent,
     byterange,
     gap
-  }) {
+  }: Omit<PartialSegment, 'type'>) {
     super('part');
     utils.PARAMCHECK(uri);
     this.hint = hint;
@@ -305,13 +422,19 @@ class PartialSegment extends Data {
 }
 
 class PrefetchSegment extends Data {
+  uri: string;
+  discontinuity?: boolean;
+  mediaSequenceNumber: number;
+  discontinuitySequence: number;
+  key?: Key | null;
+
   constructor({
     uri, // required
     discontinuity,
     mediaSequenceNumber = 0,
     discontinuitySequence = 0,
     key
-  }) {
+  }: Omit<PrefetchSegment, 'type'>) {
     super('prefetch');
     utils.PARAMCHECK(uri);
     this.uri = uri;
@@ -323,11 +446,15 @@ class PrefetchSegment extends Data {
 }
 
 class RenditionReport {
+  uri: string;
+  lastMSN?: number;
+  lastPart: number;
+
   constructor({
     uri, // required
     lastMSN,
     lastPart
-  }) {
+  }: RenditionReport) {
     utils.PARAMCHECK(uri);
     this.uri = uri;
     this.lastMSN = lastMSN;
@@ -335,7 +462,7 @@ class RenditionReport {
   }
 }
 
-module.exports = {
+export {
   Rendition,
   Variant,
   SessionData,

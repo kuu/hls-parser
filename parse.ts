@@ -1,5 +1,5 @@
-const utils = require('./utils');
-const {
+import * as utils from './utils';
+import {
   Rendition,
   Variant,
   SessionData,
@@ -13,7 +13,7 @@ const {
   PartialSegment,
   PrefetchSegment,
   RenditionReport
-} = require('./types');
+} from './types';
 
 function unquote(str) {
   return utils.trim(str, '"');
@@ -89,7 +89,7 @@ function parseAllowedCpc(str) {
   if (list.length === 0) {
     utils.INVALIDPLAYLIST(message);
   }
-  const allowedCpcList = [];
+  const allowedCpcList: {format; cpcList}[] = [];
   for (const item of list) {
     const [format, cpcText] = utils.splitAt(item, ':');
     if (!format || !cpcText) {
@@ -633,8 +633,8 @@ function parseMediaPlaylist(lines, params) {
   let discontinuityFound = false;
   let prefetchFound = false;
   let discontinuitySequence = 0;
-  let currentKey = null;
-  let currentMap = null;
+  let currentKey: Key | null = null;
+  let currentMap: MediaInitializationSection | null = null;
   let containsParts = false;
   for (const [index, line] of lines.entries()) {
     const {name, value, attributes, category} = line;
@@ -783,7 +783,7 @@ function parseMediaPlaylist(lines, params) {
   return playlist;
 }
 
-function addSegment(playlist, segment, discontinuitySequence, currentKey, currentMap) {
+function addSegment(playlist, segment, discontinuitySequence, currentKey, currentMap?: any) {
   const {discontinuity, key, map, byterange, uri} = segment;
   if (discontinuity) {
     segment.discontinuitySequence = discontinuitySequence + 1;
@@ -856,7 +856,7 @@ function checkDateRange(segments) {
   }
 }
 
-function checkLowLatencyCompatibility({lowLatencyCompatibility, targetDuration, partTargetDuration, segments, renditionReports}, containsParts) {
+function checkLowLatencyCompatibility({lowLatencyCompatibility, targetDuration, partTargetDuration, segments, renditionReports}: any, containsParts) {
   const {canSkipUntil, holdBack, partHoldBack} = lowLatencyCompatibility;
   if (canSkipUntil < targetDuration * 6) {
     utils.INVALIDPLAYLIST('The Skip Boundary must be at least six times the EXT-X-TARGETDURATION.');
@@ -944,7 +944,7 @@ function parseTag(line, params) {
 }
 
 function lexicalParse(text, params) {
-  const lines = [];
+  const lines: any[] = [];
   for (const l of text.split('\n')) {
     // V8 has garbage collection issues when cleaning up substrings split from strings greater
     // than 13 characters so before we continue we need to safely copy over each line so that it
@@ -1009,4 +1009,4 @@ function parse(text) {
   return playlist;
 }
 
-module.exports = parse;
+export default parse;

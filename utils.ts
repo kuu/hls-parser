@@ -1,6 +1,13 @@
-let options = {};
 
-function THROW(err) {
+type Options = {
+  strictMode?: boolean,
+  allowClosedCaptionsNone?: boolean,
+  silent?: boolean
+};
+
+let options: Options = {};
+
+function THROW(err: Error) {
   if (!options.strictMode) {
     if (!options.silent) {
       console.error(err.message);
@@ -52,11 +59,11 @@ function INVALIDPLAYLIST(msg) {
   THROW(new Error(`Invalid Playlist : ${msg}`));
 }
 
-function toNumber(str, radix = 10) {
+function toNumber(str: string, radix = 10) {
   if (typeof str === 'number') {
     return str;
   }
-  const num = radix === 10 ? Number.parseFloat(str, radix) : Number.parseInt(str, radix);
+  const num = radix === 10 ? Number.parseFloat(str) : Number.parseInt(str, radix);
   if (Number.isNaN(num)) {
     return 0;
   }
@@ -67,7 +74,7 @@ function hexToByteSequence(str) {
   if (str.startsWith('0x') || str.startsWith('0X')) {
     str = str.slice(2);
   }
-  const numArray = [];
+  const numArray: number[] = [];
   for (let i = 0; i < str.length; i += 2) {
     numArray.push(toNumber(str.slice(i, i + 2), 16));
   }
@@ -78,7 +85,7 @@ function byteSequenceToHex(sequence, start = 0, end = sequence.length) {
   if (end <= start) {
     THROW(new Error(`end must be larger than start : start=${start}, end=${end}`));
   }
-  const array = [];
+  const array: string[] = [];
   for (let i = start; i < end; i++) {
     array.push(`0${(sequence[i] & 0xFF).toString(16).toUpperCase()}`.slice(-2));
   }
@@ -93,7 +100,7 @@ function tryCatch(body, errorHandler) {
   }
 }
 
-function splitAt(str, delimiter, index = 0) {
+function splitAt(str: string, delimiter, index = 0) {
   let lastDelimiterPos = -1;
   for (let i = 0, j = 0; i < str.length; i++) {
     if (str[i] === delimiter) {
@@ -109,7 +116,7 @@ function splitAt(str, delimiter, index = 0) {
   return [str];
 }
 
-function trim(str, char = ' ') {
+function trim(str: string, char = ' ') {
   if (!str) {
     return str;
   }
@@ -126,11 +133,11 @@ function trim(str, char = ' ') {
   return str;
 }
 
-function splitByCommaWithPreservingQuotes(str) {
-  const list = [];
+function splitByCommaWithPreservingQuotes(str: string) {
+  const list: string[] = [];
   let doParse = true;
   let start = 0;
-  const prevQuotes = [];
+  const prevQuotes: string[] = [];
   for (let i = 0; i < str.length; i++) {
     const curr = str[i];
     if (doParse && curr === ',') {
@@ -154,8 +161,8 @@ function splitByCommaWithPreservingQuotes(str) {
   return list;
 }
 
-function camelify(str) {
-  const array = [];
+function camelify(str: string) {
+  const array: string[] = [];
   let nextUpper = false;
   for (const ch of str) {
     if (ch === '-' || ch === '_') {
@@ -172,7 +179,7 @@ function camelify(str) {
   return array.join('');
 }
 
-function formatDate(date) {
+function formatDate(date: Date) {
   const YYYY = date.getUTCFullYear();
   const MM = ('0' + (date.getUTCMonth() + 1)).slice(-2);
   const DD = ('0' + date.getUTCDate()).slice(-2);
@@ -195,7 +202,7 @@ function getOptions() {
   return Object.assign({}, options);
 }
 
-module.exports = {
+export {
   THROW,
   ASSERT,
   CONDITIONALASSERT,
