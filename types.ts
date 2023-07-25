@@ -58,6 +58,7 @@ class Variant {
   allowedCpc: any;
   videoRange: any;
   stableVariantId: any;
+  programId: any;
   audio: Rendition[];
   video: Rendition[];
   subtitles: Rendition[];
@@ -77,6 +78,7 @@ class Variant {
     allowedCpc,
     videoRange,
     stableVariantId,
+    programId,
     audio = [],
     video = [],
     subtitles = [],
@@ -97,6 +99,7 @@ class Variant {
     this.allowedCpc = allowedCpc;
     this.videoRange = videoRange;
     this.stableVariantId = stableVariantId;
+    this.programId = programId;
     this.audio = audio;
     this.video = video;
     this.subtitles = subtitles;

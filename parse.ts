@@ -330,7 +330,8 @@ function parseVariant(lines, variantAttrs, uri, iFrameOnly, params) {
     hdcpLevel: variantAttrs['HDCP-LEVEL'],
     allowedCpc: variantAttrs['ALLOWED-CPC'],
     videoRange: variantAttrs['VIDEO-RANGE'],
-    stableVariantId: variantAttrs['STABLE-VARIANT-ID']
+    stableVariantId: variantAttrs['STABLE-VARIANT-ID'],
+    programId: variantAttrs['PROGRAM-ID']
   });
   for (const line of lines) {
     if (line.name === 'EXT-X-MEDIA') {
