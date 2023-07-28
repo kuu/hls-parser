@@ -179,6 +179,7 @@ function parseAttributeList(param) {
       case 'LAST-PART':
       case 'SKIPPED-SEGMENTS':
       case 'SCORE':
+      case 'PROGRAM-ID':
         attributes[key] = utils.toNumber(val);
         break;
       default:
