@@ -173,6 +173,9 @@ function buildVariant(lines, variant) {
   if (variant.stableVariantId) {
     attrs.push(`STABLE-VARIANT-ID="${variant.stableVariantId}"`);
   }
+  if (variant.programId) {
+    attrs.push(`PROGRAM-ID=${variant.programId}`);
+  }
   lines.push(`${name}:${attrs.join(',')}`);
   if (!variant.isIFrameOnly) {
     lines.push(`${variant.uri}`);
