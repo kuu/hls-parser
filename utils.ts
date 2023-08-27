@@ -149,7 +149,7 @@ function splitByCommaWithPreservingQuotes(str: string) {
       if (doParse) {
         prevQuotes.push(curr);
         doParse = false;
-      } else if (curr === prevQuotes[prevQuotes.length - 1]) {
+      } else if (curr === prevQuotes.at(-1)) {
         prevQuotes.pop();
         doParse = true;
       } else {
