@@ -17,7 +17,7 @@ function THROW(err: Error) {
   throw err;
 }
 
-function ASSERT(msg, ...options) {
+function ASSERT(msg: string, ...options: boolean[]) {
   for (const [index, param] of options.entries()) {
     if (!param) {
       THROW(new Error(`${msg} : Failed at [${index}]`));
@@ -55,7 +55,7 @@ function CONDITIONALPARAMCHECK(...options) {
   }
 }
 
-function INVALIDPLAYLIST(msg) {
+function INVALIDPLAYLIST(msg: string) {
   THROW(new Error(`Invalid Playlist : ${msg}`));
 }
 
@@ -70,7 +70,7 @@ function toNumber(str: string, radix = 10) {
   return num;
 }
 
-function hexToByteSequence(str) {
+function hexToByteSequence(str: string): Buffer {
   if (str.startsWith('0x') || str.startsWith('0X')) {
     str = str.slice(2);
   }
@@ -81,7 +81,7 @@ function hexToByteSequence(str) {
   return Buffer.from(numArray);
 }
 
-function byteSequenceToHex(sequence, start = 0, end = sequence.length) {
+function byteSequenceToHex(sequence: Buffer, start = 0, end = sequence.length) {
   if (end <= start) {
     THROW(new Error(`end must be larger than start : start=${start}, end=${end}`));
   }
@@ -92,7 +92,7 @@ function byteSequenceToHex(sequence, start = 0, end = sequence.length) {
   return `0x${array.join('')}`;
 }
 
-function tryCatch(body, errorHandler) {
+function tryCatch<T>(body: () => T, errorHandler: (err: unknown) => T): T {
   try {
     return body();
   } catch (err) {
@@ -100,7 +100,7 @@ function tryCatch(body, errorHandler) {
   }
 }
 
-function splitAt(str: string, delimiter, index = 0) {
+function splitAt(str: string, delimiter: string, index = 0): [string] | [string, string] {
   let lastDelimiterPos = -1;
   for (let i = 0, j = 0; i < str.length; i++) {
     if (str[i] === delimiter) {
@@ -116,7 +116,7 @@ function splitAt(str: string, delimiter, index = 0) {
   return [str];
 }
 
-function trim(str: string, char = ' ') {
+function trim(str: string | undefined, char = ' ') {
   if (!str) {
     return str;
   }
@@ -190,15 +190,15 @@ function formatDate(date: Date) {
   return `${YYYY}-${MM}-${DD}T${hh}:${mm}:${ss}.${msc}Z`;
 }
 
-function hasOwnProp(obj, propName) {
+function hasOwnProp(obj: object, propName: string): boolean {
   return Object.hasOwnProperty.call(obj, propName);
 }
 
-function setOptions(newOptions = {}) {
+function setOptions(newOptions: Partial<Options> = {}): void {
   options = Object.assign(options, newOptions);
 }
 
-function getOptions() {
+function getOptions(): Options {
   return Object.assign({}, options);
 }
 
