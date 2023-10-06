@@ -103,6 +103,7 @@
           "@typescript-eslint/array-type": 1,
           "@typescript-eslint/ban-types": 1,
           "@typescript-eslint/comma-dangle": 0,
+          "@typescript-eslint/consistent-type-imports": 0,
           "@typescript-eslint/dot-notation": 0,
           "@typescript-eslint/member-delimiter-style": 0,
           "@typescript-eslint/naming-convention": 0,

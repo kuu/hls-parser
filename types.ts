@@ -1,7 +1,9 @@
 import * as utils from './utils';
 
+type RenditionType = 'AUDIO' | 'VIDEO' | 'SUBTITLES' | 'CLOSED-CAPTIONS';
+
 class Rendition {
-  type: string;
+  type: RenditionType;
   uri?: string;
   groupId: string;
   language?: string;
@@ -50,14 +52,14 @@ class Variant {
   isIFrameOnly?: boolean;
   bandwidth: number;
   averageBandwidth?: number;
-  score: any;
+  score: number;
   codecs?: string;
   resolution?: { width: number; height: number };
   frameRate?: number;
   hdcpLevel?: string;
-  allowedCpc: any;
-  videoRange: any;
-  stableVariantId: any;
+  allowedCpc: { format: string, cpcList: string[] }[];
+  videoRange: 'SDR' | 'HLG' | 'PQ';
+  stableVariantId: string;
   programId: any;
   audio: Rendition[];
   video: Rendition[];
@@ -154,7 +156,7 @@ class Key {
   }
 }
 
-type Byterange = {
+export type Byterange = {
   length: number;
   offset: number;
 };
@@ -198,10 +200,10 @@ class DateRange {
     plannedDuration,
     endOnNext,
     attributes = {}
-  }: any) {
+  }: DateRange) {
     utils.PARAMCHECK(id);
     utils.CONDITIONALPARAMCHECK([endOnNext === true, classId]);
-    utils.CONDITIONALASSERT([end, start], [end, start <= end], [duration, duration >= 0], [plannedDuration, plannedDuration >= 0]);
+    utils.CONDITIONALASSERT([end, start], [end, start! <= end!], [duration, duration! >= 0], [plannedDuration, plannedDuration! >= 0]);
     this.id = id;
     this.classId = classId;
     this.start = start;
@@ -294,8 +296,15 @@ class MasterPlaylist extends Playlist {
   }
 }
 
+type LowLatencyCompatibility = {
+  canBlockReload: boolean,
+  canSkipUntil: number,
+  holdBack: number,
+  partHoldBack: number,
+};
+
 class MediaPlaylist extends Playlist {
-  targetDuration?: number;
+  targetDuration: number;
   mediaSequenceBase?: number;
   discontinuitySequenceBase?: number;
   endlist: boolean;
@@ -303,7 +312,7 @@ class MediaPlaylist extends Playlist {
   isIFrame?: boolean;
   segments: Segment[];
   prefetchSegments: PrefetchSegment[];
-  lowLatencyCompatibility?: Record<string, any>;
+  lowLatencyCompatibility?: LowLatencyCompatibility;
   partTargetDuration?: number;
   renditionReports: RenditionReport[];
   skip: number;
@@ -326,7 +335,7 @@ class MediaPlaylist extends Playlist {
       skip = 0,
       hash
     } = params;
-    this.targetDuration = targetDuration;
+    this.targetDuration = targetDuration!;
     this.mediaSequenceBase = mediaSequenceBase;
     this.discontinuitySequenceBase = discontinuitySequenceBase;
     this.endlist = endlist;

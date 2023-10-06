@@ -1,4 +1,17 @@
 import * as utils from './utils';
+import {
+  Byterange,
+  DateRange, Key,
+  MasterPlaylist,
+  MediaInitializationSection,
+  MediaPlaylist,
+  PartialSegment,
+  Rendition,
+  Segment,
+  SessionData,
+  SpliceInfo,
+  Variant
+} from './types';
 
 const ALLOW_REDUNDANCY = [
   '#EXTINF',
@@ -15,15 +28,15 @@ const SKIP_IF_REDUNDANT = [
   '#EXT-X-MEDIA'
 ];
 
-class LineArray extends Array {
-  baseUri: string;
+class LineArray extends Array<string> {
+  baseUri?: string;
 
-  constructor(baseUri) {
+  constructor(baseUri?: string) {
     super();
     this.baseUri = baseUri;
   }
 
-  override push(...elems) {
+  override push(...elems: string[]) {
     // redundancy check
     for (const elem of elems) {
       if (!elem.startsWith('#')) {
@@ -55,7 +68,7 @@ function buildDecimalFloatingNumber(num: number, fixed?: number) {
   return fixed ? rounded.toFixed(fixed) : rounded;
 }
 
-function getNumberOfDecimalPlaces(num) {
+function getNumberOfDecimalPlaces(num: number) {
   const str = num.toString(10);
   const index = str.indexOf('.');
   if (index === -1) {
@@ -64,7 +77,7 @@ function getNumberOfDecimalPlaces(num) {
   return str.length - index - 1;
 }
 
-function buildMasterPlaylist(lines, playlist) {
+function buildMasterPlaylist(lines: LineArray, playlist: MasterPlaylist) {
   for (const sessionData of playlist.sessionDataList) {
     lines.push(buildSessionData(sessionData));
   }
@@ -76,7 +89,7 @@ function buildMasterPlaylist(lines, playlist) {
   }
 }
 
-function buildSessionData(sessionData) {
+function buildSessionData(sessionData: SessionData) {
   const attrs = [`DATA-ID="${sessionData.id}"`];
   if (sessionData.language) {
     attrs.push(`LANGUAGE="${sessionData.language}"`);
@@ -89,7 +102,7 @@ function buildSessionData(sessionData) {
   return `#EXT-X-SESSION-DATA:${attrs.join(',')}`;
 }
 
-function buildKey(key, isSessionKey?: any) {
+function buildKey(key: Key, isSessionKey?: any) {
   const name = isSessionKey ? '#EXT-X-SESSION-KEY' : '#EXT-X-KEY';
   const attrs = [`METHOD=${key.method}`];
   if (key.uri) {
@@ -110,7 +123,7 @@ function buildKey(key, isSessionKey?: any) {
   return `${name}:${attrs.join(',')}`;
 }
 
-function buildVariant(lines, variant) {
+function buildVariant(lines: LineArray, variant: Variant) {
   const name = variant.isIFrameOnly ? '#EXT-X-I-FRAME-STREAM-INF' : '#EXT-X-STREAM-INF';
   const attrs = [`BANDWIDTH=${variant.bandwidth}`];
   if (variant.averageBandwidth) {
@@ -182,7 +195,7 @@ function buildVariant(lines, variant) {
   }
 }
 
-function buildRendition(rendition) {
+function buildRendition(rendition: Rendition) {
   const attrs = [
     `TYPE=${rendition.type}`,
     `GROUP-ID="${rendition.groupId}"`,
@@ -218,7 +231,7 @@ function buildRendition(rendition) {
   return `#EXT-X-MEDIA:${attrs.join(',')}`;
 }
 
-function buildMediaPlaylist(lines, playlist) {
+function buildMediaPlaylist(lines: LineArray, playlist: MediaPlaylist) {
   let lastKey = '';
   let lastMap = '';
   let unclosedCueIn = false;
@@ -293,7 +306,7 @@ function buildMediaPlaylist(lines, playlist) {
   }
 }
 
-function buildSegment(lines, segment, lastKey, lastMap, version = 1) {
+function buildSegment(lines: LineArray, segment: Segment, lastKey: string, lastMap: string, version = 1) {
   let hint = false;
   let markerType = '';
 
@@ -338,7 +351,7 @@ function buildSegment(lines, segment, lastKey, lastMap, version = 1) {
   return [lastKey, lastMap, markerType];
 }
 
-function buildMap(map) {
+function buildMap(map: MediaInitializationSection) {
   const attrs = [`URI="${map.uri}"`];
   if (map.byterange) {
     attrs.push(`BYTERANGE="${buildByteRange(map.byterange)}"`);
@@ -346,11 +359,11 @@ function buildMap(map) {
   return `#EXT-X-MAP:${attrs.join(',')}`;
 }
 
-function buildByteRange({offset, length}) {
+function buildByteRange({offset, length}: Byterange) {
   return `${length}@${offset}`;
 }
 
-function buildDateRange(dateRange) {
+function buildDateRange(dateRange: DateRange) {
   const attrs = [
     `ID="${dateRange.id}"`
   ];
@@ -386,7 +399,7 @@ function buildDateRange(dateRange) {
   return `#EXT-X-DATERANGE:${attrs.join(',')}`;
 }
 
-function buildMarkers(lines, markers) {
+function buildMarkers(lines: LineArray, markers: SpliceInfo[]) {
   let type = '';
   for (const marker of markers) {
     if (marker.type === 'OUT') {
@@ -403,7 +416,7 @@ function buildMarkers(lines, markers) {
   return type;
 }
 
-function buildParts(lines, parts) {
+function buildParts(lines: LineArray, parts: PartialSegment[]) {
   let hint = false;
   for (const part of parts) {
     if (part.hint) {
@@ -436,7 +449,7 @@ function buildParts(lines, parts) {
   return hint;
 }
 
-function stringify(playlist) {
+function stringify(playlist: MasterPlaylist | MediaPlaylist): string {
   utils.PARAMCHECK(playlist);
   utils.ASSERT('Not a playlist', playlist.type === 'playlist');
   const lines = new LineArray(playlist.uri);
@@ -451,9 +464,9 @@ function stringify(playlist) {
     lines.push(`#EXT-X-START:TIME-OFFSET=${buildDecimalFloatingNumber(playlist.start.offset)}${playlist.start.precise ? ',PRECISE=YES' : ''}`);
   }
   if (playlist.isMasterPlaylist) {
-    buildMasterPlaylist(lines, playlist);
+    buildMasterPlaylist(lines, playlist as MasterPlaylist);
   } else {
-    buildMediaPlaylist(lines, playlist);
+    buildMediaPlaylist(lines, playlist as MediaPlaylist);
   }
   // console.log('<<<');
   // console.log(lines.join('\n'));
