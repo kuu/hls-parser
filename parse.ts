@@ -852,7 +852,7 @@ function checkDateRange(segments: Segment[]) {
           }
         }
         range.push({start, end});
-      } else {
+      } else if (dateRange.classId) {
         rangeList.set(dateRange.classId, [{start, end}]);
       }
     }
