@@ -30,6 +30,10 @@ build/Release
 node_modules
 jspm_packages
 
+# Editors
+.idea/
+.vscode/
+
 # Optional npm cache directory
 .npm
 
@@ -37,8 +41,13 @@ jspm_packages
 .node_repl_history
 
 test
+.github/
 .node-version
 .travis.yml
 .npmignore
+data-structure.png
+tsconfig.tsbuildinfo
 webpack.config.js
 LICENSE
+*.ts
+!*.d.ts
