@@ -3,12 +3,13 @@
   "version": "0.10.8",
   "description": "A simple library to read/write HLS playlists",
   "main": "index.js",
+  "types": "index.d.ts",
   "browser": "dist/hls-parser.min.js",
   "scripts": {
     "lint": "xo",
     "type-check": "tsc --noEmit",
     "audit": "npm audit --audit-level high",
-    "build": "rm -fR ./dist; webpack --mode development ; webpack --mode production",
+    "build": "rm -fR ./dist; tsc ; webpack --mode development ; webpack --mode production",
     "test": "npm run lint && npm run build && npm run audit && ava --verbose"
   },
   "repository": {

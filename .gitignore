@@ -32,6 +32,7 @@ build/Release
 
 # Typescript intermediate files
 tsconfig.tsbuildinfo
+*.d.ts
 *.js
 !test/**/*.js
 
