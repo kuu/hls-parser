@@ -191,7 +191,7 @@ function formatDate(date: Date) {
 }
 
 function hasOwnProp(obj: object, propName: string): boolean {
-  return Object.hasOwnProperty.call(obj, propName);
+  return Object.hasOwn(obj, propName);
 }
 
 function setOptions(newOptions: Partial<Options> = {}): void {

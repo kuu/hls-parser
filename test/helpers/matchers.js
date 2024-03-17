@@ -29,12 +29,8 @@ function strip(playlist) {
 }
 
 function equalPlaylist(t, expected, actual) {
-  if (expected) {
-    expected = strip(expected);
-  }
-  if (actual) {
-    actual = strip(actual);
-  }
+  expected &&= strip(expected);
+  actual &&= strip(actual);
   if (expected === actual) {
     return t.pass();
   }
@@ -42,12 +38,8 @@ function equalPlaylist(t, expected, actual) {
 }
 
 function notEqualPlaylist(t, expected, actual) {
-  if (expected) {
-    expected = strip(expected);
-  }
-  if (actual) {
-    actual = strip(actual);
-  }
+  expected &&= strip(expected);
+  actual &&= strip(actual);
   if (expected === actual) {
     t.fail(`expected="${expected}", actual="${actual}"`);
     return t.fail();
