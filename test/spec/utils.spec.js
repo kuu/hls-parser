@@ -63,15 +63,15 @@ test('utils.toNumber', t => {
 });
 
 test('utils.hexToByteSequence', t => {
-  t.deepEqual(utils.hexToByteSequence('0x000000'), Buffer.from([0, 0, 0]));
-  t.deepEqual(utils.hexToByteSequence('0xFFFFFF'), Buffer.from([255, 255, 255]));
-  t.deepEqual(utils.hexToByteSequence('FFFFFF'), Buffer.from([255, 255, 255]));
+  t.deepEqual(utils.hexToByteSequence('0x000000'), new Uint8Array([0, 0, 0]));
+  t.deepEqual(utils.hexToByteSequence('0xFFFFFF'), new Uint8Array([255, 255, 255]));
+  t.deepEqual(utils.hexToByteSequence('FFFFFF'), new Uint8Array([255, 255, 255]));
 });
 
 test('utils.byteSequenceToHex', t => {
-  t.is(utils.byteSequenceToHex(Buffer.from([0, 0, 0])), '0x000000');
-  t.is(utils.byteSequenceToHex(Buffer.from([255, 255, 255])), '0xFFFFFF');
-  t.is(utils.byteSequenceToHex(Buffer.from([255, 255, 256])), '0xFFFF00');
+  t.is(utils.byteSequenceToHex(new Uint8Array([0, 0, 0])), '0x000000');
+  t.is(utils.byteSequenceToHex(new Uint8Array([255, 255, 255])), '0xFFFFFF');
+  t.is(utils.byteSequenceToHex(new Uint8Array([255, 255, 256])), '0xFFFF00');
 });
 
 test('utils.tryCatch', t => {
