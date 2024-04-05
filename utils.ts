@@ -70,18 +70,18 @@ function toNumber(str: string, radix = 10) {
   return num;
 }
 
-function hexToByteSequence(str: string): Buffer {
+function hexToByteSequence(str: string): Uint8Array {
   if (str.startsWith('0x') || str.startsWith('0X')) {
     str = str.slice(2);
   }
-  const numArray: number[] = [];
+  const numArray = new Uint8Array(str.length / 2);
   for (let i = 0; i < str.length; i += 2) {
-    numArray.push(toNumber(str.slice(i, i + 2), 16));
+    numArray[i / 2] = Number.parseInt(str.slice(i, i + 2), 16);
   }
-  return Buffer.from(numArray);
+  return numArray;
 }
 
-function byteSequenceToHex(sequence: Buffer, start = 0, end = sequence.length) {
+function byteSequenceToHex(sequence: ArrayBuffer, start = 0, end = sequence.byteLength) {
   if (end <= start) {
     THROW(new Error(`end must be larger than start : start=${start}, end=${end}`));
   }

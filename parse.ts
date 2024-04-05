@@ -104,7 +104,7 @@ function parseAllowedCpc(str: string) {
   return allowedCpcList;
 }
 
-function parseIV(str: string): Buffer {
+function parseIV(str: string): Uint8Array {
   const iv = utils.hexToByteSequence(str);
   if (iv.length !== 16) {
     utils.INVALIDPLAYLIST('IV must be a 128-bit unsigned integer');
@@ -373,10 +373,10 @@ function sameKey(key1: Key, key2: Key) {
     if (!key2.iv) {
       return false;
     }
-    if (key1.iv.length !== key2.iv.length) {
+    if (key1.iv.byteLength !== key2.iv.byteLength) {
       return false;
     }
-    for (let i = 0; i < key1.iv.length; i++) {
+    for (let i = 0; i < key1.iv.byteLength; i++) {
       if (key1.iv[i] !== key2.iv[i]) {
         return false;
       }
@@ -962,7 +962,7 @@ function lexicalParse(text: string, params: Record<string, any>) {
     // V8 has garbage collection issues when cleaning up substrings split from strings greater
     // than 13 characters so before we continue we need to safely copy over each line so that it
     // doesn't hold any reference to the containing string.
-    const line = Buffer.from(l.trim()).toString();
+    const line = l.trim();
     if (!line) {
       // empty line
       continue;

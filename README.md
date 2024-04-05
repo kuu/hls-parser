@@ -226,7 +226,7 @@ This section describes the structure of the object returned by `parse()` method.
 | ----------------- | -------- | -------- | --------- | ------------- |
 | `method`  | string   | Yes       | N/A | See METHOD attribute in [EXT-X-KEY](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.2.4) |
 | `uri`        | string  | No       | undefined        | See URI attribute in [EXT-X-KEY](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.2.4) |
-| `iv`        | `Buffer`(length=16)   | No       | undefined        | See IV attribute in [EXT-X-KEY](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.2.4) |
+| `iv`        | `ArrayBuffer`(length=16)   | No       | undefined        | See IV attribute in [EXT-X-KEY](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.2.4) |
 | `format`  | string   | No       | undefined | See KEYFORMAT attribute in [EXT-X-KEY](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.2.4) |
 | `formatVersion`  | string   | No       | undefined | See KEYFORMATVERSIONS attribute in [EXT-X-KEY](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.2.4) |
 

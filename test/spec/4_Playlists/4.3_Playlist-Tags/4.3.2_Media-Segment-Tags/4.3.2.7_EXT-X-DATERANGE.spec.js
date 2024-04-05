@@ -138,7 +138,7 @@ test('#EXT-X-DATERANGE_06', t => {
     http://example.com/3
   `);
   t.is(playlist.segments[0].dateRange.attributes['X-STR'], 'abc');
-  t.deepEqual(playlist.segments[1].dateRange.attributes['X-BYTE'], Buffer.from([255, 254, 253, 252]));
+  t.deepEqual(playlist.segments[1].dateRange.attributes['X-BYTE'], new Uint8Array([255, 254, 253, 252]));
   t.is(playlist.segments[2].dateRange.attributes['X-FLOAT'], 0.999);
 });
 

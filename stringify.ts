@@ -109,7 +109,7 @@ function buildKey(key: Key, isSessionKey?: any) {
     attrs.push(`URI="${key.uri}"`);
   }
   if (key.iv) {
-    if (key.iv.length !== 16) {
+    if (key.iv.byteLength !== 16) {
       utils.INVALIDPLAYLIST('IV must be a 128-bit unsigned integer');
     }
     attrs.push(`IV=${utils.byteSequenceToHex(key.iv)}`);

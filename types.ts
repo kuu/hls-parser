@@ -134,7 +134,7 @@ class SessionData {
 class Key {
   method: string;
   uri?: string;
-  iv?: Buffer;
+  iv?: ArrayBuffer;
   format?: string;
   formatVersion?: string;
 
