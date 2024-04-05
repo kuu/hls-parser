@@ -15,10 +15,10 @@ Provides synchronous functions to read/write HLS playlists (conforms to [the HLS
 
 ## Usage
 ```js
-import HLS from 'hls-parser';
+import { parse, types, stringify } from 'hls-parser';
 
 // Parse the playlist
-const playlist = HLS.parse(textData);
+const playlist = parse(textData);
 // You can access the playlist as a JS object
 if (playlist.isMasterPlaylist) {
   // Master playlist
@@ -26,7 +26,7 @@ if (playlist.isMasterPlaylist) {
   // Media playlist
 }
 // Create a new playlist
-const {MediaPlaylist, Segment} = HLS.types;
+const {MediaPlaylist, Segment} = types;
 const obj = new MediaPlaylist({
   targetDuration: 9,
   playlistType: 'VOD',
@@ -38,7 +38,7 @@ const obj = new MediaPlaylist({
   ]
 });
 // Convert the object into a text
-HLS.stringify(obj);
+stringify(obj);
 /*
 #EXTM3U
 #EXT-X-TARGETDURATION:9
