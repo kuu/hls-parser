@@ -1,6 +1,11 @@
 import * as utils from './utils';
 import {
+  AllowedCpc,
+  ExtInfo,
   Rendition,
+  Resolution,
+  TagParam,
+  UserAttribute,
   Variant,
   SessionData,
   Key,
@@ -71,7 +76,7 @@ function getTagCategory(tagName: string): TagCategory {
   }
 }
 
-function parseEXTINF(param: string) {
+function parseEXTINF(param: string): ExtInfo {
   const pair = utils.splitAt(param, ',') as [string, string];
   return {duration: utils.toNumber(pair[0]), title: decodeURIComponent(escape(pair[1]))};
 }
@@ -81,18 +86,18 @@ function parseBYTERANGE(param: string): Byterange {
   return {length: utils.toNumber(pair[0]), offset: pair[1] ? utils.toNumber(pair[1]) : -1};
 }
 
-function parseResolution(str: string) {
+function parseResolution(str: string): Resolution {
   const pair = utils.splitAt(str, 'x') as [string, string];
   return {width: utils.toNumber(pair[0]), height: utils.toNumber(pair[1])};
 }
 
-function parseAllowedCpc(str: string) {
+function parseAllowedCpc(str: string): AllowedCpc[] {
   const message = 'ALLOWED-CPC: Each entry must consit of KEYFORMAT and Content Protection Configuration';
   const list = str.split(',');
   if (list.length === 0) {
     utils.INVALIDPLAYLIST(message);
   }
-  const allowedCpcList: {format: string; cpcList: string[]}[] = [];
+  const allowedCpcList: AllowedCpc[] = [];
   for (const item of list) {
     const [format, cpcText] = utils.splitAt(item, ':');
     if (!format || !cpcText) {
@@ -112,9 +117,9 @@ function parseIV(str: string): Uint8Array {
   return iv;
 }
 
-function parseUserAttribute(str: string) {
+function parseUserAttribute(str: string): UserAttribute {
   if (str.startsWith('"')) {
-    return unquote(str);
+    return unquote(str)!;
   }
   if (str.startsWith('0x') || str.startsWith('0X')) {
     return utils.hexToByteSequence(str);
@@ -131,7 +136,7 @@ function setCompatibleVersionOfKey(params: Record<string, any>, attributes: Reco
   }
 }
 
-function parseAttributeList(param) {
+function parseAttributeList(param): Record<string, any> {
   const attributes = {};
   for (const item of utils.splitByCommaWithPreservingQuotes(param)) {
     const [key, value] = utils.splitAt(item, '=');
@@ -201,7 +206,7 @@ function parseAttributeList(param) {
   return attributes;
 }
 
-function parseTagParam(name, param) {
+function parseTagParam(name: string, param): TagParam {
   switch (name) {
     case 'EXTM3U':
     case 'EXT-X-DISCONTINUITY':
@@ -282,7 +287,7 @@ function parseRendition({attributes}: Tag): Rendition {
   return rendition;
 }
 
-function checkRedundantRendition(renditions, rendition) {
+function checkRedundantRendition(renditions, rendition): string {
   let defaultFound = false;
   for (const item of renditions) {
     if (item.name === rendition.name) {
@@ -322,7 +327,7 @@ function matchTypes(attrs, variant, params) {
   }
 }
 
-function parseVariant(lines, variantAttrs, uri, iFrameOnly, params) {
+function parseVariant(lines, variantAttrs, uri: string, iFrameOnly: boolean, params: Record<string, any>): Variant {
   const variant = new Variant({
     uri,
     bandwidth: variantAttrs['BANDWIDTH'],
@@ -362,7 +367,7 @@ function parseVariant(lines, variantAttrs, uri, iFrameOnly, params) {
   return variant;
 }
 
-function sameKey(key1: Key, key2: Key) {
+function sameKey(key1: Key, key2: Key): boolean {
   if (key1.method !== key2.method) {
     return false;
   }
@@ -404,7 +409,7 @@ function parseMasterPlaylist(lines: Line[], params: Record<string, any>): Master
       if (typeof uri !== 'string' || uri.startsWith('#EXT')) {
         utils.INVALIDPLAYLIST('EXT-X-STREAM-INF must be followed by a URI line');
       }
-      const variant = parseVariant(lines, attributes, uri, false, params);
+      const variant = parseVariant(lines, attributes, uri as string, false, params);
       if (variant) {
         if (typeof variant.score === 'number') {
           variantIsScored = true;
@@ -478,7 +483,7 @@ function parseMasterPlaylist(lines: Line[], params: Record<string, any>): Master
   return playlist;
 }
 
-function parseSegment(lines: Line[], uri: string, start: number, end: number, mediaSequenceNumber: number, discontinuitySequence: number, params: Record<string, any>) {
+function parseSegment(lines: Line[], uri: string, start: number, end: number, mediaSequenceNumber: number, discontinuitySequence: number, params: Record<string, any>): Segment {
   const segment = new Segment({uri, mediaSequenceNumber, discontinuitySequence});
   let mapHint = false;
   let partHint = false;
@@ -605,7 +610,7 @@ function parseSegment(lines: Line[], uri: string, start: number, end: number, me
   return segment;
 }
 
-function parsePrefetchSegment(lines: Line[], uri: any, start: number, end: number, mediaSequenceNumber: number, discontinuitySequence: number, params: Record<string, any>) {
+function parsePrefetchSegment(lines: Line[], uri: any, start: number, end: number, mediaSequenceNumber: number, discontinuitySequence: number, params: Record<string, any>): PrefetchSegment {
   const segment = new PrefetchSegment({uri, mediaSequenceNumber, discontinuitySequence});
   for (let i = start; i <= end; i++) {
     const {name, attributes} = lines[i] as Tag;
@@ -631,7 +636,7 @@ function parsePrefetchSegment(lines: Line[], uri: any, start: number, end: numbe
   return segment;
 }
 
-function parseMediaPlaylist(lines: Line[], params: Record<string, any>) {
+function parseMediaPlaylist(lines: Line[], params: Record<string, any>): MediaPlaylist {
   const playlist = new MediaPlaylist();
   let segmentStart = -1;
   let mediaSequence = 0;
@@ -956,7 +961,7 @@ function parseTag(line: string, params: Record<string, any>): Tag | null {
 
 type Line = string | Tag;
 
-function lexicalParse(text: string, params: Record<string, any>) {
+function lexicalParse(text: string, params: Record<string, any>): Line[] {
   const lines: Line[] = [];
   for (const l of text.split('\n')) {
     // V8 has garbage collection issues when cleaning up substrings split from strings greater
@@ -987,7 +992,7 @@ function lexicalParse(text: string, params: Record<string, any>) {
   return lines;
 }
 
-function semanticParse(lines: Line[], params: Record<string, any>) {
+function semanticParse(lines: Line[], params: Record<string, any>): MasterPlaylist | MediaPlaylist {
   let playlist;
   if (params.isMasterPlaylist) {
     playlist = parseMasterPlaylist(lines, params);
