@@ -102,7 +102,7 @@ function buildSessionData(sessionData: SessionData) {
   return `#EXT-X-SESSION-DATA:${attrs.join(',')}`;
 }
 
-function buildKey(key: Key, isSessionKey?: any) {
+function buildKey(key: Key, isSessionKey?: boolean) {
   const name = isSessionKey ? '#EXT-X-SESSION-KEY' : '#EXT-X-KEY';
   const attrs = [`METHOD=${key.method}`];
   if (key.uri) {

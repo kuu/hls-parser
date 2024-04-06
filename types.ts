@@ -54,17 +54,17 @@ class Variant {
   averageBandwidth?: number;
   score: number;
   codecs?: string;
-  resolution?: { width: number; height: number };
+  resolution?: Resolution;
   frameRate?: number;
   hdcpLevel?: string;
-  allowedCpc: { format: string, cpcList: string[] }[];
+  allowedCpc: AllowedCpc[];
   videoRange: 'SDR' | 'HLG' | 'PQ';
   stableVariantId: string;
   programId: any;
-  audio: Rendition[];
-  video: Rendition[];
-  subtitles: Rendition[];
-  closedCaptions: Rendition[];
+  audio: (Rendition & {type: 'AUDIO'})[];
+  video: (Rendition & {type: 'VIDEO'})[];
+  subtitles: (Rendition & {type: 'SUBTITLES'})[];
+  closedCaptions: (Rendition & {type: 'CLOSED-CAPTIONS'})[];
   currentRenditions: { audio: number; video: number; subtitles: number; closedCaptions: number; };
 
   constructor({
@@ -219,7 +219,7 @@ class SpliceInfo {
   type: string;
   duration?: number;
   tagName?: string;
-  value?: any;
+  value?: string;
 
   constructor({
     type, // required
@@ -490,3 +490,28 @@ export {
   PrefetchSegment,
   RenditionReport
 };
+
+export type AllowedCpc = {
+  format: string;
+  cpcList: string[];
+};
+
+export type ExtInfo = {
+  duration: number;
+  title: string;
+};
+
+export type Resolution = {
+  width: number;
+  height: number;
+};
+
+export type TagParam =
+    | [ null, null ]
+    | [ number, null ]
+    | [ null, Record<string, any> ]
+    | [ ExtInfo, null ]
+    | [ Byterange, null ]
+    | [ Date, null ];
+
+export type UserAttribute = number | string | Uint8Array;
