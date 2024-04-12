@@ -367,6 +367,7 @@ class Segment extends Data {
   dateRange: DateRange;
   markers: SpliceInfo[];
   parts: PartialSegment[];
+  gap?: boolean;
 
   constructor({
     uri,
@@ -383,7 +384,8 @@ class Segment extends Data {
     programDateTime,
     dateRange,
     markers = [],
-    parts = []
+    parts = [],
+    gap
   }: any) {
     super('segment');
     // utils.PARAMCHECK(uri, mediaSequenceNumber, discontinuitySequence);
@@ -402,6 +404,7 @@ class Segment extends Data {
     this.dateRange = dateRange;
     this.markers = markers;
     this.parts = parts;
+    this.gap = gap;
   }
 }
 
