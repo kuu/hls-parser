@@ -274,3 +274,16 @@ test('#EXT-X-VERSION_11', t => {
     http://example.com
   `);
 });
+
+// A Media Playlist MUST indicate a EXT-X-VERSION of 8 or higher if it
+// contains:
+// - the "EXT-X-GAP" tag.
+test('#EXT-X-VERSION_12', t => {
+  utils.parseFail(t, `
+    #EXTM3U
+    #EXT-X-VERSION:1
+    #EXTINF:5
+    #EXT-X-GAP
+    http://example.com
+  `);
+});

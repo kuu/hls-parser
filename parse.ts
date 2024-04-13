@@ -49,6 +49,7 @@ function getTagCategory(tagName: string): TagCategory {
     case 'EXT-X-SCTE35':
     case 'EXT-X-PART':
     case 'EXT-X-PRELOAD-HINT':
+    case 'EXT-X-GAP':
       return 'Segment';
     case 'EXT-X-TARGETDURATION':
     case 'EXT-X-MEDIA-SEQUENCE':
@@ -214,6 +215,7 @@ function parseTagParam(name: string, param): TagParam {
     case 'EXT-X-I-FRAMES-ONLY':
     case 'EXT-X-INDEPENDENT-SEGMENTS':
     case 'EXT-X-CUE-IN':
+    case 'EXT-X-GAP':
       return [null, null];
     case 'EXT-X-VERSION':
     case 'EXT-X-TARGETDURATION':
@@ -508,6 +510,11 @@ function parseSegment(lines: Line[], uri: string, start: number, end: number, me
         utils.INVALIDPLAYLIST('EXT-X-DISCONTINUITY must appear before the first EXT-X-PART tag of the Parent Segment.');
       }
       segment.discontinuity = true;
+    } else if (name === 'EXT-X-GAP') {
+      if (params.compatibleVersion < 8) {
+        params.compatibleVersion = 8;
+      }
+      segment.gap = true;
     } else if (name === 'EXT-X-KEY') {
       if (segment.parts.length > 0) {
         utils.INVALIDPLAYLIST('EXT-X-KEY must appear before the first EXT-X-PART tag of the Parent Segment.');
@@ -604,6 +611,10 @@ function parseSegment(lines: Line[], uri: string, start: number, end: number, me
         independent: attributes['INDEPENDENT'],
         gap: attributes['GAP']
       });
+      if (segment.gap && !partialSegment.gap) {
+        // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-6.2.1
+        utils.INVALIDPLAYLIST('Partial segments must have GAP=YES if they are in a gap (EXT-X-GAP)');
+      }
       segment.parts.push(partialSegment);
     }
   }
