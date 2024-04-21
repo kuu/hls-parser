@@ -61,7 +61,7 @@ Converts a text playlist into a structured JS object
 #### return value
 An instance of either `MasterPlaylist` or `MediaPlaylist` (See **Data format** below.)
 
-### `HLS.stringify(obj, processors)`
+### `HLS.stringify(obj, postProcess)`
 Converts a JS object into a plain text playlist
 
 #### params
