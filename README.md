@@ -73,8 +73,8 @@ Converts a JS object into a plain text playlist
 ##### `PostProcess`
 | Property         | Type          | Required | Default | Description   |
 | ---------------- | ------------- | -------- | ------- | ------------- |
-| `segmentProcessor` | (lines: string[], start: number, end: number, segment: Segment, i: number) => undefined | No      | undefined     | A function to manipulate the segment output.  |
-| `variantProcessor` | (lines: string[], start: number, end: number, variant: Variant, i: number) => undefined | No      | undefined     | A function to manipulate the variant output.  |
+| `segmentProcessor` | (lines: string[], start: number, end: number, segment: Segment, i: number) => void | No      | undefined     | A function to manipulate the segment output.  |
+| `variantProcessor` | (lines: string[], start: number, end: number, variant: Variant, i: number) => void | No      | undefined     | A function to manipulate the variant output.  |
 
 
 #### return value
