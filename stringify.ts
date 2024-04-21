@@ -467,7 +467,7 @@ function buildParts(lines: LineArray, parts: PartialSegment[]) {
   return hint;
 }
 
-function stringify(playlist: MasterPlaylist | MediaPlaylist, postProcess: PostProcess | undefined): string {
+function stringify(playlist: MasterPlaylist | MediaPlaylist, postProcess?: PostProcess): string {
   utils.PARAMCHECK(playlist);
   utils.ASSERT('Not a playlist', playlist.type === 'playlist');
   const lines = new LineArray(playlist.uri);
