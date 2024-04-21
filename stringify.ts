@@ -10,7 +10,8 @@ import {
   Segment,
   SessionData,
   SpliceInfo,
-  Variant
+  Variant,
+  PostProcess,
 } from './types';
 
 const ALLOW_REDUNDANCY = [
@@ -57,6 +58,15 @@ class LineArray extends Array<string> {
     }
     return this.length;
   }
+
+  override join(separator: string | undefined = ','): string {
+    for (let i = this.length - 1; i >= 0; i--) {
+      if (!this[i]) {
+        this.splice(i, 1);
+      }
+    }
+    return super.join(separator);
+  }
 }
 
 function buildDecimalFloatingNumber(num: number, fixed?: number) {
@@ -77,15 +87,19 @@ function getNumberOfDecimalPlaces(num: number) {
   return str.length - index - 1;
 }
 
-function buildMasterPlaylist(lines: LineArray, playlist: MasterPlaylist) {
+function buildMasterPlaylist(lines: LineArray, playlist: MasterPlaylist, postProcess: PostProcess | undefined) {
   for (const sessionData of playlist.sessionDataList) {
     lines.push(buildSessionData(sessionData));
   }
   for (const sessionKey of playlist.sessionKeyList) {
     lines.push(buildKey(sessionKey, true));
   }
-  for (const variant of playlist.variants) {
+  for (const [i, variant] of playlist.variants.entries()) {
+    const base = lines.length;
     buildVariant(lines, variant);
+    if (postProcess?.variantProcessor) {
+      postProcess.variantProcessor(lines, base, lines.length - 1, variant, i);
+    }
   }
 }
 
@@ -231,7 +245,7 @@ function buildRendition(rendition: Rendition) {
   return `#EXT-X-MEDIA:${attrs.join(',')}`;
 }
 
-function buildMediaPlaylist(lines: LineArray, playlist: MediaPlaylist) {
+function buildMediaPlaylist(lines: LineArray, playlist: MediaPlaylist, postProcess: PostProcess | undefined) {
   let lastKey = '';
   let lastMap = '';
   let unclosedCueIn = false;
@@ -272,13 +286,17 @@ function buildMediaPlaylist(lines: LineArray, playlist: MediaPlaylist) {
   if (playlist.skip > 0) {
     lines.push(`#EXT-X-SKIP:SKIPPED-SEGMENTS=${playlist.skip}`);
   }
-  for (const segment of playlist.segments) {
+  for (const [i, segment] of playlist.segments.entries()) {
+    const base = lines.length;
     let markerType = '';
     [lastKey, lastMap, markerType] = buildSegment(lines, segment, lastKey, lastMap, playlist.version);
     if (markerType === 'OUT') {
       unclosedCueIn = true;
     } else if (markerType === 'IN' && unclosedCueIn) {
       unclosedCueIn = false;
+    }
+    if (postProcess?.segmentProcessor) {
+      postProcess.segmentProcessor(lines, base, lines.length - 1, segment, i);
     }
   }
   if (playlist.playlistType === 'VOD' && unclosedCueIn) {
@@ -449,7 +467,7 @@ function buildParts(lines: LineArray, parts: PartialSegment[]) {
   return hint;
 }
 
-function stringify(playlist: MasterPlaylist | MediaPlaylist): string {
+function stringify(playlist: MasterPlaylist | MediaPlaylist, postProcess: PostProcess | undefined): string {
   utils.PARAMCHECK(playlist);
   utils.ASSERT('Not a playlist', playlist.type === 'playlist');
   const lines = new LineArray(playlist.uri);
@@ -464,9 +482,9 @@ function stringify(playlist: MasterPlaylist | MediaPlaylist): string {
     lines.push(`#EXT-X-START:TIME-OFFSET=${buildDecimalFloatingNumber(playlist.start.offset)}${playlist.start.precise ? ',PRECISE=YES' : ''}`);
   }
   if (playlist.isMasterPlaylist) {
-    buildMasterPlaylist(lines, playlist as MasterPlaylist);
+    buildMasterPlaylist(lines, playlist as MasterPlaylist, postProcess);
   } else {
-    buildMediaPlaylist(lines, playlist as MediaPlaylist);
+    buildMediaPlaylist(lines, playlist as MediaPlaylist, postProcess);
   }
   // console.log('<<<');
   // console.log(lines.join('\n'));
