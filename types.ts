@@ -518,3 +518,8 @@ export type TagParam =
     | [ Date, null ];
 
 export type UserAttribute = number | string | Uint8Array;
+
+export type PostProcess = {
+  segmentProcessor: ((lines: string[], start: number, end: number, segment: Segment, i: number) => undefined) | undefined;
+  variantProcessor: ((lines: string[], start: number, end: number, variant: Variant, i: number) => undefined) | undefined;
+};

@@ -61,13 +61,21 @@ Converts a text playlist into a structured JS object
 #### return value
 An instance of either `MasterPlaylist` or `MediaPlaylist` (See **Data format** below.)
 
-### `HLS.stringify(obj)`
+### `HLS.stringify(obj, processors)`
 Converts a JS object into a plain text playlist
 
 #### params
 | Name    | Type   | Required | Default | Description   |
 | ------- | ------ | -------- | ------- | ------------- |
 | obj     | `MasterPlaylist` or `MediaPlaylist` (See **Data format** below.)  | Yes      | N/A     | An object returned by `HLS.parse()` or a manually created object |
+| postProcess     | PostProcess  | No      | undefined | A function to be called for each segment or variant to manipulate the output. |
+
+##### `PostProcess`
+| Property         | Type          | Required | Default | Description   |
+| ---------------- | ------------- | -------- | ------- | ------------- |
+| `segmentProcessor` | (lines: string[], start: number, end: number, segment: Segment, i: number) => undefined | No      | undefined     | A function to manipulate the segment output.  |
+| `variantProcessor` | (lines: string[], start: number, end: number, variant: Variant, i: number) => undefined | No      | undefined     | A function to manipulate the variant output.  |
+
 
 #### return value
 A text data that conforms to [the HLS playlist spec](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.1)
