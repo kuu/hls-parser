@@ -93,13 +93,11 @@
     },
     "overrides": [
       {
-        "files": "test/**/*.js",
         "rules": {
           "unicorn/no-array-push-push": 0
         }
       },
       {
-        "files": "*",
         "rules": {
           "n/file-extension-in-import": 0,
           "@typescript-eslint/array-type": 1,
