@@ -403,7 +403,8 @@ function sameKey(key1: Key, key2: Key): boolean {
 function parseMasterPlaylist(lines: Line[], params: Record<string, any>): MasterPlaylist {
   const playlist = new MasterPlaylist();
   let variantIsScored = false;
-  for (const [index, {name, value, attributes}] of (lines as Tag[]).entries()) {
+  for (const [index, line] of lines.entries()) {
+    const {name, value, attributes} = mapTo<Tag>(line);
     if (name === 'EXT-X-VERSION') {
       playlist.version = value;
     } else if (name === 'EXT-X-STREAM-INF') {
@@ -490,7 +491,7 @@ function parseSegment(lines: Line[], uri: string, start: number, end: number, me
   let mapHint = false;
   let partHint = false;
   for (let i = start; i <= end; i++) {
-    const {name, value, attributes} = lines[i] as Tag;
+    const {name, value, attributes} = mapTo<Tag>(lines[i]);
     if (name === 'EXTINF') {
       if (!Number.isInteger(value.duration) && params.compatibleVersion < 3) {
         params.compatibleVersion = 3;
@@ -658,7 +659,7 @@ function parseMediaPlaylist(lines: Line[], params: Record<string, any>): MediaPl
   let currentMap: MediaInitializationSection | null = null;
   let containsParts = false;
   for (const [index, line] of lines.entries()) {
-    const {name, value, attributes, category} = line as Tag;
+    const {name, value, attributes, category} = mapTo<Tag>(line);
     if (category === 'Segment') {
       if (segmentStart === -1) {
         segmentStart = index;
@@ -1036,6 +1037,10 @@ function parse(text: string): MasterPlaylist | MediaPlaylist {
   const playlist = semanticParse(lines, params);
   playlist.source = text;
   return playlist;
+}
+
+function mapTo<T extends object>(value: T | string): Partial<T> {
+  return typeof value === 'string' ? {} : value;
 }
 
 export default parse;
