@@ -7,9 +7,5 @@
     "declaration": true,
     "noImplicitAny": false
   },
-  "exclude": [
-    "webpack.config.js",
-    "dist",
-    "test"
-  ]
+  
 }

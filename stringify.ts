@@ -331,6 +331,9 @@ function buildSegment(lines: LineArray, segment: Segment, lastKey: string, lastM
   if (segment.discontinuity) {
     lines.push(`#EXT-X-DISCONTINUITY`);
   }
+  if (segment.gap) {
+        lines.push(`#EXT-X-GAP`);
+  }
   if (segment.key) {
     const line = buildKey(segment.key);
     if (line !== lastKey) {
