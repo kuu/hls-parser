@@ -31,10 +31,10 @@ coverage
 build/Release
 
 # Typescript intermediate files
-tsconfig.tsbuildinfo
-*.d.ts
-*.js
-!test/**/*.js
+#tsconfig.tsbuildinfo
+#*.d.ts
+#*.js
+#!test/**/*.js
 
 # Dependency directories
 node_modules
