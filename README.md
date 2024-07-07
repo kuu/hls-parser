@@ -210,6 +210,7 @@ This section describes the structure of the object returned by `parse()` method.
 | `dateRange`  | `DateRange`   | No       | undefined | See [EXT-X-DATERANGE](https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-4.3.2.7) |
 | `markers`  | [`SpliceInfo`]   | No       | [] | SCTE-35 messages associated with this segment|
 | `parts`  | [`PartialSegment`]   | No       | [] | Partial Segments that constitute this segment |
+| `gap` | boolean | No | undefined | See [EXT-X-GAP](https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.4.4.7) |
 
 ### `PartialSegment` (extends `Data`)
 | Property          | Type     | Required | Default   | Description   |
