@@ -18,7 +18,8 @@ import {
   Segment,
   PartialSegment,
   PrefetchSegment,
-  RenditionReport
+  RenditionReport,
+  ContentSteering
 } from './types';
 
 function unquote(str: string | undefined) {
@@ -31,6 +32,7 @@ function getTagCategory(tagName: string): TagCategory {
   switch (tagName) {
     case 'EXTM3U':
     case 'EXT-X-VERSION':
+    case 'EXT-X-CONTENT-STEERING':
       return 'Basic';
     case 'EXTINF':
     case 'EXT-X-BYTERANGE':
@@ -284,7 +286,8 @@ function parseRendition({attributes}: Tag): Rendition {
     forced: attributes['FORCED'],
     instreamId: attributes['INSTREAM-ID'],
     characteristics: attributes['CHARACTERISTICS'],
-    channels: attributes['CHANNELS']
+    channels: attributes['CHANNELS'],
+    pathwayId: attributes['PATHWAY-ID']
   });
   return rendition;
 }
@@ -342,6 +345,7 @@ function parseVariant(lines, variantAttrs, uri: string, iFrameOnly: boolean, par
     allowedCpc: variantAttrs['ALLOWED-CPC'],
     videoRange: variantAttrs['VIDEO-RANGE'],
     stableVariantId: variantAttrs['STABLE-VARIANT-ID'],
+    pathwayId: variantAttrs['STABLE-PATHWAY-ID'],
     programId: variantAttrs['PROGRAM-ID']
   });
   for (const line of lines) {
@@ -407,6 +411,12 @@ function parseMasterPlaylist(lines: Line[], params: Record<string, any>): Master
     const {name, value, attributes} = mapTo<Tag>(line);
     if (name === 'EXT-X-VERSION') {
       playlist.version = value;
+    } else if (name === 'EXT-X-CONTENT-STEERING-SERVER') {
+      const contentSteering = new ContentSteering({
+        serverUri: attributes['SERVER-URI'],
+        pathwayId: attributes['PATHWAY-ID']
+      });
+      playlist.contentSteering = contentSteering;
     } else if (name === 'EXT-X-STREAM-INF') {
       const uri = lines[index + 1];
       if (typeof uri !== 'string' || uri.startsWith('#EXT')) {
