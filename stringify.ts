@@ -363,8 +363,10 @@ function buildSegment(lines: LineArray, segment: Segment, lastKey: string, lastM
   if (hint) {
     return [lastKey, lastMap];
   }
-  const duration = version < 3 ? Math.round(segment.duration) : buildDecimalFloatingNumber(segment.duration, getNumberOfDecimalPlaces(segment.duration));
-  lines.push(`#EXTINF:${duration},${unescape(encodeURIComponent(segment.title || ''))}`);
+  if (typeof segment.duration === 'number' && !Number.isNaN(segment.duration)) {
+    const duration = version < 3 ? Math.round(segment.duration) : buildDecimalFloatingNumber(segment.duration, getNumberOfDecimalPlaces(segment.duration));
+    lines.push(`#EXTINF:${duration},${unescape(encodeURIComponent(segment.title || ''))}`);
+  }
   if (segment.byterange) {
     lines.push(`#EXT-X-BYTERANGE:${buildByteRange(segment.byterange)}`);
   }
