@@ -487,9 +487,9 @@ function stringify(playlist: MasterPlaylist | MediaPlaylist, postProcess?: PostP
     lines.push(`#EXT-X-START:TIME-OFFSET=${buildDecimalFloatingNumber(playlist.start.offset)}${playlist.start.precise ? ',PRECISE=YES' : ''}`);
   }
   if (playlist.isMasterPlaylist) {
-    buildMasterPlaylist(lines, playlist as MasterPlaylist, postProcess);
+    buildMasterPlaylist(lines, playlist, postProcess);
   } else {
-    buildMediaPlaylist(lines, playlist as MediaPlaylist, postProcess);
+    buildMediaPlaylist(lines, playlist, postProcess);
   }
   // console.log('<<<');
   // console.log(lines.join('\n'));
