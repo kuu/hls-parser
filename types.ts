@@ -276,6 +276,7 @@ class Playlist extends Data {
 }
 
 class MasterPlaylist extends Playlist {
+  declare isMasterPlaylist: true;
   variants: Variant[];
   currentVariant?: number;
   sessionDataList: SessionData[];
@@ -304,6 +305,7 @@ type LowLatencyCompatibility = {
 };
 
 class MediaPlaylist extends Playlist {
+  declare isMasterPlaylist: false;
   targetDuration: number;
   mediaSequenceBase?: number;
   discontinuitySequenceBase?: number;
