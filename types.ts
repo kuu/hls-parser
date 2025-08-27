@@ -15,6 +15,7 @@ class Rendition {
   instreamId?: string;
   characteristics?: string;
   channels?: string;
+  pathwayId?: string;
 
   constructor({
     type, // required
@@ -28,7 +29,8 @@ class Rendition {
     forced,
     instreamId, // required if type=CLOSED-CAPTIONS
     characteristics,
-    channels
+    channels,
+    pathwayId
   }: Rendition) {
     utils.PARAMCHECK(type, groupId, name);
     utils.CONDITIONALASSERT([type === 'SUBTITLES', uri], [type === 'CLOSED-CAPTIONS', instreamId], [type === 'CLOSED-CAPTIONS', !uri], [forced, type === 'SUBTITLES']);
@@ -44,6 +46,7 @@ class Rendition {
     this.instreamId = instreamId;
     this.characteristics = characteristics;
     this.channels = channels;
+    this.pathwayId = pathwayId;
   }
 }
 
@@ -60,6 +63,7 @@ class Variant {
   allowedCpc: AllowedCpc[];
   videoRange: 'SDR' | 'HLG' | 'PQ';
   stableVariantId: string;
+  pathwayId: string;
   programId: any;
   audio: (Rendition & {type: 'AUDIO'})[];
   video: (Rendition & {type: 'VIDEO'})[];
@@ -80,6 +84,7 @@ class Variant {
     allowedCpc,
     videoRange,
     stableVariantId,
+    pathwayId,
     programId,
     audio = [],
     video = [],
@@ -101,6 +106,7 @@ class Variant {
     this.allowedCpc = allowedCpc;
     this.videoRange = videoRange;
     this.stableVariantId = stableVariantId;
+    this.pathwayId = pathwayId;
     this.programId = programId;
     this.audio = audio;
     this.video = video;
@@ -153,6 +159,19 @@ class Key {
     this.iv = iv;
     this.format = format;
     this.formatVersion = formatVersion;
+  }
+}
+
+class ContentSteering {
+  serverUri: string;
+  pathwayId: string;
+
+  constructor({
+    serverUri,
+    pathwayId
+  }: ContentSteering) {
+    this.serverUri = serverUri;
+    this.pathwayId = pathwayId;
   }
 }
 
@@ -281,6 +300,7 @@ class MasterPlaylist extends Playlist {
   currentVariant?: number;
   sessionDataList: SessionData[];
   sessionKeyList: Key[];
+  contentSteering?: ContentSteering;
 
   constructor(params: Partial<MasterPlaylist> = {}) {
     super({...params, isMasterPlaylist: true});
@@ -288,12 +308,14 @@ class MasterPlaylist extends Playlist {
       variants = [],
       currentVariant,
       sessionDataList = [],
-      sessionKeyList = []
+      sessionKeyList = [],
+      contentSteering = undefined
     } = params;
     this.variants = variants;
     this.currentVariant = currentVariant;
     this.sessionDataList = sessionDataList;
     this.sessionKeyList = sessionKeyList;
+    this.contentSteering = contentSteering;
   }
 }
 
@@ -493,7 +515,8 @@ export {
   Segment,
   PartialSegment,
   PrefetchSegment,
-  RenditionReport
+  RenditionReport,
+  ContentSteering
 };
 
 export type AllowedCpc = {

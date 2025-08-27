@@ -12,6 +12,7 @@ import {
   SpliceInfo,
   Variant,
   PostProcess,
+  ContentSteering,
 } from './types';
 
 const ALLOW_REDUNDANCY = [
@@ -88,6 +89,9 @@ function getNumberOfDecimalPlaces(num: number) {
 }
 
 function buildMasterPlaylist(lines: LineArray, playlist: MasterPlaylist, postProcess: PostProcess | undefined) {
+  if (playlist.contentSteering) {
+    lines.push(buildContentSteeringServer(playlist.contentSteering));
+  }
   for (const sessionData of playlist.sessionDataList) {
     lines.push(buildSessionData(sessionData));
   }
@@ -101,6 +105,14 @@ function buildMasterPlaylist(lines: LineArray, playlist: MasterPlaylist, postPro
       postProcess.variantProcessor(lines, base, lines.length - 1, variant, i);
     }
   }
+}
+
+function buildContentSteeringServer(contentSteering: ContentSteering) {
+  const attrs = [
+    `SERVER-URI="${contentSteering.serverUri}"`,
+    `PATHWAY-ID="${contentSteering.pathwayId}"`
+  ];
+  return `#EXT-X-CONTENT-STEERING:${attrs.join(',')}`;
 }
 
 function buildSessionData(sessionData: SessionData) {
@@ -199,6 +211,9 @@ function buildVariant(lines: LineArray, variant: Variant) {
   }
   if (variant.stableVariantId) {
     attrs.push(`STABLE-VARIANT-ID="${variant.stableVariantId}"`);
+  }
+  if (variant.pathwayId) {
+    attrs.push(`PATHWAY-ID="${variant.pathwayId}"`);
   }
   if (variant.programId) {
     attrs.push(`PROGRAM-ID=${variant.programId}`);
