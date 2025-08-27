@@ -216,3 +216,18 @@ test('#EXT-X-PART_05', t => {
     }
   }
 });
+
+// EXTINF can be ommitted
+test('#EXT-X-PART_06', t => {
+  utils.bothPass(t, `
+    #EXTM3U
+    #EXT-X-VERSION:6
+    #EXT-X-TARGETDURATION:2
+    #EXT-X-SERVER-CONTROL:CAN-BLOCK-RELOAD=YES,PART-HOLD-BACK=0.6
+    #EXT-X-PART-INF:PART-TARGET=0.2
+    #EXTINF:2,
+    fs240.mp4
+    #EXT-X-PART:DURATION=0.17,URI="fs241.mp4",BYTERANGE=20000@0
+    #EXT-X-ENDLIST
+  `);
+});

@@ -378,8 +378,10 @@ function buildSegment(lines: LineArray, segment: Segment, lastKey: string, lastM
   if (hint) {
     return [lastKey, lastMap];
   }
-  const duration = version < 3 ? Math.round(segment.duration) : buildDecimalFloatingNumber(segment.duration, getNumberOfDecimalPlaces(segment.duration));
-  lines.push(`#EXTINF:${duration},${unescape(encodeURIComponent(segment.title || ''))}`);
+  if (typeof segment.duration === 'number' && !Number.isNaN(segment.duration)) {
+    const duration = version < 3 ? Math.round(segment.duration) : buildDecimalFloatingNumber(segment.duration, getNumberOfDecimalPlaces(segment.duration));
+    lines.push(`#EXTINF:${duration},${unescape(encodeURIComponent(segment.title || ''))}`);
+  }
   if (segment.byterange) {
     lines.push(`#EXT-X-BYTERANGE:${buildByteRange(segment.byterange)}`);
   }
@@ -500,9 +502,9 @@ function stringify(playlist: MasterPlaylist | MediaPlaylist, postProcess?: PostP
     lines.push(`#EXT-X-START:TIME-OFFSET=${buildDecimalFloatingNumber(playlist.start.offset)}${playlist.start.precise ? ',PRECISE=YES' : ''}`);
   }
   if (playlist.isMasterPlaylist) {
-    buildMasterPlaylist(lines, playlist as MasterPlaylist, postProcess);
+    buildMasterPlaylist(lines, playlist, postProcess);
   } else {
-    buildMediaPlaylist(lines, playlist as MediaPlaylist, postProcess);
+    buildMediaPlaylist(lines, playlist, postProcess);
   }
   // console.log('<<<');
   // console.log(lines.join('\n'));
