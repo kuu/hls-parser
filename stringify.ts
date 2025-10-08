@@ -337,6 +337,10 @@ function buildMediaPlaylist(lines: LineArray, playlist: MediaPlaylist, postProce
     }
     lines.push(`#EXT-X-RENDITION-REPORT:${params.join(',')}`);
   }
+
+  for (const dateRange of playlist.dateRanges) {
+    lines.push(buildDateRange(dateRange));
+  }
 }
 
 function buildSegment(lines: LineArray, segment: Segment, lastKey: string, lastMap: string, version = 1) {
@@ -407,6 +411,9 @@ function buildDateRange(dateRange: DateRange) {
   ];
   if (dateRange.start) {
     attrs.push(`START-DATE="${utils.formatDate(dateRange.start)}"`);
+  }
+  if (dateRange.cue) {
+    attrs.push(`CUE="${dateRange.cue}"`);
   }
   if (dateRange.end) {
     attrs.push(`END-DATE="${utils.formatDate(dateRange.end)}"`);

@@ -204,6 +204,7 @@ class DateRange {
   id: string;
   classId?: string;
   start?: Date;
+  cue?: string;
   end?: Date;
   duration?: number;
   plannedDuration?: number;
@@ -214,6 +215,7 @@ class DateRange {
     id, // required
     classId, // required if endOnNext is true
     start,
+    cue,
     end,
     duration,
     plannedDuration,
@@ -226,6 +228,7 @@ class DateRange {
     this.id = id;
     this.classId = classId;
     this.start = start;
+    this.cue = cue;
     this.end = end;
     this.duration = duration;
     this.plannedDuration = plannedDuration;
@@ -341,6 +344,7 @@ class MediaPlaylist extends Playlist {
   renditionReports: RenditionReport[];
   skip: number;
   hash?: Record<string, any>;
+  dateRanges: DateRange[];
 
   constructor(params: Partial<MediaPlaylist> = {}) {
     super({...params, isMasterPlaylist: false});
@@ -357,7 +361,8 @@ class MediaPlaylist extends Playlist {
       partTargetDuration,
       renditionReports = [],
       skip = 0,
-      hash
+      hash,
+      dateRanges = []
     } = params;
     this.targetDuration = targetDuration!;
     this.mediaSequenceBase = mediaSequenceBase;
@@ -372,6 +377,7 @@ class MediaPlaylist extends Playlist {
     this.renditionReports = renditionReports;
     this.skip = skip;
     this.hash = hash;
+    this.dateRanges = dateRanges;
   }
 }
 
