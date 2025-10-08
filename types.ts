@@ -344,7 +344,6 @@ class MediaPlaylist extends Playlist {
   renditionReports: RenditionReport[];
   skip: number;
   hash?: Record<string, any>;
-  dateRanges: DateRange[];
 
   constructor(params: Partial<MediaPlaylist> = {}) {
     super({...params, isMasterPlaylist: false});
@@ -362,7 +361,6 @@ class MediaPlaylist extends Playlist {
       renditionReports = [],
       skip = 0,
       hash,
-      dateRanges = []
     } = params;
     this.targetDuration = targetDuration!;
     this.mediaSequenceBase = mediaSequenceBase;
@@ -377,7 +375,6 @@ class MediaPlaylist extends Playlist {
     this.renditionReports = renditionReports;
     this.skip = skip;
     this.hash = hash;
-    this.dateRanges = dateRanges;
   }
 }
 
