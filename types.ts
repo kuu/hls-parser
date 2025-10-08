@@ -360,7 +360,7 @@ class MediaPlaylist extends Playlist {
       partTargetDuration,
       renditionReports = [],
       skip = 0,
-      hash,
+      hash
     } = params;
     this.targetDuration = targetDuration!;
     this.mediaSequenceBase = mediaSequenceBase;
