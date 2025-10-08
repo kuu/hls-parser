@@ -408,6 +408,9 @@ function buildDateRange(dateRange: DateRange) {
   if (dateRange.start) {
     attrs.push(`START-DATE="${utils.formatDate(dateRange.start)}"`);
   }
+  if (dateRange.cue) {
+    attrs.push(`CUE="${dateRange.cue}"`);
+  }
   if (dateRange.end) {
     attrs.push(`END-DATE="${utils.formatDate(dateRange.end)}"`);
   }

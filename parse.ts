@@ -563,6 +563,7 @@ function parseSegment(lines: Line[], uri: string, start: number, end: number, me
         id: attributes['ID'],
         classId: attributes['CLASS'],
         start: attributes['START-DATE'],
+        cue: attributes['CUE'],
         end: attributes['END-DATE'],
         duration: attributes['DURATION'],
         plannedDuration: attributes['PLANNED-DURATION'],

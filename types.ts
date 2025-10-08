@@ -204,6 +204,7 @@ class DateRange {
   id: string;
   classId?: string;
   start?: Date;
+  cue?: string;
   end?: Date;
   duration?: number;
   plannedDuration?: number;
@@ -214,6 +215,7 @@ class DateRange {
     id, // required
     classId, // required if endOnNext is true
     start,
+    cue,
     end,
     duration,
     plannedDuration,
@@ -226,6 +228,7 @@ class DateRange {
     this.id = id;
     this.classId = classId;
     this.start = start;
+    this.cue = cue;
     this.end = end;
     this.duration = duration;
     this.plannedDuration = plannedDuration;
