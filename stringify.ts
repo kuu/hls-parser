@@ -490,6 +490,15 @@ function buildParts(lines: LineArray, parts: PartialSegment[]) {
   return hint;
 }
 
+function buildDefines(define: Record<string, string>) {
+  const attrs: string[] = [];
+  for (var attr in define) {
+    attrs.push(`${attr}="${define[attr]}"`);
+  }
+  return `#EXT-X-DEFINE:${attrs.join(',')}`;
+}
+
+
 function stringify(playlist: MasterPlaylist | MediaPlaylist, postProcess?: PostProcess): string {
   utils.PARAMCHECK(playlist);
   utils.ASSERT('Not a playlist', playlist.type === 'playlist');
@@ -503,6 +512,11 @@ function stringify(playlist: MasterPlaylist | MediaPlaylist, postProcess?: PostP
   }
   if (playlist.start) {
     lines.push(`#EXT-X-START:TIME-OFFSET=${buildDecimalFloatingNumber(playlist.start.offset)}${playlist.start.precise ? ',PRECISE=YES' : ''}`);
+  }
+  if (playlist.defines) {
+    for (const session of playlist.defines) {
+      lines.push(buildDefines(session));
+    }
   }
   if (playlist.isMasterPlaylist) {
     buildMasterPlaylist(lines, playlist, postProcess);
