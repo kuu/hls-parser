@@ -277,6 +277,7 @@ class Playlist extends Data {
   independentSegments: boolean;
   start?: { offset: number; precise: boolean };
   source?: string;
+  defines?: Record<string, string>[];
 
   constructor({
     isMasterPlaylist, // required
@@ -284,7 +285,8 @@ class Playlist extends Data {
     version,
     independentSegments = false,
     start,
-    source
+    source,
+    defines,
   }: Partial<Playlist> & { isMasterPlaylist: boolean }) {
     super('playlist');
     utils.PARAMCHECK(isMasterPlaylist);
@@ -294,6 +296,7 @@ class Playlist extends Data {
     this.independentSegments = independentSegments;
     this.start = start;
     this.source = source;
+    this.defines = defines;
   }
 }
 

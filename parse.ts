@@ -73,6 +73,7 @@ function getTagCategory(tagName: string): TagCategory {
       return 'MasterPlaylist';
     case 'EXT-X-INDEPENDENT-SEGMENTS':
     case 'EXT-X-START':
+    case 'EXT-X-DEFINE':
       return 'MediaorMasterPlaylist';
     default:
       return 'Unknown';
@@ -247,6 +248,7 @@ function parseTagParam(name: string, param): TagParam {
     case 'EXT-X-PRELOAD-HINT':
     case 'EXT-X-RENDITION-REPORT':
     case 'EXT-X-SKIP':
+    case 'EXT-X-DEFINE':
       return [null, parseAttributeList(param)];
     case 'EXTINF':
       return [parseEXTINF(param), null];
@@ -477,6 +479,11 @@ function parseMasterPlaylist(lines: Line[], params: Record<string, any>): Master
         utils.INVALIDPLAYLIST('EXT-X-START: TIME-OFFSET attribute is REQUIRED');
       }
       playlist.start = {offset: attributes['TIME-OFFSET'], precise: attributes['PRECISE'] || false};
+    } else if (name === 'EXT-X-DEFINE') {
+      if (!playlist.defines) {
+        playlist.defines = [];
+      }
+      playlist.defines.push(attributes);
     }
   }
   if (variantIsScored) {
@@ -780,6 +787,11 @@ function parseMediaPlaylist(lines: Line[], params: Record<string, any>): MediaPl
       }
       prefetchFound = true;
       segmentStart = -1;
+    } else if (name === 'EXT-X-DEFINE') {
+      if (!playlist.defines) {
+        playlist.defines = [];
+      }
+      playlist.defines.push(attributes);
     } else if (name === 'EXT-X-DATERANGE') {
       const dateRange = parseDateRange(attributes);
       playlist.dateRanges.push(dateRange);
