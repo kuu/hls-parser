@@ -340,6 +340,7 @@ class MediaPlaylist extends Playlist {
   endlist: boolean;
   playlistType?: 'EVENT' | 'VOD';
   isIFrame?: boolean;
+  dateRanges: DateRange[];
   segments: Segment[];
   prefetchSegments: PrefetchSegment[];
   lowLatencyCompatibility?: LowLatencyCompatibility;
@@ -357,6 +358,7 @@ class MediaPlaylist extends Playlist {
       endlist = false,
       playlistType,
       isIFrame,
+      dateRanges = [],
       segments = [],
       prefetchSegments = [],
       lowLatencyCompatibility,
@@ -371,6 +373,7 @@ class MediaPlaylist extends Playlist {
     this.endlist = endlist;
     this.playlistType = playlistType;
     this.isIFrame = isIFrame;
+    this.dateRanges = dateRanges;
     this.segments = segments;
     this.prefetchSegments = prefetchSegments;
     this.lowLatencyCompatibility = lowLatencyCompatibility;
@@ -394,7 +397,7 @@ class Segment extends Data {
   key?: Key;
   map: MediaInitializationSection;
   programDateTime?: Date;
-  dateRange: DateRange;
+  dateRange?: DateRange;
   markers: SpliceInfo[];
   parts: PartialSegment[];
   gap?: boolean;
