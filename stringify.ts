@@ -301,6 +301,9 @@ function buildMediaPlaylist(lines: LineArray, playlist: MediaPlaylist, postProce
   if (playlist.skip > 0) {
     lines.push(`#EXT-X-SKIP:SKIPPED-SEGMENTS=${playlist.skip}`);
   }
+  for (const dateRange of playlist.dateRanges) {
+    lines.push(buildDateRange(dateRange));
+  }
   for (const [i, segment] of playlist.segments.entries()) {
     const base = lines.length;
     let markerType = '';

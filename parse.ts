@@ -496,6 +496,27 @@ function parseMasterPlaylist(lines: Line[], params: Record<string, any>): Master
   return playlist;
 }
 
+function parseDateRange(attributes) {
+  const attrs: Record<string, any> = {};
+  for (const key of Object.keys(attributes)) {
+    if (key.startsWith('SCTE35-') || key.startsWith('X-')) {
+      attrs[key] = attributes[key];
+    }
+  }
+  const dateRange = new DateRange({
+    id: attributes['ID'],
+    classId: attributes['CLASS'],
+    start: attributes['START-DATE'],
+    cue: attributes['CUE'],
+    end: attributes['END-DATE'],
+    duration: attributes['DURATION'],
+    plannedDuration: attributes['PLANNED-DURATION'],
+    endOnNext: attributes['END-ON-NEXT'],
+    attributes: attrs
+  });
+  return dateRange;
+}
+
 function parseSegment(lines: Line[], uri: string, start: number, end: number, mediaSequenceNumber: number, discontinuitySequence: number, params: Record<string, any>): Segment {
   const segment = new Segment({uri, mediaSequenceNumber, discontinuitySequence});
   let mapHint = false;
@@ -553,23 +574,7 @@ function parseSegment(lines: Line[], uri: string, start: number, end: number, me
     } else if (name === 'EXT-X-PROGRAM-DATE-TIME') {
       segment.programDateTime = value;
     } else if (name === 'EXT-X-DATERANGE') {
-      const attrs: Record<string, any> = {};
-      for (const key of Object.keys(attributes)) {
-        if (key.startsWith('SCTE35-') || key.startsWith('X-')) {
-          attrs[key] = attributes[key];
-        }
-      }
-      segment.dateRange = new DateRange({
-        id: attributes['ID'],
-        classId: attributes['CLASS'],
-        start: attributes['START-DATE'],
-        cue: attributes['CUE'],
-        end: attributes['END-DATE'],
-        duration: attributes['DURATION'],
-        plannedDuration: attributes['PLANNED-DURATION'],
-        endOnNext: attributes['END-ON-NEXT'],
-        attributes: attrs
-      });
+      segment.dateRange = parseDateRange(attributes);
     } else if (name === 'EXT-X-CUE-OUT') {
       segment.markers.push(new SpliceInfo({
         type: 'OUT',
@@ -775,6 +780,9 @@ function parseMediaPlaylist(lines: Line[], params: Record<string, any>): MediaPl
       }
       prefetchFound = true;
       segmentStart = -1;
+    } else if (name === 'EXT-X-DATERANGE') {
+      const dateRange = parseDateRange(attributes);
+      playlist.dateRanges.push(dateRange);
     } else if (typeof line === 'string') {
       // uri
       if (segmentStart === -1) {
