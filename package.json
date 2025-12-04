@@ -67,6 +67,7 @@
       "comma-dangle": 0,
       "capitalized-comments": 0,
       "dot-notation": 0,
+      "guard-for-in": 0,
       "import/extensions": 0,
       "import/no-dynamic-require": 0,
       "new-cap": 0,

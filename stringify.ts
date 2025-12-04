@@ -492,12 +492,11 @@ function buildParts(lines: LineArray, parts: PartialSegment[]) {
 
 function buildDefines(define: Record<string, string>) {
   const attrs: string[] = [];
-  for (var attr in define) {
+  for (const attr in define) {
     attrs.push(`${attr}="${define[attr]}"`);
   }
   return `#EXT-X-DEFINE:${attrs.join(',')}`;
 }
-
 
 function stringify(playlist: MasterPlaylist | MediaPlaylist, postProcess?: PostProcess): string {
   utils.PARAMCHECK(playlist);

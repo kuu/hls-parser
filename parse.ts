@@ -480,9 +480,7 @@ function parseMasterPlaylist(lines: Line[], params: Record<string, any>): Master
       }
       playlist.start = {offset: attributes['TIME-OFFSET'], precise: attributes['PRECISE'] || false};
     } else if (name === 'EXT-X-DEFINE') {
-      if (!playlist.defines) {
-        playlist.defines = [];
-      }
+      playlist.defines ||= [];
       playlist.defines.push(attributes);
     }
   }
@@ -783,9 +781,7 @@ function parseMediaPlaylist(lines: Line[], params: Record<string, any>): MediaPl
       prefetchFound = true;
       segmentStart = -1;
     } else if (name === 'EXT-X-DEFINE') {
-      if (!playlist.defines) {
-        playlist.defines = [];
-      }
+      playlist.defines ||= [];
       playlist.defines.push(attributes);
     } else if (typeof line === 'string') {
       // uri
