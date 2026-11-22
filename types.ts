@@ -535,7 +535,7 @@ export type AllowedCpc = {
 
 export type ExtInfo = {
   duration: number;
-  title: string;
+  title?: string;
 };
 
 export type Resolution = {

@@ -81,8 +81,21 @@ function getTagCategory(tagName: string): TagCategory {
 }
 
 function parseEXTINF(param: string): ExtInfo {
-  const pair = utils.splitAt(param, ',') as [string, string];
-  return {duration: utils.toNumber(pair[0]), title: decodeURIComponent(escape(pair[1]))};
+  const pair = utils.splitAt(param, ',') as [string, string | undefined];
+  return {duration: utils.toNumber(pair[0]), title: decodeTitle(pair[1])};
+}
+
+function decodeTitle(title: string | undefined): string | undefined {
+  if (title === undefined) {
+    return undefined;
+  }
+  // The title is raw UTF-8. Decode it when the text was read as one char per byte,
+  // and keep it as is when it was already decoded (it is not valid UTF-8 bytes then).
+  try {
+    return decodeURIComponent(escape(title));
+  } catch {
+    return title;
+  }
 }
 
 function parseBYTERANGE(param: string): Byterange {

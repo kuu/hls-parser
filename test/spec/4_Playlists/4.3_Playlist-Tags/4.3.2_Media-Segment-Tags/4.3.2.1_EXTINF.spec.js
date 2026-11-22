@@ -56,3 +56,25 @@ test('#EXTINF_03', t => {
     http://example.com/1
   `);
 });
+
+// The title may also be given as an already decoded string.
+test('#EXTINF_04', t => {
+  const {segments} = utils.parsePass(t, `
+    #EXTM3U
+    #EXT-X-TARGETDURATION:10
+    #EXTINF:10,Café あ
+    http://example.com/1
+  `);
+  t.is(segments[0].title, 'Café あ');
+});
+
+// The title is optional, and so is the comma before it in some playlists.
+test('#EXTINF_05', t => {
+  const {segments} = utils.parsePass(t, `
+    #EXTM3U
+    #EXT-X-TARGETDURATION:10
+    #EXTINF:10
+    http://example.com/1
+  `);
+  t.is(segments[0].title, undefined);
+});
