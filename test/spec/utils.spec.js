@@ -126,6 +126,8 @@ test('utils.trim', t => {
 
 test('utils.splitWithPreservingQuotes', t => {
   t.deepEqual(utils.splitByCommaWithPreservingQuotes('abc=123, def="4,5,6", ghi=78=9, jkl="abc\'123\'def"'), ['abc=123', 'def="4,5,6"', 'ghi=78=9', 'jkl="abc\'123\'def"']);
+  t.deepEqual(utils.splitByCommaWithPreservingQuotes('NAME="Director\'s cut",DEFAULT=YES'), ['NAME="Director\'s cut"', 'DEFAULT=YES']);
+  t.deepEqual(utils.splitByCommaWithPreservingQuotes('a="it\'s",b=\'say "hi"\',c=1'), ['a="it\'s"', 'b=\'say "hi"\'', 'c=1']);
 });
 
 test('utls.camelify', t => {
