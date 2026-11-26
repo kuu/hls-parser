@@ -135,26 +135,25 @@ function trim(str: string | undefined, char = ' ') {
 
 function splitByCommaWithPreservingQuotes(str: string) {
   const list: string[] = [];
-  let doParse = true;
   let start = 0;
-  const prevQuotes: string[] = [];
+  // The quote char that opened the current quoted string, or undefined when not in one.
+  // Other quote chars inside a quoted string are plain text (e.g. NAME="Director's cut").
+  let openQuote: string | undefined;
   for (let i = 0; i < str.length; i++) {
     const curr = str[i];
-    if (doParse && curr === ',') {
+    if (openQuote) {
+      if (curr === openQuote) {
+        openQuote = undefined;
+      }
+      continue;
+    }
+    if (curr === ',') {
       list.push(str.slice(start, i).trim());
       start = i + 1;
       continue;
     }
     if (curr === '"' || curr === '\'') {
-      if (doParse) {
-        prevQuotes.push(curr);
-        doParse = false;
-      } else if (curr === prevQuotes.at(-1)) {
-        prevQuotes.pop();
-        doParse = true;
-      } else {
-        prevQuotes.push(curr);
-      }
+      openQuote = curr;
     }
   }
   list.push(str.slice(start).trim());
